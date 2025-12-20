@@ -1,13 +1,19 @@
 {
   "routes": [
     {
+      "route": "/data/*",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
       "route": "/*",
       "allowedRoles": ["anonymous"]
     }
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/css/*", "/js/*", "/data/*", "/assets/*", "*.{css,js,json,jpg,png,gif,ico,svg,pdf,txt}"]
+    "exclude": ["/data/*", "/css/*", "/js/*", "/assets/*", "*.{css,js,json,jpg,png,gif,ico,svg,pdf,txt}"]
   },
   "mimeTypes": {
     ".json": "application/json",
@@ -16,12 +22,6 @@
   },
   "globalHeaders": {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Cache-Control": "public, max-age=3600"
-  },
-  "responseOverrides": {
-    "404": {
-      "rewrite": "/index.html"
-    }
+    "Access-Control-Allow-Methods": "GET, OPTIONS"
   }
 }
