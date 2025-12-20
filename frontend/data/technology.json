@@ -1,0 +1,330 @@
+{
+  "section_title": "Technology & Innovation Portfolio",
+  "tagline": "Solving Healthcare's Hardest Problems with AI, Data Science, and Strategic Innovation",
+  "preview_metrics": [
+    {
+      "value": "20+",
+      "label": "AI/Tech Projects Deployed"
+    },
+    {
+      "badge": "NVIDIA",
+      "label": "Inception Program"
+    },
+    {
+      "badge": "GCP",
+      "label": "Startup Program"
+    },
+    {
+      "badge": "ABPM",
+      "label": "Clinical Informatics"
+    },
+    {
+      "badge": "UT Austin",
+      "label": "AI/ML Certified"
+    }
+  ],
+  "categories": [
+    {
+      "id": "ai-ml",
+      "name": "AI & Machine Learning",
+      "color": "purple",
+      "tagline": "Leading the AI transformation in healthcare",
+      "projects": [
+        {
+          "name": "Healthcare IT Ticket Triaging System",
+          "problem": "Patient safety issues buried in general ticket queues require manual labor with potential for delays, inefficiencies, and higher operational costs",
+          "solution": "AI-powered intelligent ticket classification and routing system built on Azure platform for patient safety ticket prioritization",
+          "tech_stack": ["Azure AI", "Python", "ServiceNow", "Enterprise-scale architecture"],
+          "impact": [
+            ">95% accuracy in patient safety ticket identification",
+            "Improves patient safety response times",
+            "Decreases operational costs through automation"
+          ],
+          "status": "MVP pilot testing, enterprise rollout planning",
+          "type": "Enterprise healthcare AI for patient safety"
+        },
+        {
+          "name": "High-Accuracy Document Parsing & RAG System",
+          "problem": "Healthcare documents (clinical notes, reports, policies) require accurate extraction and intelligent retrieval for AI applications",
+          "solution": "Advanced parsing and Retrieval-Augmented Generation (RAG) system using cutting-edge document intelligence",
+          "tech_stack": ["Docling", "RAG architecture", "Python"],
+          "impact": [
+            "High-accuracy document understanding",
+            "Enables intelligent information retrieval",
+            "Foundation for Cortivus automation products"
+          ],
+          "status": "In development, part of Cortivus platform"
+        },
+        {
+          "name": "Epic Project Writing Assistant",
+          "problem": "Healthcare project documentation is time-consuming and often disconnected from strategic goals",
+          "solution": "AI system using aggressive prompt engineering to convert strategic plans into actionable Epic-style project documentation",
+          "tech_stack": ["Python", "Advanced prompt engineering"],
+          "impact": [
+            "Reduces project planning time significantly",
+            "Bridges strategy to execution gap",
+            "Improves project tracking and completion"
+          ],
+          "status": "Active beta, part of Strategic Mentoring package",
+          "link": "https://cortivus.com/portfolio/execution/"
+        }
+      ]
+    },
+    {
+      "id": "leadership",
+      "name": "Team Development",
+      "color": "blue",
+      "tagline": "Technology for organizational transformation",
+      "projects": [
+        {
+          "name": "Lean Agile Methodology Deployment",
+          "problem": "Traditional waterfall approaches slow healthcare IT delivery and reduce team agility",
+          "solution": "Leading federal healthcare team in adopting Lean Agile methodologies for healthcare projects",
+          "tech_stack": ["Scrum", "Lean principles", "Agile frameworks"],
+          "impact": [
+            "Faster project delivery cycles",
+            "Improved team collaboration",
+            "Increased transparency in IT projects",
+            "Better alignment with clinical needs"
+          ],
+          "status": "In progress",
+          "role": "Scrum Master / Change Champion"
+        },
+        {
+          "name": "Strategic Mentoring Program (Lead with Precision)",
+          "problem": "Chief Medical Officers and healthcare leaders struggle to navigate organizational challenges and engage physicians effectively",
+          "solution": "1-on-1 strategic partnership combining executive coaching, AI tools (Curriculum Utility + Project Writer), and actionable frameworks",
+          "tech_stack": ["Curriculum Utility", "Project Writer", "Executive coaching framework"],
+          "impact": [
+            "Transforms clinical leaders into strategic powerhouses",
+            "Accelerates AI adoption in healthcare organizations",
+            "Bridges clinical excellence and technological advancement"
+          ],
+          "status": "Accepting applicants",
+          "link": "https://cortivus.com/education/"
+        },
+        {
+          "name": "Curriculum Utility",
+          "problem": "Healthcare professionals ask 'How did you learn all this?' - need for structured, personalized learning paths in healthcare AI and leadership",
+          "solution": "AI-powered framework for rapidly designing custom educational programs. Creates phase-based learning experiences with core ideas, AI teacher interactions, activities, and reflection.",
+          "tech_stack": ["n8n workflow automation", "Grok API", "Cloudflare", "nginx", "Locally hosted"],
+          "impact": [
+            "Reduces curriculum development time by 90%",
+            "Personalized learning paths for healthcare leaders",
+            "Pilot deployment with physician colleagues",
+            "Commercial launch planned Q1 2025"
+          ],
+          "status": "Production pilot",
+          "example": "Sample: MCP fundamentals curriculum (5-phase structured learning)",
+          "link": "https://cortivus.com/portfolio/curriculum/"
+        }
+      ]
+    },
+    {
+      "id": "healthcare-it",
+      "name": "Healthcare IT",
+      "color": "green",
+      "tagline": "Practical solutions that drive efficiency",
+      "projects": [
+        {
+          "name": "EMR Deployments & Optimization",
+          "problem": "Healthcare organizations struggle with EMR implementation, optimization, and user adoption",
+          "solution": "Enterprise-scale EMR deployments and optimization initiatives across multiple healthcare systems",
+          "systems": ["Epic Systems", "Oracle Health (Cerner)", "CPRS/VistA (VA)", "Athena Health", "Credible"],
+          "impact": [
+            "Successful enterprise EMR deployments",
+            "Optimized clinical workflows",
+            "Improved user adoption and satisfaction",
+            "Enhanced patient safety through better system utilization"
+          ],
+          "experience": "12+ years healthcare IT leadership, multiple enterprise implementations"
+        },
+        {
+          "name": "Interim CIO & Informatics Department Creation",
+          "problem": "Healthcare systems undergoing IT leadership transitions need experienced executives to stabilize operations and build clinical informatics capabilities",
+          "solution": "Served as interim CIO during IT department transitions, establishing informatics departments and building clinical informatics infrastructure within healthcare systems",
+          "impact": [
+            "Stabilized IT operations during leadership transitions",
+            "Created sustainable informatics departments",
+            "Built clinical informatics capabilities from the ground up",
+            "Established governance and operational frameworks"
+          ],
+          "role": "Interim CIO / Informatics Department Architect",
+          "experience": "Multiple consulting engagements building informatics capabilities"
+        }
+      ]
+    },
+    {
+      "id": "data-science",
+      "name": "Data Science & Analytics",
+      "color": "orange",
+      "tagline": "Data-driven decision making for healthcare operations",
+      "projects": [
+        {
+          "name": "Federal Healthcare Analytics Platforms (various)",
+          "problem": "Limited visibility into healthcare operations, risk factors, and safety metrics hinders decision-making",
+          "solution": "Comprehensive analytics and automation projects leveraging Microsoft Power Platform and Azure",
+          "tech_stack": ["PowerBI", "PowerQuery", "PowerAutomate", "Azure/Summit Data Platform", "SQL"],
+          "impact": [
+            "Enhanced visibility into operational metrics",
+            "Improved risk identification and mitigation",
+            "Data-driven decision making",
+            "Real-time safety tracking",
+            "Automated reporting workflows"
+          ],
+          "use_cases": [
+            "Patient safety monitoring",
+            "Operational efficiency tracking",
+            "Quality improvement initiatives"
+          ],
+          "status": "Deployed and active in federal healthcare"
+        },
+        {
+          "name": "Revenue Optimization - Monarch Behavioral Health",
+          "problem": "Statewide behavioral health nonprofit ($80-90M annual revenue) experiencing years of suboptimal physician productivity and revenue performance due to workflow inefficiencies and underutilized patient care hours",
+          "solution": "Deployed A3/DMAIC methodology system-wide combined with Cortivus Engagement Model focusing on physician mentorship, tactical communication strategies, governance structures, and leadership development",
+          "tech_stack": ["A3/DMAIC", "Credible EMR", "Excel analytics", "Billing data analysis", "KPI dashboards"],
+          "impact": [
+            "19.6% gross revenue increase over 16 months (14.7% annualized)",
+            "Improved physician productivity and patient encounter rates",
+            "System-wide workflow optimizations across youth centers and outpatient psychiatry",
+            "Sustainable governance framework ensuring long-term improvements",
+            "Mentored 5 regional medical directors with exceptional feedback"
+          ],
+          "role": "Interim Chief Medical Officer / Revenue Optimization Lead",
+          "experience": "16-month engagement driving measurable financial and operational transformation"
+        }
+      ]
+    },
+    {
+      "id": "web-development",
+      "name": "Web Development",
+      "color": "teal",
+      "tagline": "Full-stack technical versatility with modern cloud architecture",
+      "projects": [
+        {
+          "name": "Cloud Resume Website (TroyMD.com)",
+          "problem": "Need to demonstrate cloud architecture skills and modern web development practices",
+          "solution": "Azure Cloud Resume Challenge - professional portfolio built with modern static architecture",
+          "tech_stack": [
+            "HTML5/CSS3",
+            "Vanilla JavaScript",
+            "Azure Storage",
+            "JSON-driven data",
+            "Modular CSS",
+            {"text": "GitHub Link", "link": "https://github.com/HacksterT/cloud-resume-azure"}
+          ],
+          "impact": [
+            "Separation of data, presentation, and behavior",
+            "Maintainable code structure (all files <500 lines)",
+            "Responsive, mobile-first design",
+            "Zero backend dependencies"
+          ],
+          "status": "Production",
+          "link": "https://troymd.com"
+        },
+        {
+          "name": "Cortivus Website (Cortivus.com)",
+          "problem": "Need professional web presence for healthcare AI consulting and products",
+          "solution": "Modern cloud-hosted website showcasing services, products, and company mission",
+          "tech_stack": [
+            "HTML5/CSS3",
+            "JavaScript",
+            "Google Cloud Platform",
+            "Responsive design",
+            {"text": "GitHub Link", "link": "https://github.com/HacksterT/Cortivus-Web-Site"}
+          ],
+          "impact": [
+            "Professional brand presence",
+            "Product showcase and lead generation",
+            "Integration with executive education platform"
+          ],
+          "status": "Production",
+          "link": "https://cortivus.com"
+        }
+      ]
+    },
+    {
+      "id": "entrepreneurship",
+      "name": "Entrepreneurship & Innovation",
+      "color": "indigo",
+      "tagline": "Building companies and products that transform healthcare",
+      "projects": [
+        {
+          "name": "Journey2Health - AI Health Coach & Telemedicine Platform",
+          "problem": "Chronic disease management requires personalized, accessible care that traditional healthcare systems struggle to deliver at scale",
+          "solution": "Graph database-driven AI Health Coach platform providing personalized health guidance and chronic disease management. Built on learnings from 2-year telemedicine program serving 200+ residents in rural Tennessee (2-site holistic care using Practice Fusion EMR, Google Workspace, JotForm).",
+          "tech_stack": ["Graph Database", "AI/ML", "Google Cloud Platform", "HIPAA Compliance"],
+          "impact": [
+            "NVIDIA Inception Program acceptance (AI Health Coach platform)",
+            "Google Cloud Startup Program acceptance",
+            "Foundation: 2-year telemedicine program serving 200+ residents",
+            "Built telemedicine program to $25K annual recurring revenue",
+            "Primary care physician for entire program population",
+            "Scalable AI-driven personalized health coaching",
+            "Addressing health equity gaps through technology"
+          ],
+          "status": "AI platform in development; telemedicine program completed ($25K ARR)",
+          "role": "Founder & Primary Care Physician",
+          "link": "https://cortivus.com/portfolio/journey2health/"
+        },
+        {
+          "name": "Cortivus - Healthcare AI Consulting & Products",
+          "problem": "80% of AI projects fail, and less than 1% of organizations achieve AI maturity. Healthcare leaders lack practical tools and guidance for AI adoption",
+          "solution": "Healthcare AI consulting platform bringing together executive education (Lead with Precision mentoring), automation tools (Curriculum Utility, Project Writer), and the Journey2Health AI Health Coach",
+          "tech_stack": ["Python", "AI/ML", "n8n workflow automation", "Graph Database", "HIPAA Compliance"],
+          "impact": [
+            "NVIDIA Inception Program member (Journey2Health AI Health Coach)",
+            "Google Cloud Startup Program member",
+            "Multiple products in development/beta testing",
+            "Strategic mentoring program accepting applicants",
+            "Bringing together 20+ years of healthcare technology innovation"
+          ],
+          "status": "Platform consolidation in progress, pre-revenue",
+          "role": "Founder & CEO",
+          "link": "https://cortivus.com"
+        }
+      ]
+    }
+  ],
+  "external_validation": [
+    {
+      "program": "NVIDIA Inception Program",
+      "company": "Cortivus",
+      "description": "AI startup accelerator program",
+      "badge": "nvidia"
+    },
+    {
+      "program": "Google Cloud Startup Program",
+      "company": "Cortivus",
+      "description": "GCP credits and support",
+      "badge": "gcp"
+    },
+    {
+      "credential": "Board Certified in Clinical Informatics",
+      "organization": "American Board of Preventive Medicine",
+      "expiration": "December 31, 2031",
+      "badge": "abpm"
+    },
+    {
+      "credential": "Certified Usability Analyst",
+      "organization": "Human Factors International",
+      "year": "2024",
+      "badge": "cua"
+    },
+    {
+      "credential": "UT Austin AI/ML Certificate",
+      "organization": "University of Texas at Austin",
+      "completion": "August 2025",
+      "badge": "ut-austin"
+    }
+  ],
+  "skills": {
+    "languages": ["Python", "JavaScript", "HTML5/CSS3", "SQL", "DAX", "PowerQuery", "Bash"],
+    "platforms": ["Azure", "Google Cloud Platform", "Cloudflare"],
+    "healthcare_systems": ["Epic", "Oracle Health/Cerner", "CPRS/VistA", "ServiceNow"],
+    "ai_ml": ["Azure AI", "Vertex AI", "Grok API", "Docling", "RAG", "LLM", "Prompt Engineering"],
+    "data_tools": ["PowerBI", "PowerQuery", "PowerAutomate", "Synapse", "BigQuery"],
+    "methodologies": ["Lean Agile", "Scrum", "Six Sigma", "Design Thinking", "Data-Driven Decision Making"]
+  }
+}

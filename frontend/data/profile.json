@@ -1,0 +1,52 @@
+{
+  "name": "Troy E. Sybert, MD, MPH, CUA",
+  "title": "Physician Executive | Transformational Leader | Healthcare Innovator",
+  "photo": "assets/presentations/picture.jpg",
+  "summary": "As a versatile and value-driven leader with experience spanning diverse healthcare settings, my focus remains steadfast on maintaining a patient-centric commitment while contributing to organizational growth and well-being through relationship building and collaborative decision-making. My approach integrates innovative technologies and data-driven solutions to transform healthcare delivery, consistently bridging the gap between clinical excellence and technological advancement.",
+  "experience": {
+    "clinical_years": 23,
+    "executive_years": 20,
+    "healthcare_it_years": 12
+  },
+  "skills": [
+    "Healthcare Transformation",
+    "Leadership Development",
+    "Organizational Management",
+    "Revenue Cycle Consulting",
+    "Artificial Intelligence",
+    "Clinical Informatics",
+    "Digital Strategy",
+    "Budget/Contracting",
+    "Data Science",
+    "Multiple EMRs",
+    "Quality/Safety",
+    "Multi-Site Facilities"
+  ],
+  "social_media": [
+    {
+      "platform": "doximity",
+      "url": "https://www.doximity.com/cv/troy",
+      "label": "Doximity Profile"
+    },
+    {
+      "platform": "linkedin",
+      "url": "https://www.linkedin.com/in/troy-sybert/",
+      "label": "LinkedIn Profile"
+    },
+    {
+      "platform": "twitter",
+      "url": "https://x.com/TroySybert",
+      "label": "X Profile"
+    },
+    {
+      "platform": "youtube",
+      "url": "https://www.youtube.com/@Journey2HealthDoc",
+      "label": "YouTube Channel"
+    },
+    {
+      "platform": "github",
+      "url": "https://github.com/HacksterT",
+      "label": "GitHub Profile"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "volunteer_work": [
+    {
+      "role": "Tennessee Health Information Technology Committee",
+      "organization": "Governor Appointed",
+      "years": "2015 - 2016"
+    },
+    {
+      "role": "Tennessee Medical Association",
+      "organization": "Physician Services Advisory Panel",
+      "years": "2014 - 2016"
+    },
+    {
+      "role": "American College of Preventive Medicine",
+      "organization": "Health Systems Task Force Member",
+      "years": "2014 - 2016"
+    },
+    {
+      "role": "Federation of American Hospitals",
+      "organization": "Quality Committee of the Board, Member",
+      "years": "2014 - 2015"
+    },
+    {
+      "role": "East Tennessee State University",
+      "organization": "Health Services Management & Policy Professional Advisory Committee",
+      "years": "2013 - 2014"
+    },
+    {
+      "role": "Health Information Partnership for Tennessee",
+      "organization": "Member",
+      "years": "2011"
+    },
+    {
+      "role": "Coalition for Statewide Health Literacy",
+      "organization": "Facilitator, St. Paul, MN",
+      "years": "November 2005 - February 2006"
+    }
+  ],
+  "awards": [
+    {
+      "title": "Start-Up TriCities Pitches and Pints",
+      "award": "2nd Place",
+      "year": "2016"
+    },
+    {
+      "title": "Distinguished Alumni",
+      "organization": "College of the Mainland",
+      "year": "2012"
+    },
+    {
+      "title": "Healthcare Heroes",
+      "organization": "Business Journal of the TriCities",
+      "year": "2011"
+    }
+  ]
+}

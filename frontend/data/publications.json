@@ -1,0 +1,121 @@
+{
+  "publications": [
+    {
+      "authors": "Schlosser R, Reddy S, Willis D, Sybert TE",
+      "title": "Real World Healthcare Innovation: Clinical Evidence & Cost Effectiveness",
+      "publication": "HealthTrust",
+      "url": "https://healthtrustpg.com/wp-content/uploads/2017/09/Real-World-Healthcare-Innovation.pdf",
+      "date": "September 2017",
+      "year": 2017
+    },
+    {
+      "authors": "Keller B, Enzler D, Sybert TE",
+      "title": "In the Literature: Staph Endocarditis, METS, COPD, CPGs & More",
+      "publication": "The Hospitalist",
+      "url": "https://www.the-hospitalist.org/hospitalist/article/122997/staph-endocarditis-mets-copd-cpgs-more",
+      "citation": "2015;2015(8)",
+      "date": "August 2015",
+      "year": 2015
+    },
+    {
+      "authors": "Sybert TE",
+      "title": "Big Data. Big Changes. What's the Big Idea?",
+      "publication": "Tennessee Medicine",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/25558523/",
+      "citation": "2014;107(6):21-23. PMID: 25558523",
+      "date": "June 2014",
+      "year": 2014
+    },
+    {
+      "authors": "Sybert TE, Philips BU",
+      "title": "Observations on the State of Colorectal Cancer Screening in the Hispanic Population (Thesis)",
+      "publication": "University of Texas School of Biomedical Sciences",
+      "location": "Galveston, TX",
+      "date": "May 2005",
+      "year": 2005
+    },
+    {
+      "authors": "Liu J, Sybert TE, Qian Y, Liu F",
+      "title": "Effects of thalidomide on rat embryonic DNA synthesis in vitro",
+      "publication": "Free Radical Biology and Medicine",
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0891584998000550?via%3Dihub",
+      "citation": "1998;25(6):689-92",
+      "date": "October 1998",
+      "year": 1998
+    },
+    {
+      "authors": "Chavoshan B, Sander M, Sybert TE, Hansen J, Victor RG, Thomas GD",
+      "title": "Heat acclimation and prior heat exposure do not modify pressor responses to muscle metaboreflex activation",
+      "publication": "The Journal of Physiology",
+      "url": "https://physoc.onlinelibrary.wiley.com/doi/epdf/10.1113/jphysiol.2001.013153",
+      "citation": "2002;536(2):449-459",
+      "date": "October 2002",
+      "year": 2002
+    }
+  ],
+  "presentations": [
+    {
+      "title": "Organizational Change via Provider Engagement",
+      "event": "Mental Health Corporation of America (MHCA) Summer Conference",
+      "location": "Raleigh, NC",
+      "date": "August 2022",
+      "year": 2022,
+      "video_url": "https://youtu.be/O3jceG53nCw?si=MIBTWPPOBrqLVu5m",
+      "slides_pdf": "assets/presentations/August2022.pdf",
+      "description": "A presentation on a Provider Engagement Framework built around autonomy, purpose, and mastery leading to intrinsic motivation, including a data-driven change model and its application at Monarch."
+    },
+    {
+      "title": "People and Programs: A Management Philosophy",
+      "event": "EPIC National Users Forum",
+      "location": "Verona, WI",
+      "date": "August 2013",
+      "year": 2013,
+      "slides_pdf": "assets/presentations/August2013.pdf"
+    },
+    {
+      "title": "Creating a Technology Singularity in Your Organization",
+      "event": "University of Virginia-Wise Symposium",
+      "location": "Wise, VA",
+      "date": "October 2010",
+      "year": 2010,
+      "slides_pdf": "assets/presentations/October2010.pdf"
+    },
+    {
+      "title": "Negative Predictor Variables in Colorectal Cancer Screening in Hispanic and non-Hispanic Whites",
+      "event": "American College of Physicians Regional Meeting",
+      "location": "Galveston, TX",
+      "date": "May 2005",
+      "year": 2005
+    },
+    {
+      "title": "Comparison of Recommendations Targeted Towards High-risk Groups in Cancer Screening Guidelines",
+      "event": "American College of Preventive Medicine National Meeting",
+      "location": "Orlando, FL",
+      "date": "February 2004",
+      "year": 2004
+    }
+  ],
+  "press_mentions": [
+    {
+      "title": "Troy Sybert focused on bringing Walmart model to healthcare",
+      "publication": "Teknovation.biz",
+      "url": "https://www.teknovation.biz/troy-sybert-focused-bringing-walmart-model-healthcare/",
+      "date": "March 2024",
+      "year": 2024
+    },
+    {
+      "title": "Why we switched to Epic",
+      "publication": "Becker's Hospital Review",
+      "url": "https://www.beckershospitalreview.com/healthcare-information-technology/why-we-switched-to-epic.html",
+      "date": "January 2014",
+      "year": 2014
+    },
+    {
+      "title": "Automated for the Greater Good",
+      "publication": "HealthTrust The Source",
+      "url": "https://healthtrustpg.com/thesource/technology-innovation/technological-advancements/automated-for-the-greater-good/",
+      "date": "January 2018",
+      "year": 2018
+    }
+  ]
+}

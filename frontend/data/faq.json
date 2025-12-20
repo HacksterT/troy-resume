@@ -1,0 +1,170 @@
+{
+  "greeting": "Hi! I'm HacksterT, Dr. Sybert's virtual assistant. Ask me about his leadership experience, technical expertise, achievements, or anything else you'd like to know!",
+  "default_response": "That's a great question! While I don't have a specific answer for that, you can explore Dr. Sybert's full resume above or connect with him on LinkedIn for more details.",
+  "template_questions": [
+    "Can he cook?",
+    "What's his leadership style?",
+    "Tell me about his AI experience",
+    "What healthcare IT systems does he know?",
+    "What are his key achievements?",
+    "How can I contact him?"
+  ],
+  "questions": [
+    {
+      "id": "cooking",
+      "keywords": ["cook", "cooking", "chef", "gumbo", "food", "kitchen", "culinary"],
+      "question": "Can Dr. Sybert cook?",
+      "answer": "You will not find a better bowl of Gumbo in Louisiana!"
+    },
+    {
+      "id": "leadership-style",
+      "keywords": ["leadership", "style", "approach", "manage", "lead", "team"],
+      "question": "What's Dr. Sybert's leadership style?",
+      "answer": "Dr. Sybert is a transformational leader focused on relationship building and collaborative decision-making. With over 20 years of healthcare leadership experience, he emphasizes patient-centric care while driving organizational growth. His approach integrates innovative technologies and data-driven solutions to transform healthcare delivery."
+    },
+    {
+      "id": "ai-experience",
+      "keywords": ["ai", "artificial intelligence", "machine learning", "ml", "automation"],
+      "question": "What AI and machine learning experience does Dr. Sybert have?",
+      "answer": "Dr. Sybert has extensive AI/ML experience including: (1) Healthcare IT Ticket Triaging System with >95% accuracy for patient safety identification, (2) High-accuracy document parsing and RAG systems for healthcare applications, (3) Epic Project Writing Assistant using advanced prompt engineering. He holds a Post Graduate Certificate in AI & ML Business Applications from UT Austin and is a member of the NVIDIA Inception Program."
+    },
+    {
+      "id": "healthcare-it",
+      "keywords": ["healthcare it", "emr", "ehr", "epic", "cerner", "oracle health", "vista", "cprs"],
+      "question": "What healthcare IT systems has Dr. Sybert worked with?",
+      "answer": "Dr. Sybert has 12+ years of healthcare IT leadership experience with enterprise-scale deployments and optimization across Epic Systems, Oracle Health (Cerner), CPRS/VistA (VA), Athena Health, and Credible. He's led successful enterprise EMR implementations, optimized clinical workflows, improved user adoption, and enhanced patient safety through better system utilization."
+    },
+    {
+      "id": "data-science",
+      "keywords": ["data", "analytics", "powerbi", "dashboard", "data science", "visualization"],
+      "question": "What data science and analytics experience does Dr. Sybert have?",
+      "answer": "Dr. Sybert has built comprehensive analytics platforms using PowerBI, PowerQuery, PowerAutomate, Azure/Summit Data Platform, and SQL. In federal healthcare, he created dashboards for patient safety monitoring, operational efficiency tracking, and quality improvement initiatives. He also led a revenue optimization project at Monarch Behavioral Health that achieved a 19.6% gross revenue increase over 16 months using A3/DMAIC methodology and data analytics."
+    },
+    {
+      "id": "entrepreneurship",
+      "keywords": ["entrepreneur", "business", "startup", "cortivus", "journey2health", "founder", "company"],
+      "question": "What entrepreneurial ventures has Dr. Sybert founded?",
+      "answer": "Dr. Sybert founded Cortivus, a healthcare AI consulting platform offering executive education, automation tools (Curriculum Utility, Project Writer), and the Journey2Health AI Health Coach. Journey2Health is a graph database-driven AI platform for personalized chronic disease management, accepted into both NVIDIA Inception and Google Cloud Startup programs. He previously built a telemedicine program serving 200+ residents in rural Tennessee to $25K annual recurring revenue."
+    },
+    {
+      "id": "certifications",
+      "keywords": ["certification", "certified", "credential", "license", "education", "degree"],
+      "question": "What certifications and credentials does Dr. Sybert hold?",
+      "answer": "Dr. Sybert holds: MD (Doctor of Medicine), MPH (Master of Public Health), Board Certified in Clinical Informatics (ABPM), Certified Usability Analyst (HFI), Six Sigma Black Belt, Certified Scrum Master, and a Post Graduate Certificate in AI & ML Business Applications from UT Austin (2025). He is licensed to practice medicine in Tennessee."
+    },
+    {
+      "id": "cio-experience",
+      "keywords": ["cio", "chief information officer", "informatics", "it director"],
+      "question": "Does Dr. Sybert have CIO or IT leadership experience?",
+      "answer": "Yes! Dr. Sybert has served as Interim CIO during IT department transitions, establishing informatics departments and building clinical informatics infrastructure from the ground up. He's created sustainable informatics departments, stabilized IT operations during leadership transitions, and established governance and operational frameworks across multiple healthcare systems."
+    },
+    {
+      "id": "clinical-background",
+      "keywords": ["clinical", "physician", "doctor", "medical", "patient care", "practice"],
+      "question": "What's Dr. Sybert's clinical background?",
+      "answer": "Dr. Sybert is a board-certified physician with extensive clinical experience including serving as Medical Director, Chief Medical Officer, and primary care physician. He's practiced in diverse settings from academic medicine to rural telemedicine, combining his clinical expertise with his technology and leadership skills to drive patient-centric innovation."
+    },
+    {
+      "id": "lean-agile",
+      "keywords": ["agile", "scrum", "lean", "six sigma", "process improvement", "methodology"],
+      "question": "What experience does Dr. Sybert have with Lean Agile and process improvement?",
+      "answer": "Dr. Sybert is a Scrum Master and Six Sigma Black Belt currently leading Lean Agile deployment in federal healthcare. He's applied A3/DMAIC methodology system-wide at Monarch Behavioral Health to achieve measurable revenue increases. His approach combines data-driven process improvement with Agile delivery methodologies for faster cycles, better collaboration, and improved transparency."
+    },
+    {
+      "id": "curriculum-utility",
+      "keywords": ["curriculum", "education", "learning", "training", "teaching", "mentoring"],
+      "question": "What is the Curriculum Utility?",
+      "answer": "The Curriculum Utility is an AI-powered framework Dr. Sybert developed for rapidly designing custom educational programs. It reduces curriculum development time by 90% and creates personalized learning paths for healthcare leaders. Built with n8n workflow automation and Grok API, it's in production pilot in with commercial launch planned for Q1 2025 as part of the Cortivus platform."
+    },
+    {
+      "id": "project-writer",
+      "keywords": ["project writer", "strategic planning", "execution", "strategy"],
+      "question": "What is the Project Writer tool?",
+      "answer": "The Project Writer is an AI execution system Dr. Sybert built that converts strategic material into tracked, actionable projects using aggressive prompt engineering. It bridges the gap between strategy and execution, improving completion rates of strategic initiatives and providing tracking and accountability for hospital and clinic leadership teams."
+    },
+    {
+      "id": "achievements",
+      "keywords": ["achievement", "accomplishment", "award", "success", "impact", "results"],
+      "question": "What are Dr. Sybert's key achievements?",
+      "answer": "Key achievements include: (1) >95% accuracy AI system for healthcare patient safety ticket triaging, (2) 19.6% revenue increase at Monarch Behavioral Health in 16 months, (3) NVIDIA Inception Program acceptance, (4) Google Cloud Startup Program acceptance, (5) Built telemedicine program to $25K ARR serving 200+ patients, (6) Developed multiple AI products (Curriculum Utility, Project Writer, Journey2Health), (7) 12+ years leading enterprise EMR implementations."
+    },
+    {
+      "id": "web-development",
+      "keywords": ["web development", "website", "cloud", "azure", "gcp", "coding", "programming"],
+      "question": "What web development and cloud experience does Dr. Sybert have?",
+      "answer": "Dr. Sybert built TroyMD.com as an Azure Cloud Resume Challenge using HTML5/CSS3, vanilla JavaScript, and Azure Storage with a modular CSS architecture. He also created Cortivus.com on Google Cloud Platform. He has experience with Azure (Foundry, Storage, Synapse), Google Cloud Platform, Cloudflare, nginx, and n8n workflow automation."
+    },
+    {
+      "id": "contact",
+      "keywords": ["contact", "reach", "connect", "email", "linkedin", "hire", "available"],
+      "question": "How can I contact Dr. Sybert?",
+      "answer": "You can connect with Dr. Sybert on LinkedIn at <a href='https://www.linkedin.com/in/troysybert/' target='_blank' rel='noopener noreferrer'>linkedin.com/in/troysybert</a> or email him at <a href='mailto:TroySybert@Cortivus.com'>TroySybert@Cortivus.com</a>. You can also visit his company website at <a href='https://cortivus.com' target='_blank' rel='noopener noreferrer'>cortivus.com</a> for information about his strategic mentoring program and healthcare AI consulting services."
+    },
+    {
+      "id": "availability",
+      "keywords": ["available", "hire", "consulting", "freelance", "work", "opportunity"],
+      "question": "Is Dr. Sybert available for consulting or new opportunities?",
+      "answer": "Dr. Sybert offers strategic mentoring through his 'Lead with Precision' program for Chief Medical Officers and healthcare leaders. He's also building Cortivus with multiple AI products in development. For specific opportunities or partnerships, connect with him on LinkedIn or through cortivus.com."
+    },
+    {
+      "id": "tech-stack",
+      "keywords": ["tech stack", "technology", "tools", "programming language", "platform"],
+      "question": "What technologies and tools does Dr. Sybert use?",
+      "answer": "Dr. Sybert's tech stack includes: Python (AI/ML, automation), JavaScript/HTML5/CSS3, SQL, Azure (Foundry, Storage, Synapse), Google Cloud Platform, PowerBI/PowerQuery/PowerAutomate, ServiceNow, n8n workflow automation, Grok API, Epic/Oracle Health/CPRS systems, Git/GitHub, and various AI/ML frameworks for document parsing, RAG, and prompt engineering."
+    },
+    {
+      "id": "va-experience",
+      "keywords": ["va", "veterans affairs", "veteran", "government", "federal"],
+      "question": "What federal healthcare experience does Dr. Sybert have?",
+      "answer": "Dr. Sybert serves as a Clinical Informaticist in federal healthcare leading multiple initiatives: (1) AI-powered patient safety ticket triaging system with >95% accuracy, (2) PowerBI analytics platform for patient safety monitoring and operational metrics, and (3) Lean Agile methodology deployment as Scrum Master. "
+    },
+    {
+      "id": "revenue-optimization",
+      "keywords": ["revenue", "financial", "business impact", "roi", "cost savings", "efficiency"],
+      "question": "What business impact has Dr. Sybert delivered?",
+      "answer": "Dr. Sybert delivered a 19.6% gross revenue increase (14.7% annualized) at Monarch Behavioral Health over 16 months using A3/DMAIC methodology, billing data analysis, and the Cortivus Engagement Model. He's also reduced operational costs through AI automation, reduced curriculum development time by 90% (Curriculum Utility), and built a telemedicine program to $25K ARR."
+    },
+    {
+      "id": "publications",
+      "keywords": ["publication", "published", "research", "paper", "presentation", "speaker"],
+      "question": "Has Dr. Sybert published research or given presentations?",
+      "answer": "Yes! Dr. Sybert has publications and presentations covering various topics. For a complete list of his publications, presentations with video/PDF links, and press mentions, see the Publications/Presentations section of his resume above."
+    },
+    {
+      "id": "location",
+      "keywords": ["location", "where", "based", "live", "located", "city", "state", "region"],
+      "question": "Where is Dr. Sybert located?",
+      "answer": "Dr. Sybert is based in Eastern Tennessee. He is available for remote consulting, on-site engagements, and hybrid arrangements depending on the opportunity."
+    },
+    {
+      "id": "remote-work",
+      "keywords": ["remote", "virtual", "telecommute", "work from home", "hybrid", "on-site"],
+      "question": "Does Dr. Sybert work remotely?",
+      "answer": "Yes, Dr. Sybert has extensive experience with remote work and virtual leadership. He's successfully led distributed teams, implemented remote healthcare delivery programs, and provides virtual consulting services. He's flexible with remote, hybrid, or on-site arrangements."
+    },
+    {
+      "id": "industries",
+      "keywords": ["industry", "sector", "healthcare", "hospital", "clinic", "behavioral health"],
+      "question": "What healthcare sectors has Dr. Sybert worked in?",
+      "answer": "Dr. Sybert has diverse experience across multiple healthcare sectors including: Veterans Affairs (VA), behavioral health and addiction services, academic medical centers, community hospitals, rural telemedicine, and ambulatory care settings. His experience spans both public and private healthcare organizations."
+    },
+    {
+      "id": "team-size",
+      "keywords": ["team size", "how many", "staff", "employees", "manage teams", "direct reports"],
+      "question": "What size teams has Dr. Sybert led?",
+      "answer": "Dr. Sybert has led teams ranging from small 5-person clinical informatics groups to large multi-departmental initiatives involving 50+ stakeholders. His experience includes managing direct reports, leading cross-functional teams, and coordinating enterprise-wide implementations affecting hundreds of end users."
+    },
+    {
+      "id": "patient-safety",
+      "keywords": ["patient safety", "quality", "safety", "adverse events", "harm prevention"],
+      "question": "What patient safety experience does Dr. Sybert have?",
+      "answer": "Patient safety is central to Dr. Sybert's work. His team developed an AI system with >95% accuracy for identifying patient safety issues in VA IT tickets. He's created PowerBI dashboards for patient safety monitoring, led quality improvement initiatives, and consistently integrated safety considerations into clinical workflow optimization and EMR implementations across multiple healthcare systems."
+    },
+    {
+      "id": "speaking",
+      "keywords": ["speaking", "speaker", "keynote", "conference", "talk", "present"],
+      "question": "Is Dr. Sybert available for speaking engagements?",
+      "answer": "Yes, Dr. Sybert is an experienced speaker on topics including healthcare AI/ML, clinical informatics, leadership in healthcare IT, patient safety, and digital transformation. For speaking inquiries, connect with him on LinkedIn at <a href='https://www.linkedin.com/in/troysybert/' target='_blank' rel='noopener noreferrer'>linkedin.com/in/troysybert</a> or email <a href='mailto:TroySybert@Cortivus.com'>TroySybert@Cortivus.com</a>."
+    }
+  ]
+}

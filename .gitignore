@@ -119,7 +119,6 @@ local.settings.json
 # ==============================
 # Admin tools and sensitive data
 frontend/admin/
-frontend/data/*.json
 
 # Exclude backend and archive folders from Azure workflow
 backend/
