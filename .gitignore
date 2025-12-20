@@ -124,6 +124,7 @@ frontend/data/*.json
 # Exclude backend and archive folders from Azure workflow
 backend/
 archive/
+tasks/
 
 # SageMath cloud uploaded files
 upload/
@@ -135,6 +136,7 @@ Zip/
 # IDE settings
 # ==============================
 # VS Code
+.windsurf/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

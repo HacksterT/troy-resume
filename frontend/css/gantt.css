@@ -1,0 +1,126 @@
+/* ========== GANTT CHART ========== */
+.gantt-chart {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0 15px;
+}
+
+.gantt-timeline {
+    position: relative;
+    min-width: 800px;
+}
+
+.timeline-header {
+    position: relative;
+    padding: 1rem 0;
+    border-bottom: 2px solid #ddd;
+    height: 40px;
+}
+
+.year-marker {
+    position: absolute;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9em;
+}
+
+.year-marker:nth-child(1) { left: 0; }
+.year-marker:nth-child(2) { left: 20%; }
+.year-marker:nth-child(3) { left: 40%; }
+.year-marker:nth-child(4) { left: 60%; }
+.year-marker:nth-child(5) { left: 80%; }
+.year-marker:nth-child(6) { right: 0; }
+
+.timeline-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: -700px;
+    pointer-events: none;
+}
+
+.grid-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: 1px dashed rgba(0,0,0,0.1);
+    width: 1px;
+}
+
+.grid-line:nth-child(1) { left: 0; }
+.grid-line:nth-child(2) { left: 20%; }
+.grid-line:nth-child(3) { left: 40%; }
+.grid-line:nth-child(4) { left: 60%; }
+.grid-line:nth-child(5) { left: 80%; }
+.grid-line:nth-child(6) { right: 0; }
+
+.gantt-entries {
+    position: relative;
+    z-index: 1;
+}
+
+.gantt-entry {
+    position: relative;
+    height: 10px;
+    margin-bottom: 25px;
+    border-radius: 2px;
+    width: calc((var(--end) - var(--start)) * 4%);
+    margin-left: calc(var(--start) * 4%);
+    opacity: 0.85;
+}
+
+.gantt-entry.admin { background: var(--admin-color); }
+.gantt-entry.clinical { background: var(--clinical-color); }
+.gantt-entry.academic { background: var(--academic-color); }
+.gantt-entry:hover { opacity: 1; }
+
+.entry-label {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    color: #000;
+    font-size: 0.85em;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.gantt-entry:nth-child(even) .entry-label { bottom: auto; top: 12px; }
+.gantt-entry.label-top .entry-label { bottom: auto; top: -20px; }
+.gantt-entry.label-bottom .entry-label { top: 12px; bottom: auto; }
+
+.view-summary { display: none; }
+.view-summary.active { display: block; }
+
+.gantt-footnote {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8em;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.gantt-category-admin {
+    position: absolute;
+    top: 90px;
+    left: 10px;
+    font-size: 1.6em;
+    color: var(--admin-color);
+}
+
+.gantt-category-clinical {
+    position: absolute;
+    top: 305px;
+    left: 10px;
+    font-size: 1.6em;
+    color: var(--clinical-color);
+}
+
+.gantt-category-academic {
+    position: absolute;
+    top: 520px;
+    left: 10px;
+    font-size: 1.6em;
+    color: var(--academic-color);
+}

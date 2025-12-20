@@ -1,0 +1,31 @@
+/* ========== CSS VARIABLES ========== */
+:root {
+    /* Typography */
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+
+    /* Category Colors */
+    --admin-color: rgba(52, 152, 219, 0.75);
+    --clinical-color: rgba(46, 204, 113, 0.75);
+    --academic-color: rgba(155, 89, 182, 0.75);
+
+    /* Brand Colors */
+    --primary-blue: #3498db;
+    --primary-dark: #2c3e50;
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --utmb-blue: #005EB8;
+    --linkedin-blue: #0A66C2;
+    --github-black: #171515;
+    --youtube-red: #FF0000;
+
+    /* Neutral Colors */
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --text-primary: #2c3e50;
+    --text-dark: #2c3e50;
+    --text-medium: #555;
+    --text-light: #666;
+    --text-lighter: #888;
+    --border-color: #e0e0e0;
+}

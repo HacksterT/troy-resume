@@ -1,19 +1,347 @@
 {
-    "roles": [
+  "roles": [
+    {
+      "id": "va-informaticist",
+      "category": "administrative",
+      "date_start": "2023-05",
+      "date_end": "present",
+      "gantt_start": 23.42,
+      "gantt_end": 24.92,
+      "gantt_label": "MD/IT: VA*",
+      "gantt_position": "bottom",
+      "title": "Physician Informaticist",
+      "company": "U.S. Department of Veterans Affairs",
+      "location": "Washington D.C.",
+      "dates_display": "May 2023 - Present",
+      "company_description": "The Veterans Health Administration is America's largest integrated health care system, providing care at 1,380 health care facilities, including 170 medical centers and 1,193 outpatient sites of care of varying complexity (VHA outpatient clinics), serving 9.1 million enrolled Veterans each year.",
+      "job_description": "Subject matter and policy expert on foundational methods and capabilities to support patient safety and health information systems for the delivery of healthcare. This position supports and collaborates with clinicians, researchers, educators, technical staff, and administrators across federal programs, field facilities, other federal agencies, and the private sector.",
+      "accomplishments": [
+        "AI Innovation: Developed machine learning solutions for healthcare IT operations",
+        "Policy & Strategy: Authors policies and guidance documents as SME, improving clinical quality and interoperability across VA programs and field facilities.",
+        "Data Analytics: Spearheads data analytics initiatives using PowerBI and Azure Synapse, boosting risk identification and decision-making visibility in healthcare operations.",
+        "System Support: Drive safety and process improvements in EMR systems (CPRS/Vista, Oracle Health), scaling technology adoption across diverse stakeholders."
+      ]
+    },
+    {
+      "id": "aahs-cmo",
+      "category": "administrative",
+      "date_start": "2018-11",
+      "date_end": "2019-03",
+      "gantt_start": 18,
+      "gantt_end": 19,
+      "gantt_label": "CMO: AAHS",
+      "gantt_position": "bottom",
+      "title": "Chief Medical Officer",
+      "company": "American Academic Health System",
+      "location": "Philadelphia, PA",
+      "dates_display": "November 2018 - March 2019",
+      "company_description": "With both Hahnemann University Hospital and St Christopher Hospital, AAHS was a premier inner city academic medical center in the heart of Philadelphia. My departure from this organization was a result of the primary hospital closing operations.",
+      "job_description": "Responsible for quality/safety and medical staff affairs. In addition, had direct leadership over multiple departments including Information Technology, Case Management, and Health Information Management.",
+      "accomplishments": [
+        "Served as an interim CIO during an IT transition",
+        "Responsible for Physician Advisor Program for Revenue Cycle, seeing an improvement in documentation leading to CMI increases (1.4 to 1.7) through realigning UR program/partnering with physicians",
+        "Served as liaison between medical staff and hospital leadership"
+      ]
+    },
+    {
+      "id": "troymd-ceo",
+      "category": "administrative",
+      "date_start": "2016-05",
+      "date_end": "2023-05",
+      "gantt_start": 16,
+      "gantt_end": 23.42,
+      "gantt_label": "CEO: TroyMD",
+      "gantt_position": "bottom",
+      "title": "CEO/Consultant",
+      "company": "TroyMD Wellness, PLLC",
+      "location": "Johnson City, TN",
+      "dates_display": "May 2016 - May 2023",
+      "company_description": "This company was created by me to provide executive/consultative services to various clients.",
+      "job_description": "As CEO and consultant, I provided services to a variety of clients. Client names are available on request. Various interim roles include CMO, CIO, COO, Physician Advisor, Informaticist, Regional President, and Medical Director.",
+      "accomplishments_sections": [
         {
-            "category": "administrative",
-            "date_start": "2023-05",
-            "date_end": "present",
-            "title": "Physician Informaticist",
-            "company": "Veteran's Affairs",
-            "location": "Washington D.C.",
-            "dates_display": "May 2023 - Present",
-            "company_description": "The Veterans Health Administration is America's largest integrated health care system, providing care at 1,380 health care facilities, including 170 medical centers and 1,193 outpatient sites of care of varying complexity (VHA outpatient clinics), serving 9.1 million enrolled Veterans each year. ",
-            "job_description": "This role serves as Veterans Health Administration's subject matter and policy expert on foundational methods and capabilities to support patient safety and health information systems for the delivery of healthcare. This position supports and collaborates with clinicians, researchers, educators, technical staff, and administrators in other VA Central Office programs, VA field facilities, other federal agencies, and the private sector.",
-            "accomplishments": [
-                "participated in the creation of a dashboard to assess provider order alerts",
-                "ontributed to multidisciplinary team in assessing orphan codes in the EMR"
-            ]
+          "title": "Quality/Safety/Service",
+          "items": [
+            "Responsible for assessing the status of quality/service and developing a plan to improve national standings",
+            "Focused engagement for developing the strategy and 3 use cases for the healthcare vertical of a technology company using wearable technology",
+            "In-kind Medical Director for community-based business coalition promoting healthy lifestyles (HealthyKingsport.org)",
+            "Worked with major theme park on COVID reopening strategy",
+            "Deployed a Continuous Improvement initiative in partnership with the parent organization",
+            "Assessment of quality/service and communication/leadership development supporting physician and administrative leaders in large academic hospital"
+          ]
+        },
+        {
+          "title": "Leadership Development/Contracting",
+          "items": [
+            "Developed comprehensive physician engagement and communication plan for multiple medical staffs",
+            "Creation of mortality review program/sepsis care improvement program",
+            "Physician Advisor for leadership development, clinical and technology solutions review, medical analytics",
+            "Led recruitment efforts signing 8 hospitalists, 3 medical directors, and 4 ER physicians",
+            "Conducted physician contract overhaul resulting in savings close to $1 million dollars"
+          ]
+        },
+        {
+          "title": "Operations/Revenue Cycle",
+          "items": [
+            "Service line strategic development including hospitalist, ER, vascular surgery, interventional radiology, primary care, behavioral health, and virtual health",
+            "Throughput assessment and execution improving aLOS from 5.9 to 5.1 utilizing Clinical Documentation Improvement (CDI) program development",
+            "Significant increase in provider revenue through improved contract management and productivity gains; Cost-savings of greater than $1 million through restructuring over 1st year",
+            "Company-wide Revenue improvement using A3/Six Sigma",
+            "Implemented data governance and analytics strategy",
+            "Interim COO/CMO responsible for bankruptcy navigation and corporate integrity agreement compliance, while optimizing operations, contracting, and supply chain"
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "id": "capella-cmo",
+      "category": "administrative",
+      "date_start": "2014-09",
+      "date_end": "2016-05",
+      "gantt_start": 14,
+      "gantt_end": 16,
+      "gantt_label": "CMO: Capella",
+      "title": "Executive Vice President, Chief Medical Officer",
+      "company": "Capella Health System",
+      "location": "Nashville, TN",
+      "dates_display": "September 2014 - October 2015",
+      "company_description": "Capella had emerged as a national leader in the development and operation of rural and community healthcare facilities across the United States with 12 acute care facilities as well as several outpatient operations across 7 states. My choice to leave this organization was the result of it being acquired.",
+      "job_description": "This role, reporting to the System CEO, had responsibility for all quality and service excellence initiatives as well as ensuring that physician leaders are continuously involved in shaping the company's vision and future strategies.",
+      "accomplishments": [
+        "Led the development of the corporate strategy of quality and safety with the National Physician Leadership Group, which was the platform of physician engagement across the spectrum of the hospitals",
+        "Developed and deployed a national physician leadership development program",
+        "Led multiple performance improvement initiatives resulting in over $200,000 of savings and better care",
+        "Served on oversight committee of (Medical Univ South Carolina) MUSC-Capella Network, charged with improving regional care via population health strategies, service line development strategies, and Quality Improvement Strategies, integrating medical staff into the newly formed academic-private relationship",
+        "Responsible for deploying the use of Crimson data to drive improvement efforts across many opportunities. Managed the Advisory Board contract along with a Performance Improvement Program across all hospitals"
+      ]
+    },
+    {
+      "id": "wellmont-vp",
+      "category": "administrative",
+      "date_start": "2010-03",
+      "date_end": "2014-09",
+      "gantt_start": 10.25,
+      "gantt_end": 14,
+      "gantt_label": "CQMIO: Wellmont",
+      "gantt_position": "bottom",
+      "title": "System Vice President, Chief Quality and Medical Information Officer",
+      "company": "Wellmont Health System",
+      "location": "Kingsport, TN",
+      "dates_display": "March 2010 - September 2014",
+      "company_description": "Wellmont is an integrated health care delivery system providing inpatient, outpatient and other health care services at multiple locations in Northeast Tennessee and Southwest Virginia, ranking consistently in best of class in CareChex and as BlueCross Blue Shield Distinction Centers.",
+      "job_description": "This role, reporting to the System COO, had responsibilities including operations in quality, safety, service, education, and information technology. Managed a budget of ~$5 million dollars and 55 FTEs.",
+      "accomplishments": [
+        "Developed governance structure around change management used for system-wide decision-making for 7 hospitals and 5 medical staffs",
+        "Multiple process improvement projects, including the overhaul of the root cause analysis process which resulted in ~7% reduction in safety events system-wide",
+        "Enterprise optimization and deployment of 2 EMRs (McKesson and Epic), resulting in maximum incentive dollars totaling > $40 million dollars",
+        "Contract/vendor management to include numerous software vendors (Epic, Press Ganey, and Comparion)"
+      ]
+    },
+    {
+      "id": "utmb-cmo",
+      "category": "administrative",
+      "date_start": "2006-07",
+      "date_end": "2010-03",
+      "gantt_start": 6.5,
+      "gantt_end": 10.25,
+      "gantt_label": "CMO: UTMB",
+      "title": "Chief Medical Officer, Hospital and Clinic",
+      "company": "University of Texas Medical Branch",
+      "location": "Galveston, TX",
+      "dates_display": "July 2006 - March 2010",
+      "company_description": "The 84-acre campus includes 4 schools, 3 institutes for advanced study, a major medical library, a network of hospitals and clinics that provide a full range of primary and specialized medical care.",
+      "job_description": "My role covered both the hospital and clinic operation of the Texas Department of Criminal Justice/Correctional Managed Care (TDCJ/CMC) Campus.",
+      "accomplishments": [
+        "Created a 12 doc/4 midlevel provider group that managed hospital and skilled nursing patients",
+        "Developed and managed, including the budget, the skilled nursing and obs units",
+        "Oversaw robust UR program as well as multiple quality and safety projects",
+        "Most specialties represented with ~40,000 visits per year (includes ~6 to 7k visits annually of telehealth) delivering about $14 million in revenue to the Faculty Group Practice",
+        "Focused on workflows within the clinic, coordination with Hospital operations and PCPs in the prison facilities, subspecialty UR Program, relationship management with chair/chiefs of all departments",
+        "Focused on quality outcomes of delays in care, reduction in unnecessary visits, and provider satisfaction",
+        "~150,000 lives covered in an early ACO-like model",
+        "Disaster Preparedness, including the transitioning of the location of operations of Hospital and Clinics in the wake of Hurricane Ike"
+      ]
+    },
+    {
+      "id": "quillen-primary",
+      "category": "clinical",
+      "date_start": "2023-05",
+      "date_end": "present",
+      "gantt_start": 23.42,
+      "gantt_end": 24.42,
+      "gantt_label": "MD: VA",
+      "gantt_position": "bottom",
+      "title": "Primary Care/Chief Perioperative Medicine",
+      "company": "Veterans Affairs Medical Center",
+      "location": "Johnson City, TN",
+      "dates_display": "May 2023 - May 2024",
+      "job_description": "Clinical Duties"
+    },
+    {
+      "id": "p4h-ceo",
+      "category": "clinical",
+      "date_start": "2023-08",
+      "date_end": "2025-12",
+      "gantt_start": 23.67,
+      "gantt_end": 25.00,
+      "gantt_label": "MD: P4H",
+      "gantt_position": "bottom",
+      "title": "CEO/Physician",
+      "company": "Partners for Health, PLLC",
+      "location": "Johnson City, TN",
+      "dates_display": "August 2023 - December 2025",
+      "company_description": "Partners for Health is a company I created to work with a local recovery center in serving their basic primary care needs. They are a 12 month residential recovery center where I served as medical director and provided physician services.",
+      "job_description": "Served as a primary care physician in addition to serving as a medical director for their overall program, including their Intensive Outpatient Program.",
+      "accomplishments": [
+        "Established online model of care to serve 2 distinct locations across the state of Tennessee",
+        "Facilitated with contracting as we created an Intensive Outpatient Program"
+      ]
+    },
+    {
+      "id": "healthyme-md",
+      "category": "clinical",
+      "date_start": "2021-02",
+      "date_end": "2021-12",
+      "gantt_start": 21.17,
+      "gantt_end": 22,
+      "gantt_label": "MD: HM",
+      "gantt_position": "bottom",
+      "title": "Primary Care Physician",
+      "company": "HealthyMe PLLC",
+      "location": "Johnson City, TN",
+      "dates_display": "February 2021 - December 2021",
+      "job_description": "I started my own primary care clinic."
+    },
+    {
+      "id": "medicalcare-md",
+      "category": "clinical",
+      "date_start": "2018-06",
+      "date_end": "2018-10",
+      "gantt_start": 18.5,
+      "gantt_end": 18.83,
+      "gantt_label": "MD: MC",
+      "gantt_position": "bottom",
+      "title": "Primary Care Physician",
+      "company": "Medical Care PLLC",
+      "location": "Elizabethton, TN",
+      "dates_display": "June 2018 - October 2018",
+      "job_description": "This role was a full-time clinical position and ended when I got a job as CMO at AAHS."
+    },
+    {
+      "id": "utmb-hospitalist",
+      "category": "clinical",
+      "date_start": "2006-07",
+      "date_end": "2010-03",
+      "gantt_start": 6.5,
+      "gantt_end": 10.25,
+      "gantt_label": "MD: UTMB",
+      "gantt_position": "bottom",
+      "title": "Hospitalist",
+      "company": "University of Texas Medical Branch",
+      "location": "Galveston, TX",
+      "dates_display": "July 2006 - March 2010",
+      "job_description": "This correctional medicine position started as 80% to 90% clinical while I recruited to build a hospitalist program. After the first year, I became the CMO of the Texas Department of Criminal Justice Hospital with about 75% clinical. At the time of my departure, I was 50% clinical."
+    },
+    {
+      "id": "mayo-locums",
+      "category": "clinical",
+      "date_start": "2006-01",
+      "date_end": "2006-06",
+      "gantt_start": 6.08,
+      "gantt_end": 6.5,
+      "gantt_label": "MD: Mayo",
+      "gantt_position": "bottom",
+      "title": "Hospitalist-Locums",
+      "company": "EnhanceMed, Mayo Clinic",
+      "location": "Rochester, MN",
+      "dates_display": "January 2006 - June 2006",
+      "job_description": "In this role, I provided coverage on the weekends for outlying hospitals."
+    },
+    {
+      "id": "cornerstone-md",
+      "category": "clinical",
+      "date_start": "2003-12",
+      "date_end": "2007-01",
+      "gantt_start": 3.92,
+      "gantt_end": 7.08,
+      "gantt_label": "MD: Sterling",
+      "gantt_position": "bottom",
+      "title": "Physician",
+      "company": "Cornerstone Hospital Sterling Healthcare",
+      "location": "Webster, TX",
+      "dates_display": "December 2003 - January 2007",
+      "job_description": "In this role with this long-term acute care facility (LTAC), I provided night and weekend coverage during electives and didactic periods in my residency and graduate studies."
+    },
+    {
+      "id": "gchd-md",
+      "category": "clinical",
+      "date_start": "2003-12",
+      "date_end": "2005-06",
+      "gantt_start": 3,
+      "gantt_end": 5.5,
+      "gantt_label": "MD: GCHD",
+      "title": "Physician",
+      "company": "Galveston County Health District",
+      "location": "Galveston, TX",
+      "dates_display": "December 2003 - June 2005",
+      "job_description": "In this role with this federally qualified health center, I provided primary care and urgent care coverage services through our county health district."
+    },
+    {
+      "id": "king-faculty",
+      "category": "academic",
+      "date_start": "2014-03",
+      "date_end": "2015-12",
+      "gantt_start": 14.25,
+      "gantt_end": 16,
+      "gantt_label": "Faculty: King",
+      "gantt_position": "bottom",
+      "title": "Faculty",
+      "company": "King University",
+      "company_url": "https://www.king.edu/",
+      "location": "Bristol, TN",
+      "dates_display": "March 2014 - December 2015",
+      "job_description": "Develop and taught courses in the Health Administration Program",
+      "accomplishments": [
+        "Course development for \"Current Topics in Health Informatics\" and \"Healthcare Information Systems\"",
+        "Designed and taught curriculum"
+      ]
+    },
+    {
+      "id": "etsu-faculty",
+      "category": "academic",
+      "date_start": "2012-01",
+      "date_end": "2014-12",
+      "gantt_start": 12.08,
+      "gantt_end": 15,
+      "gantt_label": "Faculty: ETSU",
+      "title": "Faculty",
+      "company": "East Tennessee State University, College of Public Health",
+      "company_url": "https://www.etsu.edu/cph/",
+      "location": "Johnson City, TN",
+      "dates_display": "January 2012 - December 2014",
+      "job_description": "Provided occasional lectures and practicum opportunities for master's public health students.",
+      "accomplishments": [
+        "Course development and teaching of Healthcare Administration and Leadership"
+      ]
+    },
+    {
+      "id": "utmb-faculty",
+      "category": "academic",
+      "date_start": "2006-07",
+      "date_end": "2010-03",
+      "gantt_start": 6.5,
+      "gantt_end": 10.25,
+      "gantt_label": "Faculty: UTMB",
+      "gantt_position": "bottom",
+      "title": "Assistant Professor, Internal Medicine, Full Time",
+      "company": "University of Texas Medical Branch",
+      "company_url": "https://www.utmb.edu/",
+      "location": "Galveston, TX",
+      "dates_display": "July 2006 - March 2010",
+      "job_description": "Teaching responsibilities for clinical and didactic activities.",
+      "accomplishments": [
+        "Practicum and course development: Healthcare Administration and Leadership"
+      ]
+    }
+  ]
 }
