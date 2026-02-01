@@ -92,7 +92,7 @@
       "id": "web-development",
       "keywords": ["web development", "website", "cloud", "azure", "gcp", "coding", "programming"],
       "question": "What web development and cloud experience does Dr. Sybert have?",
-      "answer": "Dr. Sybert built TroyMD.com as an Azure Cloud Resume Challenge using HTML5/CSS3, vanilla JavaScript, and Azure Storage with a modular CSS architecture. He also created Cortivus.com on Google Cloud Platform. He has experience with Azure (Foundry, Storage, Synapse), Google Cloud Platform, Cloudflare, nginx, and n8n workflow automation."
+      "answer": "Dr. Sybert built TroyMD.com as a Cloud Resume Challenge using HTML5/CSS3, vanilla JavaScript, and GitHub Pages with a modular CSS architecture. He also created Cortivus.com on Google Cloud Platform. He has experience with Azure (Foundry, Storage, Synapse), Google Cloud Platform, Cloudflare, nginx, and n8n workflow automation."
     },
     {
       "id": "contact",

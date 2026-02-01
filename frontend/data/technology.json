@@ -205,14 +205,14 @@
         {
           "name": "Cloud Resume Website (TroyMD.com)",
           "problem": "Need to demonstrate cloud architecture skills and modern web development practices",
-          "solution": "Azure Cloud Resume Challenge - professional portfolio built with modern static architecture",
+          "solution": "Professional portfolio built with modern static architecture, deployed on GitHub Pages",
           "tech_stack": [
             "HTML5/CSS3",
             "Vanilla JavaScript",
-            "Azure Storage",
+            "GitHub Pages",
             "JSON-driven data",
             "Modular CSS",
-            {"text": "GitHub Link", "link": "https://github.com/HacksterT/cloud-resume-azure"}
+            {"text": "GitHub Link", "link": "https://github.com/HacksterT/troy-resume"}
           ],
           "impact": [
             "Separation of data, presentation, and behavior",

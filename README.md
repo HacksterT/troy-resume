@@ -1,12 +1,12 @@
 # Troy E. Sybert - Professional Resume Portfolio
 
-A modern, static resume website showcasing healthcare leadership, data science expertise, and entrepreneurial achievements. Built with clean, maintainable code and deployed on Azure Storage.
+A modern, static resume website showcasing healthcare leadership, data science expertise, and entrepreneurial achievements. Built with clean, maintainable code and deployed on GitHub Pages.
 
-## 🌐 Live Site
+## Live Site
 
 **[www.troymd.com](https://www.troymd.com)**
 
-## 📋 Project Overview
+## Project Overview
 
 This is a fully static resume website designed for professional presentation and easy maintenance. The site features responsive design, smooth navigation, and interactive elements while maintaining simplicity and reliability.
 
@@ -19,12 +19,12 @@ This is a fully static resume website designed for professional presentation and
 - **Static Hosting**: Fast, reliable, and cost-effective deployment
 - **SEO Optimized**: Proper meta tags and structured data for search engines
 
-## 🏗️ Architecture
+## Architecture
 
-### Simplified Static Design
+### Static Design
 
 ```text
-cloud-resume-azure/
+troy-resume/
 ├── frontend/
 │   ├── index.html          # Main resume page (semantic HTML template)
 │   ├── css/                # Modular CSS files
@@ -37,19 +37,18 @@ cloud-resume-azure/
 │   │   ├── gantt.css       # Gantt chart visualization
 │   │   └── responsive.css  # Mobile responsiveness
 │   ├── js/
-│   │   └── resume.js       # Interactive functionality and data rendering
+│   │   ├── resume.js       # Interactive functionality and data rendering
+│   │   └── chatbot.js      # FAQ chatbot logic and UI
 │   ├── data/               # JSON data files
 │   │   ├── profile.json    # Personal info and skills
 │   │   ├── roles.json      # Work experience
 │   │   ├── credentials.json # Education and certifications
 │   │   ├── publications.json # Publications, presentations, press
 │   │   ├── volunteer.json  # Volunteer work and awards
-│   │   └── technology.json # Technology & Innovation portfolio
-│   └── assets/             # Images and presentations
-├── infrastructure/         # Azure deployment templates
-│   └── storage/           # Storage account ARM templates
-│       ├── template.json  # ARM template definition
-│       └── parameters.json # Deployment parameters
+│   │   ├── technology.json # Technology & Innovation portfolio
+│   │   └── faq.json        # Chatbot Q&A data
+│   ├── assets/             # Images, PDFs, and presentations
+│   └── CNAME               # Custom domain for GitHub Pages
 ├── docs/                   # Technical documentation
 ├── tasks/                  # PRDs and project documentation
 └── README.md
@@ -58,65 +57,36 @@ cloud-resume-azure/
 ### Technology Stack
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Hosting**: Azure Storage (Static Website)
-- **Domain**: Custom domain with SSL certificate
-- **Development**: Modern workflow with Git branching
+- **Hosting**: GitHub Pages
+- **CI/CD**: GitHub Actions
+- **Domain**: Custom domain (www.troymd.com) via GoDaddy DNS
+- **SSL**: Free HTTPS via GitHub Pages (Let's Encrypt)
 
-## 🚀 Deployment
+## Deployment
 
-### Infrastructure as Code
-
-The project includes ARM templates for reproducible Azure Storage deployment:
-
-**Deploy Storage Account:**
-
-```bash
-az deployment group create \
-  --resource-group <your-resource-group> \
-  --template-file infrastructure/storage/template.json \
-  --parameters infrastructure/storage/parameters.json
-```
-
-**Configuration:**
-
-- Storage account: `sybertresume` in `eastus2`
-- Type: `Standard_LRS` (StorageV2)
-- Security: TLS 1.2, HTTPS-only, encryption enabled
-- Features: Blob versioning, soft delete (7 days retention)
-- Tags: `Project: resume`, `Environment: production`
+The site auto-deploys via GitHub Actions on every push to `main`. The workflow (`.github/workflows/deploy-github-pages.yml`) uploads the `frontend/` directory to GitHub Pages. No build step is needed.
 
 ### Quick Deploy
 
-1. **Build Changes**: Make updates to local files
-2. **Test Locally**: Verify changes in browser
-3. **Deploy to Azure**: Upload files to `$web` container
-4. **Verify Live**: Check <https://www.troymd.com>
+1. Make updates to local files
+2. Test locally in browser
+3. Push to `main`
+4. GitHub Actions deploys automatically
+5. Verify at https://www.troymd.com
 
-### Deployment Methods
-
-**Azure Storage Explorer** (Recommended):
-- Connect to your storage account
-- Navigate to `$web` container
-- Drag and drop updated files
-- Changes are live immediately
-
-**Azure Portal**:
-- Storage Account → Containers → `$web`
-- Upload files individually or as batch
-- Automatic propagation to CDN
-
-## 🛠️ Development Workflow
+## Development Workflow
 
 ### Local Development
 
 1. **Clone Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/cloud-resume-azure.git
-   cd cloud-resume-azure
+   git clone https://github.com/HacksterT/troy-resume.git
+   cd troy-resume
    ```
 
 2. **Make Changes**: Edit JSON data files in `frontend/data/` or CSS/JS files
+
 3. **Test Locally**: Run a local web server (required for JSON loading):
 
    ```bash
@@ -128,7 +98,16 @@ az deployment group create \
 
    Then open `http://localhost:8000` in browser
 
-4. **Commit Changes**:
+4. **CSS Minification** (after CSS changes):
+
+   ```bash
+   cd frontend
+   node minify-css.js
+   ```
+
+   Production uses `css/styles.min.css`; development uses `css/styles.css`.
+
+5. **Commit Changes**:
 
    ```bash
    git add .
@@ -139,7 +118,6 @@ az deployment group create \
 ### Branching Strategy
 
 - **main**: Production-ready code
-- **overhaul**: Major updates and refactoring
 - **feature/***: Specific new features
 
 ### Code Standards
@@ -149,11 +127,11 @@ az deployment group create \
 - **JavaScript**: Clean, functional, well-commented
 - **Files**: Keep files under 500 lines for maintainability
 
-## 📁 File Structure
+## File Structure
 
 ### HTML Template
 
-- **index.html** (135 lines): Clean semantic HTML5 template with sections dynamically populated from JSON data
+- **index.html**: Clean semantic HTML5 template with sections dynamically populated from JSON data
 
 ### Modular CSS (all files <500 lines)
 
@@ -167,42 +145,22 @@ az deployment group create \
 - **chatbot.css**: FAQ chatbot styling with animations
 - **responsive.css**: Mobile breakpoints
 
-### JavaScript (Modular - all files <500 lines)
+### JavaScript (all files <500 lines)
 
-- **resume.js** (~820 lines): ResumeManager class - data loading, rendering, and interactive functionality
-- **chatbot.js** (~160 lines): Chatbot class - FAQ chatbot logic and UI handling
+- **resume.js**: ResumeManager class - data loading, rendering, and interactive functionality
+- **chatbot.js**: Chatbot class - FAQ chatbot logic and UI handling
 
 ### JSON Data Files
 
 - **profile.json**: Name, title, summary, experience metrics, skills, social media
-- **roles.json**: 18 work roles with descriptions, accomplishments, Gantt chart data
+- **roles.json**: Work roles with descriptions, accomplishments, Gantt chart data
 - **credentials.json**: Education, licenses, certifications
 - **publications.json**: Publications, presentations with video/PDF links, press mentions
 - **volunteer.json**: Volunteer activities and awards
-- **technology.json**: Technology & Innovation portfolio with 6 categories and 15+ projects showcasing AI/ML, leadership tools, healthcare IT, data science, web development, and entrepreneurship
+- **technology.json**: Technology & Innovation portfolio with categories and projects
 - **faq.json**: FAQ chatbot questions and answers with keyword-based matching
 
-### Assets
-
-- **presentations/**: PDF slide decks
-- **assets/**: Images and documents
-
-## 🎨 Design System
-
-### CSS Organization
-
-- **Base Styles**: Typography, colors, layout
-- **Components**: Reusable UI elements
-- **Sections**: Page-specific styling
-- **Responsive**: Mobile-first media queries
-
-### Color Palette
-
-- **Primary**: Professional blue gradient
-- **Accent**: UTMB blue, LinkedIn blue
-- **Categories**: Admin (blue), Clinical (green), Academic (purple)
-
-## 🔧 Customization
+## Customization
 
 ### Updating Content
 
@@ -228,42 +186,11 @@ See [docs/gantt-logic.md](docs/gantt-logic.md) for detailed instructions on upda
 4. **CSS**: Style in appropriate CSS file
 5. **Navigation**: Update menu in header
 
-## 📱 Mobile Optimization
+## FAQ Chatbot
 
-- Responsive design with mobile-first approach
-- Touch-friendly navigation
-- Optimized typography for small screens
-- Fast loading performance
+The site includes a client-side FAQ chatbot that answers questions about Troy's experience and expertise.
 
-## 🔍 SEO Features
-
-- Semantic HTML5 structure
-- Meta tags for search engines
-- Open Graph for social sharing
-- Structured data markup
-- Clean URLs and navigation
-
-## 📈 Performance
-
-- **Page Speed**: Optimized for <3 second load times
-- **Caching**: Proper cache headers for static assets
-- **Images**: Optimized and compressed
-- **CSS/JS**: Minified for production
-
-## 🤖 FAQ Chatbot
-
-The site includes a fully functional client-side FAQ chatbot that intelligently answers questions about Troy's experience and expertise.
-
-**Coverage**:
-
-- Leadership experience and style
-- AI/ML and technical expertise
-- Healthcare IT systems experience
-- Data science and analytics projects
-- Entrepreneurship and startups
-- Certifications and credentials
-- Professional achievements and business impact
-- Contact information
+**Coverage**: Leadership, AI/ML expertise, healthcare IT, data science, entrepreneurship, certifications, achievements, and contact information.
 
 **Features**:
 
@@ -274,37 +201,20 @@ The site includes a fully functional client-side FAQ chatbot that intelligently 
 - No backend dependencies (100% client-side)
 - Graceful fallback for unmatched questions
 
-**Data Structure**:
+**Data**: FAQ data stored in `data/faq.json`. Each Q&A includes keywords, question, and detailed answer. Easy to update and expand without code changes.
 
-- FAQ data stored in `data/faq.json`
-- Each Q&A includes keywords, question, and detailed answer
-- Easy to update and expand without code changes
+## Future Enhancements
 
-## 🔄 Future Enhancements
-
-### Potential Upgrades
-
-- **AI-Powered Chat**: Upgrade to GPT/ Claude API with dynamic hosting
+- **AI-Powered Chat**: Upgrade to GPT/Claude API with dynamic hosting
 - **Content Management**: Headless CMS for easier content updates
-- **Analytics**: Visitor tracking and insights
 - **A/B Testing**: Content optimization
 
-### Migration Path
-
-The static architecture allows easy migration to:
-- Cloudflare Pages
-- Netlify/Vercel
-- AWS S3 + CloudFront
-- Any static hosting service
-
-## 🛠️ Troubleshooting
-
-### Common Issues
+## Troubleshooting
 
 **Changes Not Visible**:
 - Clear browser cache (Ctrl+F5)
-- Check CDN propagation (5-10 minutes)
-- Verify file uploaded to correct container
+- Check GitHub Actions deployment status
+- Wait for GitHub Pages propagation
 
 **Styling Issues**:
 - Check CSS file path in HTML
@@ -316,21 +226,12 @@ The static architecture allows easy migration to:
 - Verify section IDs match navigation links
 - Test mobile menu functionality
 
-## 📞 Support
-
-For technical questions or issues:
-
-1. **Check this README** for common solutions
-2. **Review Git history** for recent changes
-3. **Test locally** before deploying
-4. **Check Azure Storage** for file integrity
-
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-**Last Updated**: December 2024  
-**Version**: 2.0 (Static Architecture)  
+**Last Updated**: February 2026
+**Version**: 3.0 (GitHub Pages)
 **Maintainer**: Troy E. Sybert

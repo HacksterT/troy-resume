@@ -45,15 +45,9 @@ This will create `.min.css` versions of all CSS files with:
   - ImageOptim (https://imageoptim.com)
   - Squoosh (https://squoosh.app)
 
-## Static Hosting
+## Hosting
 
-This site is fully static with no backend dependencies. Deploy to:
-- Azure Static Web Apps
-- Azure Blob Storage (with static website hosting)
-- GitHub Pages
-- Netlify
-- Vercel
-- Any static hosting provider
+This site is deployed on GitHub Pages via GitHub Actions. On every push to `main`, the workflow uploads the `frontend/` directory automatically.
 
 ## Build Process
 
@@ -62,7 +56,7 @@ No build process required! This is pure HTML/CSS/JS.
 Simply:
 1. Update CSS/JS as needed
 2. Run `node minify-css.js` if CSS changed
-3. Upload `frontend/` folder contents to hosting
+3. Push to `main` — GitHub Actions deploys automatically
 4. Done!
 
 ## Browser Support

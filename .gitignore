@@ -106,22 +106,11 @@ cython_debug/
 node_modules/
 package-lock.json
 
-# Azure
-# ==============================
-# Azure Functions
-local.settings.json
-.deployment
-
-# Azure Static Web Apps
-.Azure/
-
 # Project specific
 # ==============================
 # Admin tools and sensitive data
 frontend/admin/
 
-# Exclude backend and archive folders from Azure workflow
-backend/
 archive/
 tasks/
 

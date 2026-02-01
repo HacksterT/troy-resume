@@ -1,7 +1,3 @@
 {
-    "azureFunctions.projectSubpath": "backend\\api\\GetResumeCounter",
-    "azureFunctions.deploySubpath": "backend\\api\\GetResumeCounter",
-    "azureFunctions.projectLanguage": "JavaScript",
-    "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen"
 }
