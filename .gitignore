@@ -123,6 +123,9 @@ Zip/
 
 # IDE settings
 # ==============================
+# Claude Code
+.claude/
+
 # VS Code
 .windsurf/
 .vscode/*
