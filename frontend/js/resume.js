@@ -504,7 +504,7 @@ class ResumeManager {
                                     }.
                                     <span class="presentation-date">${pres.date}</span>
                                     ${pres.description ? `<div class="presentation-description">${pres.description}</div>` : ''}
-                                    ${pres.slides_pdf || pres.video_url ? `
+                                    ${pres.slides_pdf || pres.slides_download || pres.video_url ? `
                                         <div class="presentation-resources">
                                             ${pres.slides_pdf ? `
                                                 <a href="${pres.slides_pdf}" target="_blank" rel="noopener noreferrer" class="resource-link">
@@ -512,6 +512,14 @@ class ResumeManager {
                                                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M13,13V19H15V13H19L16,10L13,13Z"/>
                                                     </svg>
                                                     Slide Deck (PDF)
+                                                </a>
+                                            ` : ''}
+                                            ${pres.slides_download ? `
+                                                <a href="${pres.slides_download}" download class="resource-link">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                                    </svg>
+                                                    Download Presentation
                                                 </a>
                                             ` : ''}
                                             ${pres.video_url ? `

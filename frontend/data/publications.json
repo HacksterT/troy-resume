@@ -55,6 +55,15 @@
   ],
   "presentations": [
     {
+      "title": "Artificial Intelligence in Medicine",
+      "event": "Internal Medicine Residency Program, Quillen College of Medicine, ETSU",
+      "location": "Johnson City, TN",
+      "date": "May 2026",
+      "year": 2026,
+      "slides_pdf": "assets/presentations/Quillen_AI_Presentation_Final%202.pdf",
+      "slides_download": "assets/presentations/Quillen_AI_Presentation_Final%202.pptx"
+    },
+    {
       "title": "Organizational Change via Provider Engagement",
       "event": "Mental Health Corporation of America (MHCA) Summer Conference",
       "location": "Raleigh, NC",
