@@ -49,24 +49,6 @@
     min-height: 120px;
 }
 
-.contact-form .interest-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.contact-form .interest-option {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.9rem;
-    color: var(--text-medium);
-    cursor: pointer;
-}
-
-.contact-form .interest-option input {
-    accent-color: var(--primary-blue);
-}
 
 .contact-submit-btn {
     padding: 0.75rem 1.6rem;

@@ -1,7 +1,6 @@
 /* Contact form -> shared Cloudflare Worker (site-infra/forms-worker).
  * The Worker derives `site` from the Origin, so no site field is sent.
- * `source` is "consulting" when the private-consulting option is picked,
- * otherwise "contact". See forms-worker/CONTRACT.md. */
+ * source is always "contact". See forms-worker/CONTRACT.md. */
 (function () {
     var ENDPOINT = 'https://forms-worker.troysybert.workers.dev/submit';
     var form = document.getElementById('contact-form');
@@ -28,8 +27,6 @@
             return;
         }
 
-        var interest = form.querySelector('[name="interest"]:checked');
-        var source = interest && interest.value === 'consulting' ? 'consulting' : 'contact';
         var tokenEl = form.querySelector('[name="cf-turnstile-response"]');
 
         var payload = {
@@ -37,7 +34,7 @@
             email: email,
             organization: form.querySelector('[name="organization"]').value || null,
             message: form.querySelector('[name="message"]').value || null,
-            source: source,
+            source: 'contact',
             website: form.querySelector('[name="website"]').value,
             cf_turnstile_response: tokenEl ? tokenEl.value : null
         };
