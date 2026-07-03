@@ -18,6 +18,9 @@ cssFiles.forEach(file => {
         .replace(/\s*;\s*/g, ';') // Trim around ;
         .replace(/\s*,\s*/g, ',') // Trim around ,
         .replace(/;\}/g, '}') // Remove last semicolon before }
+        // In the minified output, point @imports at the .min.css versions so the
+        // production stylesheet loads minified modules (not the source .css).
+        .replace(/@import url\('([^']+)\.css'\)/g, "@import url('$1.min.css')")
         .trim();
 
     const minFile = path.join(cssDir, file.replace('.css', '.min.css'));

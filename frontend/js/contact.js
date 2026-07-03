@@ -20,8 +20,8 @@
         e.preventDefault();
         status.style.display = 'none';
 
-        var name = (form.querySelector('[name="name"]').value || '').trim();
-        var email = (form.querySelector('[name="email"]').value || '').trim();
+        var name = (form.querySelector('[name="name"]')?.value || '').trim();
+        var email = (form.querySelector('[name="email"]')?.value || '').trim();
         if (!name || !EMAIL_RE.test(email)) {
             showStatus('error', 'Please enter your name and a valid email address.');
             return;
@@ -32,10 +32,10 @@
         var payload = {
             name: name,
             email: email,
-            organization: form.querySelector('[name="organization"]').value || null,
-            message: form.querySelector('[name="message"]').value || null,
+            organization: form.querySelector('[name="organization"]')?.value || null,
+            message: form.querySelector('[name="message"]')?.value || null,
             source: 'contact',
-            website: form.querySelector('[name="website"]').value,
+            website: form.querySelector('[name="website"]')?.value,
             cf_turnstile_response: tokenEl ? tokenEl.value : null
         };
 

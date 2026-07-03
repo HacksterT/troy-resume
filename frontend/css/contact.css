@@ -73,7 +73,11 @@
 .contact-status.error { color: #c0392b; }
 
 /* Honeypot: never visible to humans */
-.contact-form .hp-field { display: none; }
+/* Honeypot: off-screen (harder for bots to detect than display:none). */
+.contact-form .hp-field { position: absolute; left: -9999px; top: -9999px; }
+
+/* Privacy notice under the form. */
+.contact-privacy { font-size: 0.8rem; opacity: 0.7; margin-top: 0.75rem; }
 
 @media (max-width: 600px) {
     .contact-form { max-width: 100%; }
