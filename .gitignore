@@ -121,6 +121,9 @@ upload/
 Zip/
 *.zip
 
+# macOS
+.DS_Store
+
 # IDE settings
 # ==============================
 # Claude Code
