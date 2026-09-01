@@ -712,7 +712,7 @@ class ResumeManager {
                     });
 
                     targetSection.classList.remove('collapsed');
-                    window.scrollTo(0, 0);
+                    setTimeout(() => targetSection.scrollIntoView({ behavior: 'smooth' }), 50);
                 }
             }
         };
