@@ -2,7 +2,7 @@
   "publications": [
     {
       "authors": "Schlosser R, Reddy S, Willis D, Sybert TE",
-      "title": "Real World Healthcare Innovation: Clinical Evidence & Cost Effectiveness",
+      "title": "Innovation in Healthcare: Current State & Future Needs",
       "publication": "HealthTrust",
       "url": "https://healthtrustpg.com/wp-content/uploads/2017/09/Real-World-Healthcare-Innovation.pdf",
       "date": "September 2017",
@@ -13,9 +13,9 @@
       "title": "In the Literature: Staph Endocarditis, METS, COPD, CPGs & More",
       "publication": "The Hospitalist",
       "url": "https://www.the-hospitalist.org/hospitalist/article/122997/staph-endocarditis-mets-copd-cpgs-more",
-      "citation": "2015;2015(8)",
-      "date": "August 2015",
-      "year": 2015
+      "citation": "2005;2005(9)",
+      "date": "September 2005",
+      "year": 2005
     },
     {
       "authors": "Sybert TE",
@@ -35,21 +35,21 @@
       "year": 2005
     },
     {
-      "authors": "Liu J, Sybert TE, Qian Y, Liu F",
-      "title": "Effects of thalidomide on rat embryonic DNA synthesis in vitro",
+      "authors": "Liu D, Sybert TE, Qian H, Liu J",
+      "title": "Superoxide Production After Spinal Injury Detected by Microperfusion of Cytochrome c",
       "publication": "Free Radical Biology and Medicine",
       "url": "https://www.sciencedirect.com/science/article/abs/pii/S0891584998000550?via%3Dihub",
-      "citation": "1998;25(6):689-92",
-      "date": "October 1998",
+      "citation": "1998;25(3):298-304. PMID: 9680175",
+      "date": "August 1998",
       "year": 1998
     },
     {
       "authors": "Chavoshan B, Sander M, Sybert TE, Hansen J, Victor RG, Thomas GD",
-      "title": "Heat acclimation and prior heat exposure do not modify pressor responses to muscle metaboreflex activation",
+      "title": "Nitric oxide-dependent modulation of sympathetic neural control of oxygenation in exercising human skeletal muscle",
       "publication": "The Journal of Physiology",
       "url": "https://physoc.onlinelibrary.wiley.com/doi/epdf/10.1113/jphysiol.2001.013153",
-      "citation": "2002;536(2):449-459",
-      "date": "October 2002",
+      "citation": "2002;540(Pt 1):377-86. PMID: 11927694",
+      "date": "April 2002",
       "year": 2002
     }
   ],
@@ -108,22 +108,22 @@
       "title": "Troy Sybert focused on bringing Walmart model to healthcare",
       "publication": "Teknovation.biz",
       "url": "https://www.teknovation.biz/troy-sybert-focused-bringing-walmart-model-healthcare/",
-      "date": "March 2024",
-      "year": 2024
+      "date": "April 2017",
+      "year": 2017
     },
     {
       "title": "Why we switched to Epic",
       "publication": "Becker's Hospital Review",
       "url": "https://www.beckershospitalreview.com/healthcare-information-technology/why-we-switched-to-epic.html",
-      "date": "January 2014",
+      "date": "September 2014",
       "year": 2014
     },
     {
       "title": "Automated for the Greater Good",
       "publication": "HealthTrust The Source",
       "url": "https://healthtrustpg.com/thesource/technology-innovation/technological-advancements/automated-for-the-greater-good/",
-      "date": "January 2018",
-      "year": 2018
+      "date": "Q4 2021",
+      "year": 2021
     }
   ]
 }
