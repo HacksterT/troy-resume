@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VA OIG Recommendations MCP Server</title>
+  <meta name="description" content="A Model Context Protocol server that lets AI assistants answer cross-report questions about VA Office of Inspector General findings, with every answer traced to a source report. GSA MCP Server and AI Agent Government Hackathon entry.">
+  <meta property="og:title" content="VA OIG Recommendations MCP Server">
+  <meta property="og:description" content="Cross-facility learning from public VA OIG findings, through an MCP server with cited answers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon">
+  <meta property="og:image" content="https://www.troymd.com/assets/mcp-hackathon/architecture.png">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      --ink: #2c3e50;
+      --ink-2: #555;
+      --ink-3: #777;
+      --accent: #3498db;
+      --accent-soft: #eaf4fb;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --rule: #e0e0e0;
+      --hero: #2c3e50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+    /* Top bar */
+    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px; }
+    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
+    .topbar nav { display: flex; gap: 18px; font-size: 14px; overflow-x: auto; white-space: nowrap; }
+    .topbar nav a { color: var(--ink-2); }
+
+    /* Hero */
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+
+    /* Sections */
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    h3 { font-size: 19px; margin: 28px 0 8px; }
+    p + p { margin-top: 14px; }
+    .muted { color: var(--ink-2); }
+    .small { font-size: 14px; color: var(--ink-3); }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 26px 0 8px; }
+    .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; }
+    .stat .num { font-size: 32px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+    .stat .lbl { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+
+    /* Cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+    .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; }
+    .card h3 { margin-top: 0; font-size: 17px; }
+    .card p { font-size: 15.5px; color: var(--ink-2); }
+    .card.primary { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+
+    /* Scenarios */
+    .scenario { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 22px 24px; margin-top: 16px; }
+    .scenario h3 { margin-top: 0; }
+    .scenario p { color: var(--ink-2); font-size: 16px; }
+    .scenario .evidence { margin-top: 12px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 15px; color: var(--ink); }
+
+    /* Figure */
+    figure { margin: 26px 0 8px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; padding: 12px; }
+    figure img { width: 100%; height: auto; display: block; }
+    figcaption { font-size: 14px; color: var(--ink-3); margin-top: 8px; padding: 0 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td:first-child { font-weight: 600; white-space: nowrap; }
+
+    ul.clean { list-style: none; margin-top: 12px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 8px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+
+    ol.sources { margin: 12px 0 0 20px; font-size: 15px; color: var(--ink-2); }
+    ol.sources li { margin-top: 6px; }
+
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+    footer p + p { margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .hero { padding: 44px 0 40px; }
+      .hero p.lead { font-size: 17px; }
+      section { padding: 40px 0; }
+      h2 { font-size: 24px; }
+      td:first-child { white-space: normal; }
+      .topbar nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/">troymd.com</a>
+      <nav aria-label="Sections">
+        <a href="#problem">Problem</a>
+        <a href="#users">Users</a>
+        <a href="#scenarios">Scenarios</a>
+        <a href="#approach">Approach</a>
+        <a href="#fit">Hackathon fit</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">GSA MCP Server and AI Agent Government Hackathon · Dataset Access track</div>
+      <h1>VA OIG Recommendations MCP Server</h1>
+      <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every answer traces back to a report number and a link.</p>
+      <p class="meta">Proposal, October 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
+    </div>
+  </div>
+
+  <main>
+
+    <section id="problem">
+      <div class="wrap">
+        <h2>The problem</h2>
+        <p>VA OIG publishes every report and recommendation it issues, and its website is good at finding individual documents. It cannot answer questions that span documents. Today those answers take hours of reading PDFs, so much of the cross-facility learning they could support does not happen.</p>
+
+        <div class="stats">
+          <div class="stat"><div class="num">182</div><div class="lbl">OIG reports published in the 12 months to Oct 19, 2026</div></div>
+          <div class="stat"><div class="num">718</div><div class="lbl">recommendations in those reports</div></div>
+          <div class="stat"><div class="num">605</div><div class="lbl">open OIG recommendations on Oct 19, 2026; 187 open more than a year</div></div>
+          <div class="stat"><div class="num">88%</div><div class="lbl">of GAO's five-year-old recommendations VA has implemented, versus 77% government-wide</div></div>
+        </div>
+        <p class="small">Sources: VA OIG data dashboard; GAO-26-108978.</p>
+
+        <p style="margin-top:22px">VA acts on most of what it is told. The gap this project addresses is not whether VA closes recommendations. It is whether one facility can learn from the findings issued to the others.</p>
+        <p>vaoig.gov offers full-text search and filters by report type, topic, office, state, VISN, status, and age. Those tools return lists of documents; the person searching still has to open each report, compare it with others, and count. There is no API or bulk export, and the most actionable content, each facility's response with its target date and corrective action, appears only in the report PDFs.</p>
+      </div>
+    </section>
+
+    <section id="users">
+      <div class="wrap">
+        <h2>Who it serves</h2>
+        <div class="cards">
+          <div class="card primary">
+            <h3>Facility patient safety and quality staff</h3>
+            <p>Anticipate what an OIG inspection will examine, check whether the facility shares weaknesses peers were cited for, and show leadership that recurring national findings were addressed locally.</p>
+          </div>
+          <div class="card">
+            <h3>VISN and VHA program offices</h3>
+            <p>Spot systemic findings that call for a national fix rather than facility-by-facility correction.</p>
+          </div>
+          <div class="card">
+            <h3>Oversight and accountability staff</h3>
+            <p>Track the age of open recommendations and closure performance by office and topic.</p>
+          </div>
+          <div class="card">
+            <h3>Veterans, VSOs, congressional staff, journalists</h3>
+            <p>Ask in plain language what OIG found at a facility and what was done about it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scenarios">
+      <div class="wrap">
+        <h2>What the server makes possible</h2>
+
+        <div class="scenario">
+          <h3>Preparing for an inspection</h3>
+          <p>OIG's Healthcare Facility Inspection program reviews each VHA medical facility on an approximately three-year cycle across five domains: culture, environment of care, patient safety, primary care, and the Veteran-centered safety net. A patient safety manager whose facility is coming due asks what peers were cited for, which findings recur, and what those facilities did in response. The server returns the facility's own prior findings and whether they closed, recurring peer findings ranked by frequency and severity, each peer's committed corrective action and target date, and links to every source report.</p>
+          <div class="evidence">In 14,084 OIG recommendations published 2004 through 2024, about 182 templated recommendation clusters each appear in five or more reports, covering 1,624 recommendations.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>Seeing whether a theme is growing</h3>
+          <p>A VISN patient safety officer asks whether suicide-risk and safety-plan findings are rising. The website cannot produce that trend; the server returns it year by year with open counts and typical time to closure.</p>
+          <div class="evidence">Reports with such recommendations: 7 in 2015, 35 in 2016, 23 in 2020, 35 in 2021, 31 in 2023, 51 in 2024.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>Reading a pattern honestly</h3>
+          <p>Communicating test results to patients appeared in 28 reports in each of 2015 and 2016, then 2 to 7 a year afterward. That drop could mean facilities improved, or that the topic left the inspection protocol. On October 19, 2026, OIG issued an inspection report for the VA Phoenix Health Care System recommending written workflows for communicating test results under VHA Directive 1088. The server presents both readings with the counts rather than choosing one.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>Tracking closure performance</h3>
+          <p>OIG publishes a closure date for each recommendation. The server turns those dates into time-to-closure figures and not-implemented rates by office, topic, and report type, reconciled against OIG's dashboard totals.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>Explaining a facility to the public</h3>
+          <p>A Veteran or advocate asks what OIG has found at their medical center. The server returns every report and recommendation for that facility in plain language, with status, closure date, and the published facility response.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="approach">
+      <div class="wrap">
+        <h2>Approach</h2>
+        <p>Two parts: a data service that turns OIG's public pages and PDFs into a structured, queryable dataset, and an MCP server that gives AI assistants goal-level tools over that dataset.</p>
+
+        <figure>
+          <img src="/assets/mcp-hackathon/architecture.png" alt="Public OIG sources flow through collection into a database and API inside the data service. The MCP server calls the API, an AI assistant calls the MCP server, and the user receives answers that cite a report number and link." width="1344" height="564">
+          <figcaption>Every answer the MCP server returns traces back to a source report.</figcaption>
+        </figure>
+
+        <h3>Data</h3>
+        <p>A polite, identified crawler that follows robots.txt collects OIG's report listings, report pages, and report PDFs. It captures OIG's own classifications (report type, topic, Major Management Challenge, action office, state, VISN), each recommendation's text, status, action office, and closure date, and, from inspection reports, the domain, concurrence, target completion date, corrective action, and standards cited for each recommendation. The data lives in a structured database with full-text search behind a documented JSON API, is refreshed on a schedule, and is reconciled against OIG's dashboard on every run.</p>
+
+        <h3>MCP tools</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>What it answers</th></tr></thead>
+            <tbody>
+              <tr><td>Inspection readiness brief</td><td>Next inspection window estimate, the facility's prior findings and status, recurring peer findings ranked, peer corrective actions, source links</td></tr>
+              <tr><td>Search findings</td><td>Recommendations matching a question, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
+              <tr><td>Theme trend</td><td>Year-by-year reports and recommendations for a theme, open counts, typical time to closure</td></tr>
+              <tr><td>Systemic clusters</td><td>Near-identical recommendations issued across many facilities, with each facility's status</td></tr>
+              <tr><td>Closure performance</td><td>Time to closure, not-implemented rate, and aging by office, topic, and report type</td></tr>
+              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses and closure dates</td></tr>
+              <tr><td>Report detail</td><td>One report with every recommendation, status, closure date, response, and standards cited</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:10px">The server also publishes reference resources (topic taxonomy, offices, facilities, dataset freshness) and guided prompts for an inspection readiness checklist and a leadership aging brief.</p>
+
+        <h3>Safeguards</h3>
+        <ul class="clean">
+          <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
+          <li>Every claim carries a report number and link, and every response states when its data was collected.</li>
+          <li>Where data supports more than one interpretation, the server says so.</li>
+          <li>Rankings show their components and weights.</li>
+          <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
+        </ul>
+
+        <h3>Evaluation</h3>
+        <p>An AI assistant with no other context answers realistic multi-step questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, precision and recall on lists, tool selection, caveats, and a citation-integrity check that every cited report exists. Traces are logged with Arize Phoenix. PDF extraction is checked separately against a hand-labeled sample.</p>
+      </div>
+    </section>
+
+    <section id="fit">
+      <div class="wrap">
+        <h2>Fit with the hackathon</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Criterion</th><th>How the project meets it</th></tr></thead>
+            <tbody>
+              <tr><td>Dataset Access track</td><td>OIG's recommendations are public but have no API. The project makes them queryable by any MCP-capable assistant.</td></tr>
+              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation.</td></tr>
+              <tr><td>Innovation</td><td>Cross-report analytics the source does not offer: recurrence clusters, time to closure, and peer corrective actions from published facility responses.</td></tr>
+              <tr><td>Mission alignment</td><td>Public accountability data made usable by the people expected to act on it, on patient safety topics such as test-result follow-up, suicide prevention, medication security, and credentialing.</td></tr>
+              <tr><td>Presentation</td><td>A live inspection-readiness walkthrough on a real facility, backed by evaluation results.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="limits">
+      <div class="wrap">
+        <h2>Limits</h2>
+        <p>The server is not a replacement for VA's internal tracking of OIG recommendations, which is organized around compliance with each recommendation; it is built for learning across facilities. Recurrence of a finding does not by itself show that facilities fail to learn from one another, because OIG inspects against a standard protocol and will find what it looks for. Statuses change after each refresh, so every answer carries its data date.</p>
+
+        <h3>Sources</h3>
+        <ol class="sources">
+          <li><a href="https://www.vaoig.gov/reports/data-dashboard">VA OIG Data Dashboard</a>, accessed October 19, 2026</li>
+          <li>VA OIG <a href="https://www.vaoig.gov/reports/all">Reports</a> and <a href="https://www.vaoig.gov/recommendations-all">Recommendations</a> listings</li>
+          <li>VA OIG, <a href="https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-phoenix-health-care-system">Healthcare Facility Inspection of the VA Phoenix Health Care System in Arizona</a>, 26-00041-05, October 19, 2026</li>
+          <li>GAO, <a href="https://www.gao.gov/products/gao-26-108978">Priority Open Recommendations: Department of Veterans Affairs</a>, GAO-26-108978, May 2026</li>
+          <li><a href="https://www.oversight.gov/reports/recommendations">Oversight.gov open recommendations</a></li>
+          <li><a href="https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
+          <li>Historical figures come from an analysis of 14,084 recommendations in 1,958 OIG reports published May 2004 through December 2024, collected from vaoig.gov in March 2025. Theme counts use keyword rules; cluster counts use normalized text matching.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+      <p><a href="/">Troy E. Sybert, MD</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
