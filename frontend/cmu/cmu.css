@@ -77,3 +77,10 @@ footer { padding: 30px 0 50px; font-size: 14px; color: var(--ink-3); }
 .muted { color: var(--ink-2); }
 .small { font-size: 15px; color: var(--ink-3); }
 .section p + p { margin-top: 12px; }
+
+/* Pearls: high-yield takeaways */
+.pearls { background: var(--maroon-soft); border-color: #e3c6d2; border-left: 6px solid var(--maroon); }
+.pearls ul { list-style: none; padding-left: 0; }
+.pearls li { font-size: 19px; font-weight: 600; padding-left: 28px; position: relative; }
+.pearls li::before { content: "\2726"; color: var(--maroon); position: absolute; left: 0; }
+@media (max-width: 600px) { .pearls li { font-size: 17px; } }

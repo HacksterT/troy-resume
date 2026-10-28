@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Claude Office Hours</title>
+  <meta name="description" content="Office hours session guides for the Claude stages of AI Pathways.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+  <link rel="stylesheet" href="/cmu/cmu.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/cmu">AI Pathways</a>
+      <nav aria-label="Paths">
+        <a href="/cmu/ai-basics">AI Basics</a>
+        <a href="/cmu/chatgpt">ChatGPT</a>
+        <a href="/cmu/claude" aria-current="page">Claude</a>
+        <a href="/cmu/copilot">Copilot</a>
+        <a href="/cmu/faculty-prep">Faculty Prep</a>
+        <a href="/cmu/in-the-classroom">In the Classroom</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Learn path</div>
+        <h1>Claude</h1>
+        <p>Setting up Claude for ongoing work, then using it on everyday tasks. Features change often; these notes were checked in October 2026. For which account to use for work, see the "What CMU Permits" page in the team's Learn-Claude channel.</p>
+        <div class="jump">
+          <a href="#stage-1-4">1.4 Setting up Claude</a>
+          <a href="#stage-1-5">1.5 Working patterns</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.4 -->
+    <section class="session" id="stage-1-4">
+      <div class="wrap">
+        <div class="stage">Stage 1.4</div>
+        <h2>Setting up Claude</h2>
+        <p class="goal">Leave with the right account, the settings you chose on purpose, and one project set up for a task you repeat.</p>
+
+        <div class="block">
+          <h3>Quick review <span class="min">15 minutes with the demo</span></h3>
+          <ul>
+            <li>There are two kinds of account. A university-provided account is managed by the university, which may turn features on or off. A personal account (Free, Pro, or Max) is managed by you. Check the "What CMU Permits" page in the team's Learn-Claude channel before using either for work.</li>
+            <li>On a personal account, a model improvement setting under Privacy controls whether your chats may be used to train Anthropic's models. Anthropic's business plans (Team and Enterprise) are not used for training by default.</li>
+            <li>Memory: Claude can build memory from your chats and carry it into new ones. You can view, edit, or delete what it holds, or turn it off, in Settings. An incognito chat is not saved to your chat history or to memory.</li>
+            <li>A project holds context for ongoing work. Project knowledge is the files and text every chat in the project can draw on. Project instructions are standing directions that apply to every chat in the project. Every plan has projects; free accounts can have up to five.</li>
+            <li>Other ways to set context: files uploaded to a single chat, account-wide instructions in Settings that apply to every chat, and styles (Normal, Concise, Formal, Explanatory, or a custom style built from a sample of your writing).</li>
+            <li>When Claude produces something substantial and self-contained, such as a document, it can open it as an artifact beside the chat. You can keep revising it, then copy, download, or export it.</li>
+          </ul>
+        </div>
+
+        <div class="block stuck">
+          <h3>Where people get stuck</h3>
+          <ul>
+            <li><strong>Project knowledge versus a single chat.</strong> Put in project knowledge what every chat on the task needs: the syllabus, the template, the style guide. Upload one-off material to the chat itself. Chats in the same project do not see each other, so anything that should carry forward has to be added to project knowledge.</li>
+            <li><strong>Which settings apply to your account.</strong> The model improvement setting is for personal accounts. On a university account, the university may have customized features or applied its own policies, and on organization plans an administrator must turn memory on before you can use it. Rating a response with thumbs up or down sends that conversation to Anthropic as feedback, which may be used for training even on an account that is otherwise excluded. Chats do not move between a personal and a university account.</li>
+            <li><strong>Usage limits on long work.</strong> Every plan has usage limits that reset on a schedule. Long, complex chats use more of the limit with every turn, and a very long chat may be summarized to keep going, which uses more still. Start a new chat for a new task, and keep standing material in the project instead of pasting it again.</li>
+            <li><strong>Artifacts versus chat replies.</strong> A chat reply is text in the conversation. An artifact is a separate working document you revise and take out of Claude. If artifacts never appear, the code execution and file creation capability may be turned off in Settings.</li>
+            <li><strong>Long PDFs in a project.</strong> In project knowledge, a PDF over 100 pages is read for its text only. Tables drawn as images, charts, and scanned pages may not be seen at all.</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Live demo</h3>
+          <ol>
+            <li>Open Settings on a personal account and walk through privacy, memory, and account-wide instructions. Show where to view and edit what memory holds.</li>
+            <li>Create a project for a recurring task, such as weekly course announcements. Add the syllabus and one past announcement to project knowledge, and write three lines of project instructions.</li>
+            <li>Start two chats in the project. Show that both use the instructions and files, and that the second does not know what was said in the first.</li>
+            <li>Ask for a one-page handout, show it open as an artifact, revise it twice, and copy it out.</li>
+            <li>Set up the same task in ChatGPT and Copilot side by side, and compare where each keeps standing instructions and files.</li>
+          </ol>
+        </div>
+
+        <div class="block discuss">
+          <h3>Discussion <span class="min">30 minutes with your questions</span></h3>
+          <ul>
+            <li>Which recurring task did you choose, and what went into project knowledge versus project instructions?</li>
+            <li>After looking at the privacy and memory settings, what did you change, and what did you leave alone? Why?</li>
+            <li>Where did ChatGPT, Claude, and Copilot differ in how they hold standing instructions and files for the same task?</li>
+          </ul>
+        </div>
+
+        <div class="block pearls">
+          <h3>Pearls <span class="min">high yield</span></h3>
+          <ul>
+            <li>Know which account you are in before you type.</li>
+            <li>On a personal account, check the training setting and choose on purpose.</li>
+            <li>Standing material goes in the project. One-off material goes in the chat.</li>
+            <li>Chats in a project do not see each other.</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Share and next <span class="min">15 minutes</span></h3>
+          <p>Share: one difference you noticed setting up the same task in ChatGPT, Claude, and Copilot.</p>
+          <p>Try: set up a project for one recurring task with standing instructions, and use it at least once before the next session.</p>
+          <p>Next, stage 1.5: working patterns in Claude, on real tasks of your own.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1.5 -->
+    <section class="session" id="stage-1-5">
+      <div class="wrap">
+        <div class="stage">Stage 1.5</div>
+        <h2>Working patterns in Claude</h2>
+        <p class="goal">Leave with three prompts that work on your own tasks, and a clear sense of where Claude's output needs checking.</p>
+
+        <div class="block">
+          <h3>Quick review</h3>
+          <ul>
+            <li>Drafting: give the audience, purpose, and length, and paste an example of the tone you want or use a custom style.</li>
+            <li>Editing and critique: say what kind of edit you want (tighten, change the reading level, find the weakest argument). Ask for a list of suggested changes when you want to stay the author.</li>
+            <li>Summarizing long documents: a chat accepts PDFs of up to 1,000 pages. Name the audience for the summary and ask Claude to quote the passages it relied on.</li>
+            <li>Research scoping: when Claude searches the web, its answers include citations you can open. Use it to map a topic, questions, and search terms, not as the final source. Paid plans also offer Research, which runs several searches that build on each other.</li>
+            <li>Meeting prep: give the agenda, the background documents, and who will attend. Ask for likely questions and a one-page brief.</li>
+            <li>Anthropic's own prompting guide suggests: explain why an instruction matters, put a long document first and your request last, say what to do rather than what not to do, and include a few examples of what good looks like.</li>
+          </ul>
+        </div>
+
+        <div class="block stuck">
+          <h3>Where people get stuck</h3>
+          <ul>
+            <li><strong>Asking "is this good?"</strong> It tends to say yes. Ask it to find the three weakest points, or to read the draft as a skeptical student or reviewer would.</li>
+            <li><strong>Summaries that drop or add.</strong> A summary of a long document can leave out the point you needed, or state something the document does not say. Ask for quoted passages, then check two of them against the original.</li>
+            <li><strong>References with and without search.</strong> When Claude has not searched, a reference it gives comes from the model and may not exist. When it has searched, a citation shows where it looked, not that the page supports the claim. Open it either way.</li>
+            <li><strong>Redrafting in one endless chat.</strong> Many rounds on the same draft use up limits and let early instructions fade. When a draft is close, start a new chat with the latest version and the original brief.</li>
+            <li><strong>Telling it only what not to do.</strong> "Don't be wordy" works less well than "Use short sentences, under 150 words, for students reading on a phone."</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Live demo</h3>
+          <ol>
+            <li>In the project from stage 1.4, draft a course announcement, then ask for critique as a skeptical student would read it.</li>
+            <li>Upload a long public report, ask for a one-page summary for a hospital board with quoted passages, and check two quotes live.</li>
+            <li>Scope a research question with web search and open two of the cited pages.</li>
+            <li>Run the same summary request in ChatGPT and Copilot, and compare what each kept, dropped, and added.</li>
+          </ol>
+        </div>
+
+        <div class="block discuss">
+          <h3>Discussion</h3>
+          <ul>
+            <li>Which of your three tasks went best, and what was different about the prompt?</li>
+            <li>Where did Claude's output need the most correction: facts, tone, length, or judgment?</li>
+            <li>For the same task, which platform's result would you send with the least editing, and why?</li>
+          </ul>
+        </div>
+
+        <div class="block pearls">
+          <h3>Pearls <span class="min">high yield</span></h3>
+          <ul>
+            <li>Say who it is for and why.</li>
+            <li>Long document first, request last.</li>
+            <li>Ask it to quote what it relied on.</li>
+            <li>Ask for the weaknesses, not a verdict.</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Share and next</h3>
+          <p>Share: your best prompt, the task it was for, and how the other platforms handled the same task.</p>
+          <p>Try: use Claude on three real tasks and save the three best prompts to the Prompts library in the team's Commons channel.</p>
+          <p>Next, stage 1.6 in <a href="/cmu/ai-basics#stage-1-6">AI Basics</a>: choosing a tool, and going beyond chat.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">CMU Health Administration Division, AI Pathways. Facilitated by Troy Sybert.</div></footer>
+</body>
+</html>
