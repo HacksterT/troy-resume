@@ -1,0 +1,79 @@
+/* CMU AI Pathways office hours pages. Shared by every page in /cmu. */
+:root {
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --ink: #2b2b2b;
+  --ink-2: #555;
+  --ink-3: #777;
+  --maroon: #6A0032;
+  --maroon-soft: #f6ecf0;
+  --gold: #FFC82E;
+  --gold-soft: #fff7dc;
+  --bg: #faf8f6;
+  --card: #ffffff;
+  --rule: #e4dfdb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 18px; }
+a { color: var(--maroon); }
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 16px; }
+
+/* Top bar */
+.topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 52px; flex-wrap: wrap; }
+.topbar .home { font-weight: 700; color: var(--maroon); text-decoration: none; font-size: 15px; }
+.topbar nav { display: flex; gap: 16px; font-size: 14px; overflow-x: auto; white-space: nowrap; padding: 6px 0; }
+.topbar nav a { color: var(--ink-2); text-decoration: none; }
+.topbar nav a[aria-current="page"] { color: var(--maroon); font-weight: 700; }
+
+/* Hero */
+.hero { background: var(--maroon); color: #fff; padding: 52px 0 44px; border-bottom: 6px solid var(--gold); }
+.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: var(--gold); font-weight: 700; }
+.hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 10px 0 14px; }
+.hero p { font-size: 19px; color: #f3e6ec; max-width: 760px; }
+
+/* Session index */
+.jump { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 0; }
+.jump a { background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 14px; font-size: 15px; text-decoration: none; color: var(--ink); }
+.jump a:hover { border-color: var(--maroon); }
+
+/* Sessions */
+.session { padding: 48px 0; border-bottom: 1px solid var(--rule); }
+.session:last-of-type { border-bottom: 0; }
+.session h2 { font-size: clamp(24px, 4vw, 32px); line-height: 1.2; }
+.session .stage { color: var(--maroon); font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; }
+.session .goal { color: var(--ink-2); margin-top: 8px; font-size: 19px; }
+.block { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+.block h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .05em; color: var(--maroon); margin-bottom: 10px; }
+.block h3 .min { color: var(--ink-3); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 15px; margin-left: 6px; }
+.block ul, .block ol { padding-left: 22px; }
+.block li + li { margin-top: 8px; }
+.block p + p { margin-top: 10px; }
+.stuck { background: var(--gold-soft); border-color: #f0d98a; }
+.stuck h3 { color: #7a5a00; }
+.stuck li strong { color: var(--ink); }
+.discuss li { font-size: 19px; }
+
+/* Hub cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 20px; }
+.card { display: block; background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; text-decoration: none; color: var(--ink); }
+.card:hover { border-color: var(--maroon); }
+.card .path { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--maroon); font-weight: 700; }
+.card h3 { font-size: 20px; margin: 4px 0 6px; }
+.card p { font-size: 16px; color: var(--ink-2); }
+.section { padding: 44px 0; border-bottom: 1px solid var(--rule); }
+.section h2 { font-size: 28px; margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; margin-top: 14px; background: var(--card); font-size: 16px; }
+th, td { text-align: left; padding: 10px 12px; border: 1px solid var(--rule); vertical-align: top; }
+th { background: var(--maroon-soft); }
+
+footer { padding: 30px 0 50px; font-size: 14px; color: var(--ink-3); }
+
+@media (max-width: 600px) {
+  body { font-size: 17px; }
+  .block { padding: 16px; }
+  .discuss li { font-size: 17px; }
+}
+.muted { color: var(--ink-2); }
+.small { font-size: 15px; color: var(--ink-3); }
+.section p + p { margin-top: 12px; }
