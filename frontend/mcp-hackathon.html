@@ -36,8 +36,6 @@
     .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
     .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px; }
     .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
-    .topbar nav { display: flex; gap: 18px; font-size: 14px; overflow-x: auto; white-space: nowrap; }
-    .topbar nav a { color: var(--ink-2); }
 
     /* Hero */
     .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
@@ -45,7 +43,8 @@
     .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
     .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
     .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
-    .hero .btn { display: inline-block; margin-top: 24px; padding: 11px 20px; background: #fff; color: var(--hero); font-weight: 600; font-size: 15px; border-radius: 8px; }
+    .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .hero .btn { display: inline-block; padding: 11px 20px; background: #fff; color: var(--hero); font-weight: 600; font-size: 15px; border-radius: 8px; }
     .hero .btn:hover { background: var(--accent-soft); text-decoration: none; }
 
     /* Sections */
@@ -106,7 +105,6 @@
       section { padding: 40px 0; }
       h2 { font-size: 24px; }
       td:first-child { white-space: normal; }
-      .topbar nav { display: none; }
     }
   </style>
 </head>
@@ -115,13 +113,6 @@
   <header class="topbar">
     <div class="wrap">
       <a class="home" href="/">troymd.com</a>
-      <nav aria-label="Sections">
-        <a href="#problem">Problem</a>
-        <a href="#users">Users</a>
-        <a href="#scenarios">Scenarios</a>
-        <a href="#approach">Approach</a>
-        <a href="#fit">Hackathon fit</a>
-      </nav>
     </div>
   </header>
 
@@ -131,7 +122,10 @@
       <h1>VA OIG Recommendations MCP Server</h1>
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every answer traces back to a report number and a link.</p>
       <p class="meta">Proposal, October 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
-      <a class="btn" href="/mcp-hackathon-overview">Read the plain-language overview</a>
+      <div class="actions">
+        <a class="btn" href="/mcp-hackathon-overview">Plain-language overview</a>
+        <a class="btn" href="/mcp-hackathon-backend">Technical backend overview</a>
+      </div>
     </div>
   </div>
 

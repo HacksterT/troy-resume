@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How the OIG Data Service Works: Technical Overview</title>
+  <meta name="description" content="How the VA OIG data service collects, structures, checks, and serves public OIG findings for AI assistants over the Model Context Protocol, with its design decisions, use cases, and limits.">
+  <meta property="og:title" content="How the OIG Data Service Works">
+  <meta property="og:description" content="How public VA OIG findings become a structured, citable dataset that AI assistants can use.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-backend">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-backend">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      --ink: #2c3e50;
+      --ink-2: #555;
+      --ink-3: #777;
+      --accent: #3498db;
+      --accent-soft: #eaf4fb;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --rule: #e0e0e0;
+      --hero: #2c3e50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px; }
+    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
+
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    h3 { font-size: 19px; margin: 28px 0 8px; }
+    p + p { margin-top: 14px; }
+    .small { font-size: 14px; color: var(--ink-3); margin-top: 10px; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+    .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; }
+    .card h3 { margin-top: 0; font-size: 17px; }
+    .card p { font-size: 15.5px; color: var(--ink-2); }
+
+    .scenario { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 24px 26px; margin-top: 18px; }
+    .scenario h3 { margin-top: 0; font-size: 21px; }
+    .scenario p { color: var(--ink-2); font-size: 16px; margin-top: 12px; }
+    .scenario p strong { color: var(--ink); }
+    .scenario .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
+    .quote { font-style: italic; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-size: 14.5px; font-weight: 600; }
+    .flow span { background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 12px; }
+    .flow i { color: var(--ink-3); font-style: normal; }
+
+    .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td:first-child { font-weight: 600; }
+    td.num, th.num { text-align: right; }
+
+    ul.clean { list-style: none; margin-top: 12px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 8px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+    .scenario ul.clean li { color: var(--ink-2); font-size: 16px; }
+
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+    footer p + p { margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .hero { padding: 44px 0 40px; }
+      .hero p.lead { font-size: 17px; }
+      section { padding: 40px 0; }
+      h2 { font-size: 24px; }
+      .scenario { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/mcp-hackathon">&larr; Back to the project page</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Technical overview · The data service</div>
+      <h1>How the OIG Data Service Works</h1>
+      <p class="lead">The VA Office of Inspector General (OIG) publishes every report and recommendation it issues, and its website is good at finding them. What it cannot do is answer a question that spans many reports: what keeps recurring, whether a problem is growing, how long fixes take, or what other facilities did about the same finding.</p>
+      <p class="meta">Status as of November 4, 2026. Figures come from a full crawl of vaoig.gov on that date.</p>
+    </div>
+  </div>
+
+  <main>
+
+    <section id="short">
+      <div class="wrap">
+        <h2>The short version</h2>
+        <p>An AI assistant has the same limit, and a tighter one: it can read a few pages at a time, not thousands. We built a data service that turns OIG's public record into a structured dataset, and exposes it over the Model Context Protocol (MCP), so an assistant can answer those questions and cite the source report for each claim. It covers 4,415 reports, 15,649 recommendations, about 89,000 pages of report text, and 11,240 facility responses extracted from PDFs. The assistant reads records from this service and writes the answer from them. The service never generates findings of its own.</p>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <h2>How it works</h2>
+        <div class="flow" role="img" aria-label="vaoig.gov flows to Collect, Structure, Analyze, Secure API, MCP server, and AI assistant">
+          <span>vaoig.gov</span><i>&rarr;</i><span>Collect</span><i>&rarr;</i><span>Structure</span><i>&rarr;</i><span>Analyze</span><i>&rarr;</i><span>Secure API</span><i>&rarr;</i><span>MCP server</span><i>&rarr;</i><span>AI assistant</span>
+        </div>
+        <p style="margin-top:22px"><strong>Collect.</strong> A crawler reads OIG's public pages and report PDFs, one request at a time, and identifies itself to the site. Everything it fetches is saved untouched, so a parsing error can be fixed and rerun without contacting OIG again.</p>
+        <p><strong>Structure.</strong> Each recommendation becomes a record with its status, responsible office, and closure date. For inspection reports, rules (not AI) read the PDF to pull out what the facility committed to: whether it agreed, its target date, and its corrective action.</p>
+        <p><strong>Analyze.</strong> Once per build, the service works out which facility each report belongs to, groups near-identical recommendations issued across many reports, and prepares the data for search.</p>
+        <p><strong>Check.</strong> Each build is compared with what OIG publishes and tested for missing data. A build that fails these checks is not published. On November 4, a row-by-row comparison found the same recommendations in OIG's listing and in ours, with none missing either way, and all 14,223 closure dates agreed.</p>
+        <p><strong>Serve.</strong> A read-only API runs on a local machine, reachable only through Cloudflare with a service token. The AI assistant connects through a separate Model Context Protocol (MCP) server. That server runs on the same machine today, and IBM Cloud is its deployment target.</p>
+
+        <h3>Two design decisions that matter</h3>
+        <p><strong>Finding and counting are handled differently.</strong> Finding uses one search that blends two methods, because people describe problems in their own words. Counting uses only exact database queries. The same question always returns the same number, so results can be checked and repeated.</p>
+        <p><strong>The AI never writes database queries.</strong> It can only ask for what the service offers, using set options such as a status or a date range. This closes off a common failure, where an AI writes its own query and confidently reports a wrong number.</p>
+
+        <h3>How search works</h3>
+        <p>Each search runs two methods at once. Keyword search matches the words used. Semantic search matches meaning, using an embedding model that runs locally. Both look at the recommendations and at the corrective actions facilities committed to.</p>
+        <p>The results are merged by rank, so a finding that several searches agree on rises to the top. If the semantic model is ever unavailable, search continues on keywords and the response says so.</p>
+      </div>
+    </section>
+
+    <section id="difference">
+      <div class="wrap">
+        <h2>What this adds beyond OIG's search</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question</th><th>OIG website</th><th>This service</th></tr></thead>
+            <tbody>
+              <tr><td>Find a report or filter by state, office, or status</td><td>Yes</td><td>Yes, not the reason to use this</td></tr>
+              <tr><td>Describe a problem in your own words</td><td>Keyword-based</td><td>Matches on meaning as well as words</td></tr>
+              <tr><td>What did other facilities commit to do about this?</td><td>Read each PDF</td><td>Searchable across reports</td></tr>
+              <tr><td>Which findings recur across facilities?</td><td>Compare by hand</td><td>Grouped automatically, with how common each one is</td></tr>
+              <tr><td>Was this facility cited for this before?</td><td>Compare by hand</td><td>Listed in the facility's profile</td></tr>
+              <tr><td>Is this theme growing?</td><td>Count by hand</td><td>Counts by year</td></tr>
+              <tr><td>How long do fixes take?</td><td>Not available</td><td>Time to closure by office, topic, and finding</td></tr>
+              <tr><td>Can an AI assistant use it directly, with citations?</td><td>No API</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:18px">The main value lies in the corrective actions and the cross-report analysis. Today, that information takes hours of reading PDFs to assemble, so much of this learning across facilities does not happen.</p>
+
+        <h3>Why an AI assistant needs this layer</h3>
+        <p>OIG's website is built for a person reading one page at a time. An AI assistant with a browser can open those pages, but it cannot work effectively across them. The record is spread over thousands of web pages and PDFs, and there is no API or bulk export. Consider two ordinary questions. <em>How long do VHA recommendations typically take to close?</em> OIG shows a closure date on each closed recommendation, but across 223 listing pages and with no averages. <em>What did other facilities commit to do about this finding?</em> That answer sits inside about 2,200 PDFs, or roughly 89,000 pages. Building this dataset took about 6,100 fetches over nearly three hours, far more than an assistant can read while answering one question. In practice, we would expect it to sample a few pages and estimate, and its answer could sound just as confident.</p>
+        <p>Through MCP, the first question is one tool call that returns an exact figure, computed the same way each time, along with the data's date and how many recommendations it rests on. The work divides cleanly: the service does the collecting, counting, and matching, and the assistant does what it does well, which is interpreting those records, connecting them to the user's situation, and explaining them in plain language.</p>
+        <p>This does not make the assistant's conclusions correct by default. It means they start from complete, organized, citable evidence, and a reader can check each one against the source report.</p>
+      </div>
+    </section>
+
+    <section id="use-cases">
+      <div class="wrap">
+        <h2>Use cases</h2>
+
+        <div class="scenario">
+          <h3>1. "Has OIG cited this?"</h3>
+          <p>A patient safety manager notices a problem on rounds and asks in plain language: <span class="quote">"Staff left medication carts unlocked in a hallway."</span></p>
+          <p>We tested this exact sentence against our own recommendation data, using three approaches:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Approach</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Require every word to match</td><td>No results</td></tr>
+                <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
+                <tr><td>Blended search</td><td>Led with recommendations to secure medication carts</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The report wording is "secure medication carts when not in use," which shares few words with how the manager put it. The manager gets the relevant findings, each with its report number and link, plus what facilities committed to do where that has been extracted.</p>
+          <p>Blended search is not perfect. In our test of ten such questions, some answers were still only partly relevant, so a person should check results against the cited reports.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>2. Preparing for an inspection</h3>
+          <p>A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span> The assistant draws on several parts of the service to assemble:</p>
+          <ul class="clean">
+            <li><strong>The facility's own history:</strong> prior findings, whether they closed, and any finding cited in more than one report.</li>
+            <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is across inspections.</li>
+            <li><strong>What peers did about it:</strong> their committed corrective actions and target dates.</li>
+            <li><strong>A realistic timeline:</strong> how long that kind of finding has typically taken to close.</li>
+            <li><strong>The likely timing:</strong> an estimated next inspection window, clearly labeled as an estimate, because OIG publishes no schedule.</li>
+          </ul>
+          <p>The peer view is a real one: the largest recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. The source material is detailed too. In El Paso's July 2026 report (25-00193-155), for example, OIG recommended that leaders maintain a clean and safe environment. The facility concurred, set a target of January 29, 2027, and described its cleaning logs, inspections, and procedures. This response exists only in the PDF. As structured data, it can sit alongside what peers committed to for the same finding.</p>
+          <p>The manager starts from an evidence-based checklist instead of a blank page.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>3. Reading a trend honestly</h3>
+          <p>A VISN patient safety officer asks whether test-result communication is still a problem. Counting reports with recommendations that mention test or laboratory results gives this pattern:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Years</th><th class="num">Reports per year</th></tr></thead>
+              <tbody>
+                <tr><td>2015 and 2016</td><td class="num">32 and 27</td></tr>
+                <tr><td>2017 through 2024</td><td class="num">2 to 11</td></tr>
+                <tr><td>2025 and 2026 (to date)</td><td class="num">21 and 28</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The counts for 2025 and 2026 come almost entirely from the current inspection program, where recommendations about communicating test results appear in 20 of 45 Healthcare Facility Inspection reports in 2025 and 28 of 61 so far in 2026. Counts depend on the search words: this count includes "laboratory results" because the 2015 and 2016 recommendations use that wording, and a narrower search for "communicating test results" finds only 5 and 2 reports in those years.</p>
+          <p>A simple reading is that facilities improved, then slipped. The data cannot support that alone. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop. The assistant should give the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="limits">
+      <div class="wrap">
+        <h2>Safeguards and limits</h2>
+        <ul class="clean">
+          <li><strong>Every claim is traceable.</strong> Results carry a report number and link, along with the date the data was collected.</li>
+          <li><strong>No ratings.</strong> The service describes what OIG found and what facilities reported. It does not score facilities or individuals.</li>
+          <li><strong>Recurrence needs care.</strong> OIG inspects against a standard protocol, so it finds what it looks for. A repeat finding means an issue was cited again, not that nothing was done in between.</li>
+          <li><strong>Gaps in the source are stated.</strong> About 6 percent of closed recommendations show no closure date on OIG's site, mostly from 2013 to 2016, and OIG tagged only about a quarter of reports with a topic.</li>
+          <li><strong>Closure dates need care.</strong> A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to closure describes OIG's process as well as the facility's, and we do not report whether facilities met their target dates.</li>
+          <li><strong>Partial PDF coverage.</strong> PDFs are collected for reports with recommendations. The 2,186 reports without recommendations remain listed and searchable by title, but their full text is not included.</li>
+          <li><strong>Not a system of record.</strong> This does not replace VA's internal tracking of OIG recommendations. It is built for learning across facilities.</li>
+          <li><strong>Availability.</strong> The service currently runs on a single local machine. A dated snapshot allows it to be moved to a cloud host if needed.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="status">
+      <div class="wrap">
+        <h2>Where things stand</h2>
+        <p>The data service is complete and live: collection, database, search, analysis, and secure hosting. Facility responses were fully extracted from all 90 Healthcare Facility Inspection reports and 95% of the 312 CHIP reports from 2018 on, and each was checked against OIG's own text for the recommendation it belongs to. Six MCP tools are built against this API and running on the same machine, with deployment to IBM Cloud to follow. A formal evaluation comes next, scoring the assistant's answers against gold answers computed directly from the data. Accuracy figures will come from that evaluation, so none are claimed here.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+      <p><a href="/">Troy E. Sybert, MD</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
