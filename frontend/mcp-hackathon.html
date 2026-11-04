@@ -121,7 +121,7 @@
       <div class="eyebrow">GSA MCP Server and AI Agent Government Hackathon · Dataset Access track</div>
       <h1>VA OIG Recommendations MCP Server</h1>
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every answer traces back to a report number and a link.</p>
-      <p class="meta">Proposal, October 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
+      <p class="meta">Status as of November 4, 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
       <div class="actions">
         <a class="btn" href="/mcp-hackathon-overview">Plain-language overview</a>
         <a class="btn" href="/mcp-hackathon-backend">Technical backend overview</a>
@@ -179,24 +179,24 @@
 
         <div class="scenario">
           <h3>Preparing for an inspection</h3>
-          <p>OIG's Healthcare Facility Inspection program reviews each VHA medical facility on an approximately three-year cycle across five domains: culture, environment of care, patient safety, primary care, and the Veteran-centered safety net. A patient safety manager whose facility is coming due asks what peers were cited for, which findings recur, and what those facilities did in response. The server returns the facility's own prior findings and whether they closed, recurring peer findings ranked by frequency and severity, each peer's committed corrective action and target date, and links to every source report.</p>
-          <div class="evidence">In 14,084 OIG recommendations published 2004 through 2024, about 182 templated recommendation clusters each appear in five or more reports, covering 1,624 recommendations.</div>
+          <p>OIG's Healthcare Facility Inspection program reviews each VHA medical facility on an approximately three-year cycle across five domains: culture, environment of care, patient safety, primary care, and the Veteran-centered safety net. A patient safety manager whose facility is coming due asks what peers were cited for, which findings recur, and what those facilities did in response. The server provides the facility's own prior findings and whether they closed, recurring peer findings and how common each one is, each peer's committed corrective action and target date, and links to every source report.</p>
+          <div class="evidence">The current data holds 283 groups of recurring findings. The largest in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports.</div>
         </div>
 
         <div class="scenario">
           <h3>Seeing whether a theme is growing</h3>
-          <p>A VISN patient safety officer asks whether suicide-risk and safety-plan findings are rising. The website cannot produce that trend; the server returns it year by year with open counts and typical time to closure.</p>
-          <div class="evidence">Reports with such recommendations: 7 in 2015, 35 in 2016, 23 in 2020, 35 in 2021, 31 in 2023, 51 in 2024.</div>
+          <p>A VISN patient safety officer asks whether suicide-risk and safety-plan findings are rising. On the website, that means repeating a search for each year and tallying the results. The server returns it year by year with open counts and typical time to closure.</p>
+          <div class="evidence">Reports with such recommendations, from an earlier analysis through 2024: 7 in 2015, 35 in 2016, 23 in 2020, 35 in 2021, 31 in 2023, 51 in 2024.</div>
         </div>
 
         <div class="scenario">
           <h3>Reading a pattern honestly</h3>
-          <p>Communicating test results to patients appeared in 28 reports in each of 2015 and 2016, then 2 to 7 a year afterward. That drop could mean facilities improved, or that the topic left the inspection protocol. On October 19, 2026, OIG issued an inspection report for the VA Phoenix Health Care System recommending written workflows for communicating test results under VHA Directive 1088. The server presents both readings with the counts rather than choosing one.</p>
+          <p>Reports with recommendations that mention test or laboratory results numbered 32 and 27 in 2015 and 2016, then 2 to 11 a year through 2024, then 21 and 28 in 2025 and 2026 so far. It is tempting to say facilities improved and then slipped. The data cannot support that alone: OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop. On October 19, 2026, OIG issued an inspection report for the VA Phoenix Health Care System recommending written workflows for communicating test results under VHA Directive 1088. The server presents both readings with the counts rather than choosing one.</p>
         </div>
 
         <div class="scenario">
           <h3>Tracking closure performance</h3>
-          <p>OIG publishes a closure date for each recommendation. The server turns those dates into time-to-closure figures and not-implemented rates by office, topic, and report type, reconciled against OIG's dashboard totals.</p>
+          <p>OIG publishes a closure date for each recommendation. The server turns those dates into time-to-closure figures and not-implemented rates by office, topic, and report type, compared against what OIG publishes. A closure date appears to record when OIG closed a recommendation after reviewing evidence, so these figures describe OIG's process as well as the facility's. The server does not report whether facilities met their target dates.</p>
         </div>
 
         <div class="scenario">
@@ -217,36 +217,34 @@
         </figure>
 
         <h3>Data</h3>
-        <p>A polite, identified crawler that follows robots.txt collects OIG's report listings, report pages, and report PDFs. It captures OIG's own classifications (report type, topic, Major Management Challenge, action office, state, VISN), each recommendation's text, status, action office, and closure date, and, from inspection reports, the domain, concurrence, target completion date, corrective action, and standards cited for each recommendation. The data lives in a structured database with full-text search behind a documented JSON API, is refreshed on a schedule, and is reconciled against OIG's dashboard on every run.</p>
+        <p>A polite, identified crawler that follows robots.txt collects OIG's report listings, report pages, and report PDFs. It captures OIG's own classifications (report type, topic, Major Management Challenge, action office, state, VISN), each recommendation's text, status, action office, and closure date, and, from inspection reports, the domain, concurrence, target completion date, corrective action, and standards cited for each recommendation. The data lives in a structured database behind a documented JSON API, with one search that blends keyword and semantic matching. Each build is compared with what OIG publishes, and a build that fails those checks is not published.</p>
 
         <h3>MCP tools</h3>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Tool</th><th>What it answers</th></tr></thead>
             <tbody>
-              <tr><td>Inspection readiness brief</td><td>Next inspection window estimate, the facility's prior findings and status, recurring peer findings ranked, peer corrective actions, source links</td></tr>
-              <tr><td>Search findings</td><td>Recommendations matching a question, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
-              <tr><td>Theme trend</td><td>Year-by-year reports and recommendations for a theme, open counts, typical time to closure</td></tr>
-              <tr><td>Systemic clusters</td><td>Near-identical recommendations issued across many facilities, with each facility's status</td></tr>
-              <tr><td>Closure performance</td><td>Time to closure, not-implemented rate, and aging by office, topic, and report type</td></tr>
-              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses and closure dates</td></tr>
+              <tr><td>Search findings</td><td>Recommendations and corrective actions matching a question in any wording, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
+              <tr><td>Analyze recommendations</td><td>Exact counts and measures grouped by year, office, topic, or report type: trends, open counts, time to closure, and aging</td></tr>
+              <tr><td>Systemic clusters</td><td>Recurring recommendations across reports, with how common each one is and how long similar findings take to close</td></tr>
+              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses, closure dates, repeat findings, and an estimated next inspection window</td></tr>
               <tr><td>Report detail</td><td>One report with every recommendation, status, closure date, response, and standards cited</td></tr>
+              <tr><td>Dataset status</td><td>What the data covers, when it was collected, and how it compares with OIG's published totals</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="small" style="margin-top:10px">The server also publishes reference resources (topic taxonomy, offices, facilities, dataset freshness) and guided prompts for an inspection readiness checklist and a leadership aging brief.</p>
+        <p class="small" style="margin-top:10px">The tool list is deliberately short: new facts become fields on these tools rather than new tools. Reference lists of topics, offices, and facilities, and a guided inspection-prep workflow, are planned.</p>
 
         <h3>Safeguards</h3>
         <ul class="clean">
           <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
           <li>Every claim carries a report number and link, and every response states when its data was collected.</li>
           <li>Where data supports more than one interpretation, the server says so.</li>
-          <li>Rankings show their components and weights.</li>
           <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
         </ul>
 
         <h3>Evaluation</h3>
-        <p>An AI assistant with no other context answers realistic multi-step questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, precision and recall on lists, tool selection, caveats, and a citation-integrity check that every cited report exists. Traces are logged with Arize Phoenix. PDF extraction is checked separately against a hand-labeled sample.</p>
+        <p>Planned next, with results to follow. An AI assistant with no other context answers realistic multi-step questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, precision and recall on lists, tool selection, caveats, and a citation-integrity check that every cited report exists. Traces are logged with Arize Phoenix. PDF extraction is checked separately against a hand-labeled sample.</p>
       </div>
     </section>
 
@@ -258,8 +256,8 @@
             <thead><tr><th>Criterion</th><th>How the project meets it</th></tr></thead>
             <tbody>
               <tr><td>Dataset Access track</td><td>OIG's recommendations are public but have no API. The project makes them queryable by any MCP-capable assistant.</td></tr>
-              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation.</td></tr>
-              <tr><td>Innovation</td><td>Cross-report analytics the source does not offer: recurrence clusters, time to closure, and peer corrective actions from published facility responses.</td></tr>
+              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation in progress.</td></tr>
+              <tr><td>Innovation</td><td>Cross-report analysis the source does not offer: recurring findings, time to closure, and peer corrective actions from 11,240 published facility responses.</td></tr>
               <tr><td>Mission alignment</td><td>Public accountability data made usable by the people expected to act on it, on patient safety topics such as test-result follow-up, suicide prevention, medication security, and credentialing.</td></tr>
               <tr><td>Presentation</td><td>A live inspection-readiness walkthrough on a real facility, backed by evaluation results.</td></tr>
             </tbody>
@@ -281,7 +279,7 @@
           <li>GAO, <a href="https://www.gao.gov/products/gao-26-108978">Priority Open Recommendations: Department of Veterans Affairs</a>, GAO-26-108978, May 2026</li>
           <li><a href="https://www.oversight.gov/reports/recommendations">Oversight.gov open recommendations</a></li>
           <li><a href="https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
-          <li>Historical figures come from an analysis of 14,084 recommendations in 1,958 OIG reports published May 2004 through December 2024, collected from vaoig.gov in March 2025. Theme counts use keyword rules; cluster counts use normalized text matching.</li>
+          <li>Figures marked as earlier analysis come from an analysis of 14,084 recommendations in 1,958 OIG reports published May 2004 through December 2024, collected from vaoig.gov in March 2025. Theme counts use keyword rules. Other figures come from the project's data, collected November 4, 2026, and depend on the search words used.</li>
         </ol>
       </div>
     </section>
