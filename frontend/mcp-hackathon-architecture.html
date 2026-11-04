@@ -447,7 +447,7 @@
     </ul>
     <p><strong>Search and analysis</strong></p>
     <ul class="clean">
-    <li>Search quality is only lightly measured (see Search relevance test). About half of the top results were relevant, and precision was about the same as OIG's. <code>/v1/search</code> always returns a full shortlist, relevant or not, because similarity has no natural cutoff, so its consumer has to read results critically.</li>
+    <li>Search quality is only lightly measured (see Search relevance test). A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. <code>/v1/search</code> always returns a full shortlist, relevant or not, because similarity has no natural cutoff, so its consumer has to read results critically.</li>
     <li>Under heavy parallel load, a query embedding can exceed its 5 second timeout, and that search then runs on keywords only. The response reports this in <code>search_mode</code>. It did not occur in the runs above.</li>
     <li>Near-duplicate templated recommendations can fill the top of a shortlist.</li>
     <li>Title-based facility links were spot-checked, and each change on this build was read, but they have not all been reviewed. A title naming several facilities links to only one, and a title naming a system links to its parent station even when it also names a division's city.</li>
