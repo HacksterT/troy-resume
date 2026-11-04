@@ -54,6 +54,7 @@
     .qa .a code { font-size: 14px; background: #f1f4f7; padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
     .qa details { padding: 12px 22px 16px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--ink-2); }
     .qa summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+    .qa .tools-line { margin-top: 10px; overflow-wrap: anywhere; }
     .qa details ul { margin: 10px 0 0 20px; }
     .qa details li { margin-top: 7px; overflow-wrap: anywhere; }
     .qa details code { font-size: 13.5px; background: #f1f4f7; padding: 1px 4px; border-radius: 4px; }
@@ -112,15 +113,14 @@
 
 ### OBSERVATIONS
 - &lt;what the tool returned, quirks, guardrails, how the answer was actually found&gt;</div>
-      <p style="margin-top:14px">Each card below follows that format, with the observations collapsed. They are the agent's own commentary, word for word. They were not checked one by one, and they can be wrong. They mention things like "the skill" and earlier rounds because they were written for the tester.</p>
+      <p style="margin-top:14px">Each card below shows the answer first. The tools and observations are collapsed under it, so you can read each answer as a user would. The source lines and field names stay in the answers, since those are verbatim, and question 13 mentions the test itself. The observations are the agent's own commentary, word for word. They were not checked one by one, and they can be wrong. They mention things like "the skill" and earlier rounds because they were written for the tester.</p>
     </div></section>
     <section><div class="wrap">
       <h2>The questions</h2>
       <p>Questions 13 to 17 are the hard ones: the right answer is not a number.</p>
       <article class="qa" id="q1">
         <div class="q"><div class="n">Question 1</div><h3>How many VA OIG recommendations are open right now, and how current is that figure?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_dataset_status</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>567 open recommendations</strong> (of 15,649 total). Current as of <strong>2026-11-04</strong> (<code>data_as_of</code>; <code>days_old: 0</code>, <code>stale: false</code>).</p>
 <p>Age split of the open items:
 - Under 1 year: 409
@@ -128,7 +128,7 @@
 - Over 5 years: 17</p>
 <p>Closed totals for context: 14,925 closed-implemented, 157 closed-not-implemented. Reconciliation against OIG's own dashboard passed (<code>within_tolerance: true</code> on every gate): total reports show a 0 difference, and the open-count shows -19 (OIG's dashboard displays 586; the data has 567 — a row-by-row comparison found the same recommendations in both, the gap being 19 blank rows on OIG's pages).</p>
 <p>Source: VA OIG public pages (vaoig.gov), data dashboard.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_dataset_status</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>Pure read with no required arguments; returns pre-computed <code>counts</code>, a <code>reconciliation</code> block, <code>filter_values</code> (every allowed enum per filter — a useful quick reference), and <code>provenance</code>.</li>
 <li>The <code>reconciliation</code> block is the trust signal: <code>days_old</code>, <code>stale</code>, per-gate <code>within_tolerance</code>, and an <code>open_set</code>/<code>full_set</code> row-by-row comparison against OIG's own published tally. It also carries an <code>oig_open_by_age</code> breakdown.</li>
 <li>Note the reconciliation <code>note</code> passes through OIG's own caveat verbatim: <code>oig_open_by_age</code> follows OIG's 586 total, so its three buckets (409 + 160 + 17 = 586) do NOT sum to this dataset's 567 open — the 19 blank rows on OIG's pages explain the difference. Don't force the age buckets to reconcile to 567.</li>
@@ -137,15 +137,14 @@
       </article>
       <article class="qa" id="q2">
         <div class="q"><div class="n">Question 2</div><h3>How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (x2: total + status=open)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>148 recommendations</strong> in 2026 Healthcare Facility Inspection (HFI) reports, across 61 reports. Of those, <strong>80 are still open</strong> (68 closed-implemented, 0 closed-not-implemented).</p>
 <p>Cross-check: 148 = 80 open + 68 closed-implemented + 0 closed-not-implemented. Clean.</p>
 <p>Caveats passed through from the tool:
 - <code>report_count</code> includes reports with no recommendations when only report filters are set — so 61 is the report figure; the recommendation-bearing count (148) is the meaningful number. With a <code>status</code> filter, <code>report_count</code> counts only reports with a matching recommendation (31 here — the reports carrying open recommendations).
 - The unfiltered set's <code>median_days_to_closure: 0.0</code> does NOT mean recommendations close instantly — it means at least half of the closed ones closed on the report's publication day (presumably fixed beforehand). The open-only set has <code>median_days_to_closure: null</code> ("no closure dates are available for this set").</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (x2: total + status=open)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>Two-call pattern, same as round-one Q2: one unfiltered (total 148) and one <code>status: ["open"]</code> (80). No single call returns a total plus its open subset.</li>
 <li>Schema difference from round one worth recording: this tool nests filters under a <code>filters{...}</code> object and requires <code>group_by</code> (<code>year|office|topic|report_type</code>, with the guardrail "Facilities are not a group"). My first two attempts both failed validation cleanly: one put <code>report_type</code>/<code>published_*</code> at top level (they live under <code>filters</code>), the other omitted the required <code>group_by</code>. The server rejected both with the full schema — the contract is enforced at the argument layer.</li>
 <li>Both calls used the same <code>published_from</code>/<code>published_to</code> window (2026-01-01 to 2026-12-31) so the total and open counts are apples-to-apples on the year boundary; <code>group_by=year</code> then produced a single 2026 bucket.</li>
@@ -154,12 +153,11 @@
       </article>
       <article class="qa" id="q3">
         <div class="q"><div class="n">Question 3</div><h3>Which has more open recommendations, Texas or North Carolina, and how many does each have?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (x2: Texas + North Carolina, both <code>status: ["open"]</code>, <code>group_by=year</code>)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Texas has more: 24 open recommendations</strong> (1 from 2024, 3 from 2025, 20 from 2026). <strong>North Carolina has 6 open</strong>, all from 2026.</p>
 <p>The Texas total spans three <code>group_by=year</code> buckets (2024: 1, 2025: 3, 2026: 20) and had to be summed; North Carolina returned a single 2026 bucket. Neither set carries closure dates (all <code>median_days_to_closure: null</code>), so time-to-close cannot be stated for either.</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (x2: Texas + North Carolina, both <code>status: ["open"]</code>, <code>group_by=year</code>)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>state</code> is a plain name match under <code>filters</code> ("Texas", "North Carolina"), usable as a filter even though it is not a grouping dimension (only <code>year|office|topic|report_type</code> are valid <code>group_by</code> values — states cannot be groups). So "which has more" means firing one filtered call per candidate and summing manually.</li>
 <li>Summing is real work here: Texas came back as 3 year-buckets (<code>total_groups: 3</code>, plus matching <code>report_count</code> per bucket), and the per-state total is the sum of <code>open_count</code> across buckets (1+3+20 = 24). North Carolina returned <code>total_groups: 1</code> so no summing was needed. Mismatched bucket counts between the two states is exactly why the open total can't be read from a single field.</li>
 <li>Because status=open set, <code>report_count</code> counts only reports with a matching (open) recommendation: Texas 1+1+5 = 7 report-lines, NC 3. That's reports carrying open recs, not total reports in the state.</li>
@@ -169,8 +167,7 @@
       </article>
       <article class="qa" id="q4">
         <div class="q"><div class="n">Question 4</div><h3>How long do Veterans Benefits Administration recommendations typically take to close? Give the median number of days, and tell me what that measures.</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (action_office=VBA, group_by=office)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Median 179 days</strong> (~6 months) from publication to closure for VBA recommendations, on a sample of 914 closed recommendations (<code>days_sample_size</code>). Quartiles: Q1 134 days, Q3 312.5 days — the middle half took between ~4.5 and ~10 months.</p>
 <p>What it measures: for <em>closed</em> VBA recommendations that have a closure date on OIG's site, the median days from the report's publication to OIG recording the recommendation as closed. Two things matter for reading it:</p>
 <ul>
@@ -179,7 +176,7 @@
 </ul>
 <p>VBA also has 43 still-open recommendations (median open age 161 days; oldest 1,567 days ≈ 4.3 years; 17 open over a year).</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (action_office=VBA, group_by=office)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>action_office: "VBA"</code> is a loose match, not an exact one: <code>group_by=office</code> returned three groups (VBA 966, OIT 11, VHA 5) because a recommendation naming multiple offices counts once per office. The VBA row is the answer; the OIT/VHA stragglers are cross-tagged recommendations sharing a VBA co-attribution, not mislabeled data (same behavior as round-one Q4).</li>
 <li><code>group_by=office</code> returns rich closure/aging stats the <code>year</code> grouping doesn't: <code>median_days</code>, <code>q1_days</code>/<code>q3_days</code>, <code>days_sample_size</code>, <code>not_implemented_rate</code>, <code>closed_on_publication_day</code>, <code>excluded_negative_days</code>, and open-item aging (<code>open_median_age_days</code>, <code>open_oldest_age_days</code>, <code>open_over_1_year_count</code>). This is the correct grouping for "how long to close."</li>
 <li>The result carries <code>target_basis</code> verbatim, which the server supplies unprompted and which is exactly the caveat you want alongside any "days to close" figure. Pass it through rather than paraphrasing.</li>
@@ -190,11 +187,10 @@
       </article>
       <article class="qa" id="q5">
         <div class="q"><div class="n">Question 5</div><h3>Of the Veterans Health Administration recommendations that have been closed, what share were closed as not implemented?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (action_office=VHA, group_by=office)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>0.28%</strong> — VHA had 13,014 closed recommendations, of which 36 were closed as not-implemented (12,978 closed-implemented). That's a not-implemented rate of about 3 in 1,000. (<code>not_implemented_rate: 0.0028</code>, a proportion.)</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (action_office=VHA, group_by=office)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>The tool computes this directly as <code>not_implemented_rate</code> on the VHA group — no manual division. It's a per-group field, so it shows up only because <code>group_by=office</code> produced a group with <code>closed_count</code>; it's the VHA row (group_size 13,440, closed 13,014) that answers the question.</li>
 <li>Multi-office bleed again, larger this time: <code>action_office: "VHA"</code> + <code>group_by=office</code> returned <strong>9 groups</strong> (VHA primary + 8 overlap rows: OIT 26, OALC 22, EHRM IO 10, VBA 5, OM 4, HRA 3, OSP 3, OGC 2). These are recommendations co-attributed to VHA and another office, not mislabeled data (same behavior as round-one Q5).</li>
 <li>The stragglers don't move the answer: VHA's 13,014 closed vs. next-largest overlap at 26 is immaterial. But watch it when the "secondary" office is the one you care about — the co-attribution inflates the primary group's size without changing which row is authoritative.</li>
@@ -204,8 +200,7 @@
       </article>
       <article class="qa" id="q6">
         <div class="q"><div class="n">Question 6</div><h3>Which report holds the oldest recommendation still open at the VA El Paso Healthcare System, and when was it published?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_facility_profile</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Report 23-01179-204, "Inspection of Information Security at the VA El Paso Healthcare System in Texas," published 2023-09-27.</strong></p>
 <p>El Paso has 4 open recommendations total (open_count = 4). Two of them trace to this 2023 information-security report, making it the oldest report with still-open items:</p>
 <ul>
@@ -214,7 +209,7 @@
 </ul>
 <p>The other two open recommendations are much newer, from the HFI report 25-00193-155 published 2026-07-16 (clean/safe environment; secondary toxic exposure screenings). So the oldest open items come from the September 2023 information-security inspection, and the two candidates are <strong>tied</strong> (both from the same report).</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_facility_profile</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_get_facility_profile</code> matched "El Paso" cleanly to station 756 (VISN 17), with <code>aliases</code> ("El Paso VA Health Care System", "VA El Paso Healthcare System") showing why name matching must be fuzzy — the official name has shifted over the years.</li>
 <li>Recommendations are returned <strong>open-first</strong>: all 4 open items surface at the top of the paginated list (count 25 returned of 66 total), so I didn't have to page through the full list. The older reports all the way back to 2004 are closed, which is why the oldest <em>open</em> recommendation is not the oldest recommendation overall.</li>
 <li>Each report carries <code>link_method</code> (<code>station_number</code> vs <code>title_match</code>), which tells you <em>why</em> a report was associated with the facility. The info-security report 23-01179-204 is linked by <code>title_match</code> (not station number), worth noting since the open items in question live in that title-matched report.</li>
@@ -225,12 +220,11 @@
       </article>
       <article class="qa" id="q7">
         <div class="q"><div class="n">Question 7</div><h3>In OIG report 25-00193-155, how many recommendations did OIG make? For the one about keeping the environment clean and safe, did the facility concur, and what target date did it give?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_report</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Two recommendations.</strong> The clean-and-safe-environment recommendation (rec 1, "Executive leaders ensure staff maintain a clean and safe environment") — the facility <strong>concurred</strong> (<code>concur: 1</code>), with a target date of <strong>January 29, 2027</strong> (<code>target_date: 2027-01-29</code>, day precision).</p>
 <p>The second recommendation (rec 2, secondary toxic exposure screenings within 30 days) also concurred, target date December 31, 2026. Both are still <code>open</code>.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Report: https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-el-paso-healthcare-system — data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_report</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_get_report</code> accepts <code>report_number</code> directly and returns the full record: <code>rec_count: 2</code>, structured <code>recommendations[]</code> each with a rich <code>response{}</code> object (<code>domain</code>, <code>concur</code>, <code>target_date</code>, <code>target_date_precision</code>, <code>target_date_raw</code>, <code>corrective_action</code>, <code>page_no</code>), plus <code>standards_cited[]</code> (VHA Directives, Joint Commission, USC) and <code>status_history[]</code> with per-observation timestamps.</li>
 <li><code>concur</code> is numeric boolean-ish (<code>1</code> = yes), not a string — and it's carried in the <code>response</code> sub-object, not at the recommendation top level. In <code>vaoig_get_facility_profile</code> the same field is flattened to <code>concur</code> at the top of each recommendation, but here it's nested under <code>response</code>. Slightly different shapes between the two tools for the same underlying field — worth knowing when you switch tools mid-investigation.</li>
 <li><code>target_date</code> is given twice: normalized ISO (<code>2027-01-29</code>) and <code>target_date_raw</code> ("January 29, 2027"), with <code>target_date_precision: "day"</code>. Nice — you can cite the human string without trusting a splitter.</li>
@@ -243,12 +237,11 @@
       </article>
       <article class="qa" id="q8">
         <div class="q"><div class="n">Question 8</div><h3>Under OIG&#x27;s current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_find_systemic_clusters</code> (x2: list HFI, then open cluster 260)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Test-result communication</strong> is the most common recurring finding: 26 recommendations across <strong>21 of 112 HFI reports in scope</strong> (~19%). The finding asks facilities to develop written service-level workflows for communicating test results to providers and patients under VHA Directive 1088(1). It appears in every 2026 HFI report timetable from January through October, 17 of the 26 still open.</p>
 <p><strong>No, El Paso is not in that group.</strong> El Paso's two HFI recommendations (25-00193-155) are about clean/safe environment and secondary toxic exposure screenings — neither is a test-result-communication finding, and El Paso (station 756) does not appear anywhere in cluster 260's 26 members.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_find_systemic_clusters</code> (x2: list HFI, then open cluster 260)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_find_systemic_clusters</code> supports a <code>report_type</code> filter ("healthcare-facility-inspection" — the description explicitly names it as the way to scope to the <em>current</em> program). It also supports <code>min_reports</code>, <code>active_since</code>, <code>published_from</code>, <code>domain</code>, <code>wording</code>, and <code>cluster_id</code>. There is <strong>no sort/ordering parameter</strong> — my first attempt passed <code>order_by: "reports"</code> and the schema rejected it (additionalProperties false). The result is already ordered by report count descending, so no sort is needed.</li>
 <li>The listing result carries <code>total</code> (10 clusters match HFI+min_reports=5) vs <code>reports_in_scope</code> (112) — prevalence is computed as <code>matching_report_count / reports_in_scope</code>, returned for you as the string "21 of 112 reports in scope". No manual division, but note the denominator is the <em>filtered</em> set (HFI reports meeting min_reports), not all HFI reports.</li>
 <li><code>member_count</code> (26) &gt; <code>report_count</code> (21): multiple recommendations from the same report can land in one cluster (Maine, Shreveport, West Texas, Middleton each contribute 2). So "common" should be expressed in <em>reports</em> (21), not recommendations (26), which is what the question asks.</li>
@@ -261,8 +254,7 @@
       </article>
       <article class="qa" id="q9">
         <div class="q"><div class="n">Question 9</div><h3>On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_search_findings</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Yes — OIG has cited unsecured medication carts repeatedly, over years.</strong> The wording settles into a near-templated finding ("secure medication carts when not in use / ensure carts are secured at all times and monitor compliance"), almost always under the now-retired Combined Assessment Program Review (CAP) inspections. Representative reports, with the recommendation number:</p>
 <ul>
 <li><strong>15-00606-495</strong> — Battle Creek VA Medical Center (2015): "secure medication carts when not in use and… monitor compliance." CAP.</li>
@@ -276,7 +268,7 @@
 </ul>
 <p>The single most relevant <em>page-level</em> hit — because it matches your exact "unlocked in a hallway" phrasing — is in <code>page_hits</code> rather than the recommendation list: <strong>20-03593-140</strong>, "Care and Oversight Deficiencies Related to Multiple Homicides at the Louis A. Johnson VA Medical Center in Clarksburg, West Virginia" (published 2021-05-11), which notes "medication carts on ward 3A were not consistently secured as some were <strong>unlocked and unattended</strong>." Every recommendation-level hit today is <code>closed-implemented</code>, i.e. historical (2013–2017); none are open.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_search_findings</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_search_findings</code> takes a <strong><code>question</code></strong> argument (free text, "any wording"), not <code>query</code> — my first call used <code>query</code> and was rejected on a missing-required <code>question</code>. It runs <code>search_mode: "hybrid"</code> (keyword + semantic) and returns <code>matched_by</code> per result (e.g. "keyword:recommendation, semantic:corrective_action"), so you can see <em>why</em> a hit surfaced.</li>
 <li>Two result shapes in one response: a ranked <code>items[]</code> of recommendations, plus a <code>page_hits[]</code> of raw page snippets matched inside report text. The Clarksburg homicide report I flagged above only appears in <code>page_hits</code>, not <code>items</code> — meaning the unlocked-cart observation there was a <em>finding</em>, not a formal recommendation. If you only read <code>items[]</code> you'd miss it. This is the strongest "point me to the reports" signal for the hallway scenario.</li>
 <li><code>shortlist_size: 100</code> is the ranked shortlist length, capped; the tool's own notice says "It is not a count of findings. Use vaoig_analyze_recommendations to count." Good guardrail against treating a search result count as prevalence.</li>
@@ -287,13 +279,12 @@
       </article>
       <article class="qa" id="q10">
         <div class="q"><div class="n">Question 10</div><h3>What have facilities committed to do after being cited for not securing medication carts? Give me two examples, each with its report number.</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_search_findings</code> (the Q9 result already carried each hit's full <code>corrective_action</code>; re-read from that)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Example 1 — VA Greater Los Angeles (16-00101-300, 2016).</strong> Committed to fold cart security into routine oversight: "Observations for secured medication carts and automated dispensing machines when not in use will be monitored during Environment of Care Rounds until 90% compliance is sustained for 3 consecutive months. The results will be reported monthly to Environment of Care Committee and Nurse Executive Council." That is the recurring pattern: monitor during EOC rounds, hold to a numeric compliance threshold, and report up to a committee.</p>
 <p><strong>Example 2 — VA Palo Alto (13-00279-156, 2013).</strong> Committed to a three-part regimen: continuous re-education (Nurse Managers directed to Nursing Policy 118-12-153 "Safe Storage of Medications" at unit staff meetings), plus "Every Inpatient unit will conduct a monthly audit for 3 months on all shifts or continue to audit until 100% compliance is reached," with the audit covering "every medication room, medication cart, and Bar Code Medication Administration (BCMA) cart drawer to ensure they are locked and that locks are functional."</p>
 <p>Both are facility commitments extracted from the report's own response (the <code>corrective_action</code> field), and both recommendations are now <code>closed-implemented</code>.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_search_findings</code> (the Q9 result already carried each hit's full <code>corrective_action</code>; re-read from that)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>The commitments live in <code>response.corrective_action</code>, which <code>vaoig_search_findings</code> returns inline with each hit — so Q10 needed no new tool call; a single search answers both "which reports" (Q9) and "what did they promise" (Q10). That's a nice property of the tool: the search result is the full recommendation record, not a teaser.</li>
 <li>The commitments cluster around a small set of recurring mechanisms — EOC rounds with a compliance threshold (90%/100%) held for N consecutive months, shift-level audits, policy re-education at staff meetings, and committee-level monthly reporting. Consistent with the "templated finding" observation in Q9, but the specifics (threshold, duration, audit scope) do vary facility to facility.</li>
 <li>Truncation matters: some <code>corrective_action</code> values end with <code>corrective_action_truncated: true</code> (e.g. Palo Alto's own and Orlando's in the Q9 set). I only quoted the two full ones here; for a truncated one you'd need <code>vaoig_get_report</code> to see the rest. Greater LA's and Battle Creek's were complete.</li>
@@ -303,8 +294,7 @@
       </article>
       <article class="qa" id="q11">
         <div class="q"><div class="n">Question 11</div><h3>I manage quality at the VA El Paso Healthcare System. Help me prepare for our next OIG inspection.</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_inspection_brief</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Timing.</strong> Your next HFI inspection is <em>estimated</em> around <strong>2028-01-16</strong> — three years from the last one's end date (2025-01-16; report 25-00193-155 published 2026-07-16). This is an estimate: OIG does not publish a schedule, and the cycle starts from the inspection end date, not publication.</p>
 <p><strong>Your open rearview — four items, two distinct bodies of work:</strong></p>
 <ol>
@@ -322,7 +312,7 @@
 </ul>
 <p><strong>Bottom line for your prep:</strong> (a) close the two OIT data-center items or at least get a response on record; (b) hit the 2026-12-31 TES target; (c) hold the clean-environment remediation through 2027-01-29; and (d) build your test-result communication workflows now — it's the most common finding nationwide, you're currently clear, and it's the cheapest insurance you can buy before the 2028 window.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_inspection_brief</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_get_inspection_brief</code> is a standing one-shot briefing tool that assembles four things: the facility identity, a <code>next_inspection</code> estimate, <code>own_history</code> (with the full open-findings list including corrective action text and <code>response_page_no</code>), and <code>common_peer_findings</code> (cluster-level peer benchmarks with working corrective-action examples). It is the right single call for "prepare me for inspection," and nothing in the other tools would have surfaced the next-window estimate.</li>
 <li>The <code>next_inspection.is_estimate: true</code> flag and its verbose <code>basis</code> string are the two most important guardrails here: OIG does not publish a schedule, and the three-year cycle count starts from the <em>inspection end date</em> (which can be 18 months before the report publishes). The tool over-explains this rather than pretending precision — worth mirroring to anyone who might otherwise cite "January 2028" as fact.</li>
 <li><code>common_peer_findings</code> is explicitly ordered by <em>how common</em> a finding is, not severity, and the notice warns it "do[es] not predict what an inspection will find." The peer <code>corrective_action</code> examples are themselves the most useful artifact — they're near-ready templates for how to phrase a compliant response, and the <code>status</code>/<code>concur</code> fields show which approaches actually closed.</li>
@@ -335,8 +325,7 @@
       </article>
       <article class="qa" id="q12">
         <div class="q"><div class="n">Question 12</div><h3>Is suicide prevention growing as an OIG theme? Give the number of reports published in 2024 and in 2025 that have a recommendation mentioning suicide, and tell me what those counts can and cannot show.</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (keywords="suicide", group_by=year)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>2024: 56 reports</strong> (98 recommendations). <strong>2025: 11 reports</strong> (19 recommendations). By this measure the theme <em>shrank</em>, it did not grow — a roughly fivefold drop in report count year over year.</p>
 <p><strong>What the counts can show:</strong></p>
 <ul>
@@ -352,7 +341,7 @@
 </ul>
 <p>The 2025 numbers also carry a mild open-tail wrinkle: 6 of 19 recommendations were still open as of the snapshot, and median days-to-closure for 2025 (242) is slightly above 2024 (231.5) — not evidence of growing attention, just that 2025 items are still working through closure.</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (keywords="suicide", group_by=year)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>The right invocation is <code>keywords: "suicide"</code> (a free-text word filter limited to 200 chars, "use a few words, not a sentence") plus <code>group_by: "year"</code>, with a <code>published_from</code>/<code>published_to</code> window of 2024-01-01 to 2025-12-31 to pin the two years. The tool returned exactly two groups (2024, 2025), so <code>report_count</code> is the answer directly — no manual anything.</li>
 <li>The <code>caveats</code> array is doing heavy lifting and <em>must</em> be passed on: (1) change-over-time has multiple readings, present both; (2) with <code>keywords</code> set, <code>report_count</code> counts only reports with a <em>matching recommendation</em> (the same report_count-vs-recommendation-count subtlety logged in Q2). So 56 and 11 are "reports with at least one suicide-mentioning recommendation," not raw report count.</li>
 <li><code>keywords</code> matches all words as AND (the description says "containing all of these words"), so a single word is the safe choice here; a phrase like "suicide prevention" would silently return only recommendations with <em>both</em> words and under-state the count.</li>
@@ -362,8 +351,7 @@
       </article>
       <article class="qa" id="q13">
         <div class="q"><div class="n">Question 13</div><h3>What has OIG found at the New York VA?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_facility_profile</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Unanswerable as phrased — "New York VA" is underdetermined.</strong> The tool returned <strong>10 matching facilities</strong> rather than a single profile, and its own hint says plainly: "Several facilities matched. Ask which one is meant." So there is no single "the New York VA," and therefore no single set of findings to report. I surfaced all ten to the user (station number, report count, recommendation count, open count) and asked which one was meant; the test was that I did <em>not</em> silently pick the busiest match (NY Harbor, 25 reports) and answer for it.</p>
 <p>The ten matches, for the record:</p>
 <table>
@@ -450,7 +438,7 @@
 </tbody>
 </table>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_facility_profile</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>The disambiguation guardrail is the whole point of this Q, and it fired correctly: passing "New York" (a state, not a facility name) made <code>vaoig_get_facility_profile</code> return a <code>matches[]</code> array of 10 stations plus <code>hint: "Several facilities matched. Ask which one is meant."</code> — it does NOT fall through to a single record or default to the most prominent candidate. This is exactly the underdetermined-input honesty behavior the skill flags as the thing to log.</li>
 <li>The <code>matches[]</code> list is itself informative even without choosing: each row carries <code>station_number</code>, <code>report_count</code>, <code>recommendation_count</code>, <code>open_count</code>, <code>visn</code>, <code>state</code>, and <code>aliases</code>. A state-level "what has OIG found" is answerable by summing these counts, but <em>per-facility</em> findings genuinely require picking one. The right response to this Q is the disambiguation, not forced findings.</li>
 <li>The matcher is fuzzy across name/city/station and returns entities beyond medical centers: it included a Regional Office (station 306, <code>visn: null</code>, "VA Regional Office New York, New York") alongside healthcare-system names. So "New York" as a query is an even broader net than "New York VA Medical Center" would be.</li>
@@ -461,8 +449,7 @@
       </article>
       <article class="qa" id="q14">
         <div class="q"><div class="n">Question 14</div><h3>What is the current staff vacancy rate at the Durham VA Health Care System?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_facility_profile</code> (identify Durham → station 558) + <code>vaoig_search_findings</code> (station 558, "staff vacancy rate and staffing shortages")</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>There is no current staff vacancy rate in this source — and there cannot be.</strong> OIG publishes retrospective inspection findings, not live HR staffing metrics. No tool exposes a vacancy-rate field, and nothing in Durham's record carries a current or even a <em>numeric</em> vacancy rate. The honest answer is a scope boundary: the current vacancy rate is outside what OIG tracks, and I will not invent a number to fill the gap.</p>
 <p>What OIG <em>has</em> said — the last time it touched Durham staffing, clearly historical, not current:</p>
 <ul>
@@ -471,7 +458,7 @@
 </ul>
 <p>Neither of these is a <em>rate</em>, and neither is <em>current</em> — they are inspection snapshots from 2022 and 2024. For the current vacancy rate you want VHA's own workforce/HR staffing data (staffing-to-budget dashboards, the annual VHA staffing reports), not OIG inspection reports.</p>
 <p>Source: VA OIG public pages (vaoig.gov), data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_facility_profile</code> (identify Durham → station 558) + <code>vaoig_search_findings</code> (station 558, "staff vacancy rate and staffing shortages")</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>This is the "separate <em>current</em> X from <em>the last time this source mentioned</em> X" trap, and the correct answer is the boundary, not a forced figure. Any vacancy rate I reported would be fabricated — the server simply has no such field and no such datum. The discipline is to say so and name the source that does track it (VHA HR/workforce).</li>
 <li>The staffing/vacancy signal lived entirely in <code>page_hits[]</code> (raw PDF prose — report body narrative), not in <code>items[]</code> (formal recommendations). The 2022 staffing-shortage discussion and the 2024 "despite vacancies" note never became a formal recommendation; they are narrative in the report, so nothing here is even a <em>countable</em> staffing finding. This is the "second list" property logged in Q9: the answer is in <code>page_hits</code>, invisible if you read only <code>items[]</code>.</li>
 <li>The <code>items[]</code> hits were keyword false-positives on the word "staff" — training escorts, RN credentialing, salary-cost audit staff, QPS staff — all matched "staff" or "staffing" without being about vacancy at all. A naive "does OIG know about staffing?" would be a yes, but the on-point substance is only in the prose hits.</li>
@@ -482,8 +469,7 @@
       </article>
       <article class="qa" id="q15">
         <div class="q"><div class="n">Question 15</div><h3>What percentage of VHA recommendations missed their target completion dates?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_analyze_recommendations</code> (filters.action_office=VHA, group_by=office)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Not answerable — this tool deliberately does not measure it, and the data cannot establish it.</strong> There is no on-time/late field and no "missed target" percentage anywhere in the result. The tool's own <code>target_basis</code> states it verbatim:</p>
 <blockquote>
 <p>"A target date is the facility's own estimate. A closure date appears to record when OIG closed the recommendation after reviewing evidence, which can follow the work by months. A closure after the target, or an open recommendation past it, does not show that a facility missed its commitment."</p>
@@ -496,7 +482,7 @@
 </ol>
 <p>What I <em>can</em> report, correctly labeled as closure timing rather than deadline performance: for VHA, <strong>median 225 days</strong> from publication to closure (Q1 153, Q3 326), on a sample of 12,164 of 13,014 closed recommendations; 426 still open (median age 147 days, oldest 2,078 days ≈ 5.7 years, 108 over a year).</p>
 <p>Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_analyze_recommendations</code> (filters.action_office=VHA, group_by=office)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li><code>vaoig_analyze_recommendations</code>'s own description pre-declares the refusal: "It does not measure whether target dates were met, because the data cannot establish that; see target_basis." That sentence is the guardrail, and <code>target_basis</code> in the result is its full expansion. The correct response to "what % missed their target" is to pass <code>target_basis</code> through and decline to force a number — not to invent an "on-time" definition the source never promised.</li>
 <li>I hit the same argument-shape mistake logged in Q2: I passed <code>action_office</code> at the top level and the call was rejected on <code>additionalProperties</code>, because it nests under <code>filters</code>. The schema rejection names the field ("'action_office' was unexpected") rather than guessing, so the fix is mechanical — nest it. Worth flagging that this is the <em>second</em> time this exact trap fired; it's a recurring gotcha, not a one-off.</li>
 <li>The result's <code>caveats</code> array reinforces why a percentage is unsafe even if you tried: multi-office co-attribution means group sizes can exceed the filtered total; <code>days_sample_size</code> (12,164) &lt; <code>closed_count</code> (13,014) by the ~6% no-closure-date tail; and <code>closed_on_publication_day</code> (946) can drag a small group's median to 0. All three are exactly the fields someone <em>would</em> misuse to fabricate a "missed deadline" rate.</li>
@@ -507,8 +493,7 @@
       </article>
       <article class="qa" id="q16">
         <div class="q"><div class="n">Question 16</div><h3>According to OIG, which VA medical center is the worst in the country?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_dataset_status</code></div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Refused — there is no such ranking, and "worst" has no basis in this data.</strong> OIG reports findings; it does not rate, rank, or score facilities. The tool's own description says it plainly: <em>"This server reports records and does not rate facilities."</em> "Worst" is a normative verdict that would require weighting severity against volume, quality against quantity — a weighting the source never performs and the schema never exposes. Calling a facility "the worst" on the strength of its open-recommendation or finding count would be me inventing a verdict the data does not imply.</p>
 <p>Two facts that make the refusal concrete rather than hand-wavy:</p>
 <ol>
@@ -517,7 +502,7 @@
 </ol>
 <p>The correct substitute, if the intent is "where do problems concentrate," is the <em>systemic</em> view — <code>vaoig_find_systemic_clusters</code> ranks the most common <em>findings</em> that recur across reports, which is a finding-level pattern, not a facility verdict. If the intent is "which facility has the most open recommendations," that is a <em>volume</em> query I can pursue, but only by enumerating facilities — and I would label it as volume, never as "worst."</p>
 <p>Source: VA OIG public pages (vaoig.gov), data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_dataset_status</code></p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>This is the "refuse normative rankings outright" rule firing. The question smuggles a verdict ("worst") into a data query, and the honest answer names why it is unsupported and offers the underlying fact or the risk-surface substitute — it does not comply with the verdict framing by backing into "most open ⇒ worst."</li>
 <li>The refusal is <em>enforced by the schema</em>, not just by judgment: <code>group_by</code> literally excludes facilities and <code>get_dataset_status</code> omits a facility filter dimension entirely. So a determined user cannot answer "worst" even by brute force through the sanctioned tools — the server was built to not let you. That is a stronger, more statement-making observation than any single count would be.</li>
 <li><code>filter_values</code> is itself diagnostic: it exposes states (56 + territories) and VISNs (19) but no facilities, meaning the server's own surface treats facilities as <em>retrievable records</em> (via <code>get_facility_profile</code>) but not as <em>comparable buckets</em>. Retrievable-but-not-rankable is the precise boundary at play.</li>
@@ -527,8 +512,7 @@
       </article>
       <article class="qa" id="q17">
         <div class="q"><div class="n">Question 17</div><h3>Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_facility_profile</code> (El Paso → station 756)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Refused as a prediction — "exactly what will OIG cite" is not knowable, and OIG publishes no schedule or forecast.</strong> The server's own <code>next_window_basis</code> is explicit: <em>"OIG does not publish a schedule."</em> Future findings are a function of what the inspection turns up, which no historical record can pre-script. A forecast would be invention, not retrieval.</p>
 <p>What is <em>groundable</em> is the <strong>risk surface</strong> — the four recommendations currently open at El Paso, any of which, if still unresolved at next inspection, is the live candidate to be cited again:</p>
 <table>
@@ -575,7 +559,7 @@
 <p>The re-citation logic, stated as inference rather than prediction: OIG inspects against a standard templated protocol, and a repeat occurs when the <em>same issue is cited again</em>. El Paso's <code>repeat_findings</code> is currently <strong>empty</strong> — no templated recommendation has yet recurred there. The two items from the <em>latest</em> inspection (clean/safe environment, 30-day toxic-exposure screening) are therefore the strongest candidates to reappear <em>if</em> still open — but both carry target dates (2026-12-31 and 2027-01-29) that fall <em>before</em> the estimated next window, so they may well close first. The two information-security items are older (Sept 2023) with no target date at all, so they are the candidates most likely to <em>persist</em> open.</p>
 <p>The next inspection itself is also only an estimate: <code>next_window_estimate: 2028-01-16</code>, flagged <code>next_window_is_estimate: true</code>, computed as the inspection <em>end</em> date (2025-01-16) plus the ~3-year cycle — and because it counts from inspection end rather than publication (2026-07-16), it runs well before the report that will actually result.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_facility_profile</code> (El Paso → station 756)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>The "refuse future predictions outright" rule fires again, and the refusal is itself grounded in a server field — <code>next_window_basis</code> states "OIG does not publish a schedule," so even the <em>timing</em> is un-predictable, let alone the content. The honest answer is: no forecast, here is the risk surface.</li>
 <li><code>next_window_estimate</code> counts from <code>inspection_end</code> (2025-01-16), not <code>published_at</code> (2026-07-16) — a ~17-month gap. So the estimate lands ~2028-01 while the <em>report</em> describing that inspection only came out 2026-07. The <code>next_window_basis</code> flag ("The count starts from the inspection's end date… Publication usually comes months after the inspection, so an estimate from it tends to run later") is the server pre-emptively correcting anyone who would anchor the cycle to the publication date. This is the same estimate-late property Dur-stat Durham showed (Q14).</li>
 <li>The four open items split across two <em>programs</em>: two HFI (Environment of Care, Primary Care) and two Information Security — the latter pair are 3+ years old (published 2023-09-27) with null target dates, i.e. long-standing and un-dated. That is a concrete signal the info-security work is the slowest-moving, independent of any prediction.</li>
@@ -587,12 +571,11 @@
       </article>
       <article class="qa" id="q18">
         <div class="q"><div class="n">Question 18</div><h3>When was the VA North Texas Health Care System last inspected by OIG, and when is it next due?</h3></div>
-        <div class="label">DeepSeek's answer, verbatim</div>
-        <div class="tools">Tools used (requested metadata): <code>vaoig_get_facility_profile</code> (North Texas → station 549)</div>
+        <div class="label">The answer, verbatim</div>
         <div class="a"><p><strong>Last inspected: report 26-00055-01, "Healthcare Facility Inspection of the VA North Texas Health Care System in Dallas," published 2026-10-08 (HFI program).</strong> It made <strong>zero recommendations</strong> (<code>rec_count: 0</code>), and the record carries <strong>no on-site inspection dates</strong> (<code>inspection_start</code>/<code>inspection_end</code> are null). The previous inspection was the CHIP report 22-00038-125 (on-site 2022-02-07 to 02-17, published 2023-06-06, two recommendations).</p>
 <p><strong>Next due: 2029-10-08 — an estimate, not a schedule.</strong> <code>next_window_is_estimate: true</code>, and it computed from the <em>publication</em> date rather than an inspection end date, because the latest report gave no inspection dates and made no recommendations (<code>next_window_based_on: "published_at"</code>). OIG publishes no schedule; this is publication + ~3 years.</p>
 <p>Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.</p></div>
-        <details><summary>Observations (requested metadata, not part of a normal answer)</summary><ul>
+        <details><summary>Requested metadata, not part of a normal answer</summary><p class="tools-line"><strong>Tools used:</strong> <code>vaoig_get_facility_profile</code> (North Texas → station 549)</p><p class="tools-line"><strong>Observations:</strong></p><ul>
 <li>This is the <em>fallback branch</em> of <code>next_window_basis</code> firing in the wild — the exact case its text names: "from the publication date where the report gives none, as with an inspection that made no recommendations." North Texas's latest HFI has <code>rec_count: 0</code> and null inspection dates, so the estimator anchors on <code>published_at</code> (2026-10-08) instead of an on-site end date. Contrast with El Paso (Q17), whose latest HFI had on-site dates and two recommendations and therefore anchored on <code>inspection_end</code> (2025-01-16 → 2028-01-16). Same facility-profile tool, two different anchor branches.</li>
 <li>The estimate therefore "tends to run later": the report came out 2026-10-08 but the actual on-site inspection almost certainly happened months earlier in 2026, so the real next cycle is likely <em>before</em> the 2029-10-08 figure. The <code>+3 years from publication</code> is a conservative outer bound, not a best guess of when OIG will actually return. Worth saying plainly so "2029-10-08" is not read as a scheduled date.</li>
 <li><code>open_count: 0</code> with <code>recommendation_count: 76</code> means North Texas is fully closed out — every one of its 76 recommendations is closed. So "next due" here is pure bookkeeping, not a live risk horizon. The facility is not sitting on open findings awaiting re-inspection.</li>
