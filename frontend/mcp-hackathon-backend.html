@@ -67,6 +67,15 @@
     footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
     footer p + p { margin-top: 8px; }
     @media (max-width: 600px) { body { font-size: 16px; } .hero { padding: 44px 0 40px; } .hero p.lead { font-size: 17px; } section { padding: 40px 0; } h2 { font-size: 24px; } .scenario { padding: 20px; } .stats { grid-template-columns: repeat(2, 1fr); } }
+    /* hero-nav start */
+    .hero-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 26px; }
+    .hero-nav a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 10px; background: #fff; color: #2c3e50; font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; border-radius: 7px; }
+    .hero-nav a:hover { background: #eaf4fb; text-decoration: none; }
+    @media (max-width: 600px) {
+      .hero-nav { gap: 6px; margin-top: 22px; }
+      .hero-nav a { min-height: 52px; padding: 6px 4px; font-size: 12px; }
+    }
+    /* hero-nav end */
   </style>
 </head>
 <body>
@@ -83,6 +92,12 @@
       <h1>How the OIG Data Service Works</h1>
       <p class="lead">This project gives an AI assistant working access to the public record of the VA Office of Inspector General (OIG). Without it, an assistant can read only a few of OIG's pages at a time.</p>
       <p class="meta">Status as of November 4, 2026. The figures come from a full crawl of vaoig.gov on that date. The technology stack, test results, and engineering detail are on the companion <a href="/mcp-hackathon-architecture">technical page</a>.</p>
+      <nav class="hero-nav" aria-label="Project pages">
+        <a href="/mcp-hackathon">Project Home</a>
+        <a href="/mcp-hackathon-overview">MCP Exec Summary</a>
+        <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
+        <a href="/mcp-hackathon-test-bank">Test Bank</a>
+      </nav>
     </div>
   </div>
 
