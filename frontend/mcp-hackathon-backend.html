@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How the OIG Data Service Works: Technical Overview</title>
+  <title>Data Source Tech Summary: How the OIG Data Service Works</title>
   <meta name="description" content="How the VA OIG data service collects, structures, checks, and serves public OIG findings for AI assistants over the Model Context Protocol, with its design decisions, use cases, and limits.">
-  <meta property="og:title" content="How the OIG Data Service Works">
+  <meta property="og:title" content="Data Source Tech Summary: How the OIG Data Service Works">
   <meta property="og:description" content="How public VA OIG findings become a structured, citable dataset that AI assistants can use.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-backend">
@@ -59,9 +59,15 @@
     .scenario p strong { color: var(--ink); }
     .scenario .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
     .quote { font-style: italic; }
-    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-size: 14.5px; font-weight: 600; }
-    .flow span { background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 12px; }
-    .flow i { color: var(--ink-3); font-style: normal; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+    .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; }
+    .stat .num { font-size: 27px; font-weight: 700; line-height: 1.1; }
+    .stat .lbl { font-size: 13.5px; color: var(--ink-2); margin-top: 6px; }
+    figure { margin: 24px 0 8px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; padding: 12px; }
+    figure .scroll { overflow-x: auto; }
+    figure img { display: block; width: 100%; height: auto; min-width: 680px; }
+    figcaption { font-size: 14px; color: var(--ink-3); margin-top: 8px; padding: 0 4px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
 
     .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
     table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
@@ -86,6 +92,7 @@
       section { padding: 40px 0; }
       h2 { font-size: 24px; }
       .scenario { padding: 20px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -99,7 +106,7 @@
 
   <div class="hero">
     <div class="wrap">
-      <div class="eyebrow">Technical overview · The data service</div>
+      <div class="eyebrow">Data Source Tech Summary</div>
       <h1>How the OIG Data Service Works</h1>
       <p class="lead">The VA Office of Inspector General (OIG) publishes every report and recommendation it issues, and its website is good at finding them. It has keyword search and useful filters. What it cannot do is answer a question that spans many reports: what keeps recurring, whether a problem is growing, how long fixes take, or what other facilities did about the same finding.</p>
       <p class="meta">Status as of November 4, 2026. Figures come from a full crawl of vaoig.gov on that date.</p>
@@ -112,20 +119,34 @@
       <div class="wrap">
         <h2>The short version</h2>
         <p>An AI assistant has the same limit, and a tighter one: it can read a few pages at a time, not thousands. We built a data service that turns OIG's public record into a structured dataset, and exposes it over the Model Context Protocol (MCP), so an assistant can answer those questions and cite the source report for each claim. It covers 4,415 reports, 15,649 recommendations, about 89,000 pages of report text, and 11,240 facility responses extracted from PDFs. The assistant reads records from this service and writes the answer from them. The service never generates findings of its own.</p>
+        <div class="stats">
+          <div class="stat"><div class="num">4,415</div><div class="lbl">reports</div></div>
+          <div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div>
+          <div class="stat"><div class="num">89,261</div><div class="lbl">pages of PDF text</div></div>
+          <div class="stat"><div class="num">11,240</div><div class="lbl">facility responses</div></div>
+          <div class="stat"><div class="num">26,049</div><div class="lbl">768-dimension vectors</div></div>
+          <div class="stat"><div class="num">457 MB</div><div class="lbl">published database</div></div>
+        </div>
       </div>
     </section>
 
     <section id="how">
       <div class="wrap">
         <h2>How it works</h2>
-        <div class="flow" role="img" aria-label="vaoig.gov flows to Collect, Structure, Analyze, Secure API, MCP server, and AI assistant">
-          <span>vaoig.gov</span><i>&rarr;</i><span>Collect</span><i>&rarr;</i><span>Structure</span><i>&rarr;</i><span>Analyze</span><i>&rarr;</i><span>Secure API</span><i>&rarr;</i><span>MCP server</span><i>&rarr;</i><span>AI assistant</span>
-        </div>
+        <figure>
+          <div class="scroll"><img src="assets/mcp-hackathon/system-architecture.svg" alt="System architecture: OIG's public pages flow through a polite crawl into a pipeline on a local Mac mini, which publishes a read-only SQLite database. A containerized API reads it and reaches the internet only through an outbound Cloudflare tunnel, where Cloudflare Access requires a service token. The oig-mcp server calls the API and serves tools to any MCP client." width="940" height="446"></div>
+          <figcaption>The system. No inbound port is open on the host, and the API opens its database read-only.</figcaption>
+        </figure>
         <p style="margin-top:22px"><strong>Collect.</strong> A crawler reads OIG's public pages and report PDFs, one request at a time, and identifies itself to the site. Everything it fetches is saved untouched, so a parsing error can be fixed and rerun without contacting OIG again.</p>
         <p><strong>Structure.</strong> Each recommendation becomes a record with its status, responsible office, and closure date. For inspection reports, rules (not AI) read the PDF to pull out what the facility committed to: whether it agreed, its target date, and its corrective action.</p>
         <p><strong>Analyze.</strong> Once per build, the service works out which facility each report belongs to, groups near-identical recommendations issued across many reports, and prepares the data for search.</p>
         <p><strong>Check.</strong> Each build is compared with what OIG publishes and tested for missing data. A build that fails these checks is not published. On November 4, a row-by-row comparison found the same recommendations in OIG's listing and in ours, with none missing either way, and all 14,223 closure dates agreed.</p>
         <p><strong>Serve.</strong> A read-only API runs on a local machine, reachable only through Cloudflare with a service token. The AI assistant connects through a separate Model Context Protocol (MCP) server. That server runs on the same machine today, and IBM Cloud is its deployment target.</p>
+
+        <figure>
+          <div class="scroll"><img src="assets/mcp-hackathon/data-pipeline.svg" alt="Data pipeline in four stages that stop at the first failure. Collect: listing, facets, report pages, PDFs. Structure: parse, ingest, index. Analyze: embed, derive. Release: validate, snapshot, publish." width="930" height="378"></div>
+          <figcaption>One refresh runs these steps in order and stops at the first failure. The first full crawl was 6,122 requests over 2 hours 41 minutes, with no errors. Parsing, ingest, and derive take minutes.</figcaption>
+        </figure>
 
         <h3>Two design decisions that matter</h3>
         <p><strong>Finding and counting are handled differently.</strong> Finding uses one search that blends two methods, because people describe problems in their own words. Counting uses only exact database queries. The same question always returns the same number, so results can be checked and repeated.</p>
@@ -137,6 +158,129 @@
       </div>
     </section>
 
+    <section id="search">
+      <div class="wrap">
+        <h2>Search specifics</h2>
+        <p>One pipeline, with no modes to choose. Each method covers what the other misses, and rank fusion needs no score calibration.</p>
+        <figure>
+          <div class="scroll"><img src="assets/mcp-hackathon/hybrid-search.svg" alt="Hybrid search: a query becomes a keyword query and a local query vector. Keywords run BM25 over recommendations, corrective actions, and PDF pages. The vector runs cosine similarity over recommendations and corrective actions. The four lists merge by reciprocal rank fusion with k of 60 into a shortlist of up to 100, returned with up to 5 PDF page hits." width="920" height="540"></div>
+          <figcaption>Every query runs all four recommendation lists. Filters apply to every list.</figcaption>
+        </figure>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Keyword search</td><td>SQLite FTS5 with BM25 ranking and porter stemming, over recommendations, corrective actions, and PDF pages</td></tr>
+              <tr><td>Embedding model</td><td><code>nomic-embed-text:v1.5</code> on a local Ollama, with task prefixes; text is capped at 2,000 characters</td></tr>
+              <tr><td>Vectors</td><td>26,049 unit-length float32 vectors with 768 dimensions, stored in the database file, so a snapshot carries its exact index</td></tr>
+              <tr><td>Semantic search</td><td>Brute-force cosine scan in NumPy, cached in memory until the database changes. Adequate at this size</td></tr>
+              <tr><td>Candidates per list</td><td>200</td></tr>
+              <tr><td>Fusion</td><td>Reciprocal rank fusion, k = 60, merged on <code>rec_id</code></td></tr>
+              <tr><td>Result</td><td>A shortlist of up to 100, paged, with <code>matched_by</code> naming the lists that found each item</td></tr>
+              <tr><td>Fallback</td><td>5-second embedding timeout. If the model is down, the same pipeline runs on keywords, <code>search_mode</code> reports <code>keyword_fallback</code>, and <code>/health/search</code> reports <code>degraded</code></td></tr>
+              <tr><td>Observed latency</td><td>Median of 79 to 135 ms across 10 test questions, on the host and excluding the tunnel. A small sequential sample, not a load test</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Finding and counting stay separate</h3>
+        <p>Similarity has no natural cutoff, so a count built on it would depend on an arbitrary threshold. The search result's <code>total</code> is the shortlist size, not a count of findings. Every endpoint that counts uses exact SQL, so a query returns the same number each time and can be checked against gold answers.</p>
+        <h3>Considered and left out</h3>
+        <ul class="clean">
+          <li><strong>Cross-encoder reranker:</strong> another service to keep up during judging. It can be added after fusion if evaluation shows ranking trouble, without changing the tool.</li>
+          <li><strong><code>sqlite-vec</code>:</strong> a native extension in the container, for no gain at this size.</li>
+          <li><strong>A larger embedding model (<code>qwen3-embedding:8b</code>):</strong> 35 minutes or more to embed, against about 2, with 19 GB held in memory. Ruled out on operating cost; its quality was not compared.</li>
+          <li><strong>Embedding PDF pages:</strong> chunking and a much larger index, for a narrative search that keywords serve adequately so far.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="wrap">
+        <h2>Technical specifications</h2>
+        <h3 style="margin-top:0">Stack</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Layer</th><th>Technology</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Language</td><td>Python 3.11, uv</td><td>Locked dependencies. New releases wait two weeks before they can resolve</td></tr>
+              <tr><td>Crawling</td><td>httpx 0.28</td><td>One request at a time, at least 1.5 seconds apart, with backoff, a host allow-list, and a stop after 10 consecutive failures</td></tr>
+              <tr><td>HTML parsing</td><td>selectolax 1.0</td><td>Raw pages are saved, so a parser fix never needs a new crawl</td></tr>
+              <tr><td>PDF text</td><td>pypdf 6.20 with its crypto extra</td><td>All 2,214 extracted documents have a text layer, so no OCR is used</td></tr>
+              <tr><td>Response extraction</td><td>Rules, not an LLM</td><td>Deterministic and testable. Each response is checked against OIG's own text for that recommendation</td></tr>
+              <tr><td>Database</td><td>SQLite 3.46, FTS5</td><td>One file, forward-only migrations, opened read-only for serving</td></tr>
+              <tr><td>Embeddings</td><td>Ollama, <code>nomic-embed-text:v1.5</code></td><td>Runs on the host, so no outside model sees query text</td></tr>
+              <tr><td>Vector scan</td><td>NumPy 2.4</td><td>No separate vector database</td></tr>
+              <tr><td>API</td><td>FastAPI 0.143, uvicorn 0.54, Pydantic 2.14</td><td>Read-only JSON. Unknown query parameters return 422, so a misspelled filter cannot return unfiltered numbers</td></tr>
+              <tr><td>Runtime</td><td>One container image, OrbStack</td><td>The same image runs the pipeline and the API, on a Mac mini</td></tr>
+              <tr><td>Access</td><td>Cloudflare Tunnel, Cloudflare Access</td><td>Outbound-only tunnel. Requests without the service token get 401</td></tr>
+              <tr><td>MCP server</td><td>FastMCP 4, in a separate repository</td><td>Seven tools. Stdio today; streamable HTTP with a bearer token for hosting</td></tr>
+              <tr><td>Quality tooling</td><td>pytest, ruff</td><td>The suite runs offline against saved pages and two real PDFs</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Data model</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Table</th><th class="num">Rows</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>reports</code></td><td class="num">4,415</td><td>Keyed by site path, because vaoig.gov exposes a node id only for reports with recommendations</td></tr>
+              <tr><td><code>recommendations</code></td><td class="num">15,649</td><td>Keyed <code>&lt;node_id&gt;-&lt;rec_no&gt;</code></td></tr>
+              <tr><td><code>status_observations</code></td><td class="num">31,296</td><td>Append-only, one per recommendation per run, so history accumulates</td></tr>
+              <tr><td><code>rec_responses</code></td><td class="num">11,240</td><td>Domain, concurrence, target date with precision, corrective action</td></tr>
+              <tr><td><code>pdf_pages</code></td><td class="num">89,261</td><td>Page text from 2,214 documents, with physical page numbers</td></tr>
+              <tr><td><code>standards_cited</code></td><td class="num">23,750</td><td>Directive, handbook, and regulation citations</td></tr>
+              <tr><td><code>facilities</code></td><td class="num">162</td><td>Keyed by VA station number, with 2,283 report links that each record how they were made</td></tr>
+              <tr><td><code>inspections</code></td><td class="num">815</td><td>Per facility, with the latest one and its next-window estimate</td></tr>
+              <tr><td><code>clusters</code></td><td class="num">283</td><td>Recurring recommendations, with the method and threshold of each</td></tr>
+              <tr><td><code>text_embeddings</code></td><td class="num">26,049</td><td>Vectors with model name and text hash, so only changed text is embedded again</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Recurring findings use two methods</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Method</th><th>Scope</th><th>How</th><th class="num">Clusters</th></tr></thead>
+            <tbody>
+              <tr><td><code>normalized-prefix-1</code></td><td>All reports</td><td>First 12 words after removing the addressee, stock openers, numbers, punctuation, and facility names; 5 or more reports</td><td class="num">259</td></tr>
+              <tr><td><code>semantic-seed-1</code></td><td>Healthcare Facility Inspections</td><td>Cosine similarity of at least 0.88 to one central recommendation; 3 or more reports</td><td class="num">24</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Parsing and validation results</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Check</th><th class="num">Result</th><th class="num">Threshold</th></tr></thead>
+            <tbody>
+              <tr><td>Healthcare Facility Inspection reports fully parsed (90)</td><td class="num">100%</td><td class="num">100%</td></tr>
+              <tr><td>CHIP reports from 2018 on fully parsed (312)</td><td class="num">95.2%</td><td class="num">90%</td></tr>
+              <tr><td>Closed recommendations with a closure date</td><td class="num">94.3%</td><td class="num">90%</td></tr>
+              <tr><td>Reports with recommendations having a PDF</td><td class="num">99.3%</td><td class="num">90%</td></tr>
+              <tr><td>Recommendations and corrective actions with a vector</td><td class="num">100%</td><td class="num">99%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">"Fully parsed" means every recommendation has a verdict, a target, and an action. Thresholds are judgment calls informed by this one build.</p>
+
+        <h3>API latency</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Request</th><th class="num">Median</th><th class="num">Slowest seen</th></tr></thead>
+            <tbody>
+              <tr><td><code>/v1/recommendations</code></td><td class="num">3 ms</td><td class="num">9 ms</td></tr>
+              <tr><td><code>/v1/reports/{id}</code></td><td class="num">1 ms</td><td class="num">6 ms</td></tr>
+              <tr><td><code>/v1/facilities/{station}</code></td><td class="num">8 ms</td><td class="num">12 ms</td></tr>
+              <tr><td><code>/v1/metrics/closure</code></td><td class="num">45 ms</td><td class="num">50 ms</td></tr>
+              <tr><td><code>/v1/metrics/counts</code></td><td class="num">21 ms</td><td class="num">32 ms</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">On the host, excluding the tunnel, which added roughly 150 to 200 ms. Small sequential samples, not a load test.</p>
+      </div>
+    </section>
+
     <section id="difference">
       <div class="wrap">
         <h2>What this adds beyond OIG's search</h2>
@@ -145,7 +289,7 @@
             <thead><tr><th>Question</th><th>OIG website</th><th>This service</th></tr></thead>
             <tbody>
               <tr><td>Find a report or filter by state, office, or status</td><td>Yes</td><td>Yes, not the reason to use this</td></tr>
-              <tr><td>Describe a problem in your own words</td><td>Keyword-based</td><td>Matches on meaning as well as words</td></tr>
+              <tr><td>Describe a problem in your own words</td><td>Keyword matching: all ten full sentences we tried found no recommendations</td><td>Matches on meaning as well as words</td></tr>
               <tr><td>What did other facilities commit to do about this?</td><td>Read each PDF</td><td>Searchable across reports</td></tr>
               <tr><td>Which findings recur across facilities?</td><td>Compare by hand</td><td>Grouped automatically, with how common each one is</td></tr>
               <tr><td>Was this facility cited for this before?</td><td>Compare by hand</td><td>Listed in the facility's profile</td></tr>
@@ -179,11 +323,14 @@
                 <tr><td>Require every word to match</td><td>No results</td></tr>
                 <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
                 <tr><td>Blended search</td><td>Led with recommendations to secure medication carts</td></tr>
+                <tr><td>OIG's recommendation search, same sentence</td><td>No results</td></tr>
               </tbody>
             </table>
           </div>
           <p>The report wording is "secure medication carts when not in use," which shares few words with how the manager put it. The manager gets the relevant findings, each with its report number and link, plus what facilities committed to do where that has been extracted.</p>
           <p>Blended search is not perfect. In our test of ten such questions, some answers were still only partly relevant, so a person should check results against the cited reports.</p>
+          <p>We also ran those ten questions through OIG's own recommendation search on November 4. All ten full sentences returned nothing. That isn't the fairest test, because people type keywords into a keyword search, so we also tried a short form of each, such as "medication carts." Eight of the ten then returned at least one recommendation, and two returned none. Results are listed newest first, and the site offers no sort by relevance. Someone who already knows the report's wording will do well on OIG's site. For someone who doesn't, or for an assistant passing along what a person said, it is much less forgiving.</p>
+          <p>This shows which searches return results, not which results are better. Our search returned five results every time, and returning something is not the same as being relevant. A blind relevance comparison is prepared but not yet scored. These questions were also written with knowledge of our own results, so they favor this service.</p>
         </div>
 
         <div class="scenario">
