@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MCP Exec Summary: VA OIG Recommendations Assistant</title>
-  <meta name="description" content="A plain-language overview for leaders and staff: what an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
-  <meta property="og:title" content="MCP Exec Summary: VA OIG Recommendations Assistant">
-  <meta property="og:description" content="What an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
+  <title>MCP Overview: VA OIG Recommendations Assistant</title>
+  <meta name="description" content="What the VA OIG Recommendations MCP server does: where it goes beyond OIG's website, its tools, its safeguards, and how it has been evaluated.">
+  <meta property="og:title" content="MCP Overview: VA OIG Recommendations Assistant">
+  <meta property="og:description" content="What the VA OIG Recommendations MCP server does: its tools, its safeguards, and how it has been evaluated.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-overview">
   <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-overview">
@@ -107,13 +107,11 @@
 
   <div class="hero">
     <div class="wrap">
-      <div class="eyebrow">MCP Exec Summary · For leaders and staff</div>
+      <div class="eyebrow">MCP Overview</div>
       <h1>VA OIG Recommendations Assistant</h1>
-      <p class="lead">The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
+      <p class="lead">The VA Office of Inspector General (OIG) has published about 4,410 reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
       <p class="meta">Status and figures as of November 4, 2026</p>
       <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon-backend">Data Source Overview</a>
-        <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
         <a href="/mcp-hackathon-test-bank">Test Bank</a>
       </nav>
       <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
@@ -148,124 +146,47 @@
             </tbody>
           </table>
         </div>
+        <p class="small" style="margin-top:10px">Three worked examples, with what this looks like against OIG's website, are on the <a href="/mcp-hackathon-use-cases">use cases page</a>.</p>
       </div>
     </section>
 
-    <section id="leaders">
+    <section id="tools">
       <div class="wrap">
-        <h2>For leaders</h2>
-        <p>The value is turning a published archive into something an organization can learn from. A program office can see whether a finding is isolated or systemic before deciding on a national fix. A facility can learn from how its peers responded rather than starting from nothing. Oversight staff can see what is aging and where.</p>
-        <p>The design favors trust over polish:</p>
-        <div class="cards">
-          <div class="card"><h3>Every finding can be checked</h3><p>It carries a report number, a link to vaoig.gov, and the date the data was collected.</p></div>
-          <div class="card"><h3>It does not rate anyone</h3><p>It reports records and offers no facility scores or rankings. Grouping results by facility is deliberately not offered.</p></div>
-          <div class="card"><h3>It states its limits in the answer</h3><p>A repeat finding means the same issue was cited again, not that nothing was done. A next-inspection date is labeled as an estimate, because OIG publishes no schedule. Where a pattern has more than one explanation, it gives both.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="staff">
-      <div class="wrap">
-        <h2>For staff</h2>
-        <p>You would use this through an AI assistant, with no new search screens to learn. Ask the way you would ask a colleague:</p>
-        <ul class="clean">
-          <li>"What have facilities been cited for on securing medications, and which of those are still open?"</li>
-          <li>"How many suicide prevention findings has OIG made each year since 2020?"</li>
-          <li>"Which offices have the most recommendations open longer than a year?"</li>
-          <li>"Show me everything in report 24-03416-237."</li>
-        </ul>
-        <p style="margin-top:16px">Use the links to confirm anything you plan to act on or repeat. OIG's site remains the official record.</p>
-      </div>
-    </section>
-
-    <section id="use-cases">
-      <div class="wrap">
-        <h2>Three use cases</h2>
-
-        <div class="scenario">
-          <h3>1. "Has OIG cited this?"</h3>
-          <p><strong>The situation.</strong> A patient safety manager notices a problem on rounds and describes it in plain language: <span class="quote">"Staff left medication carts unlocked in a hallway."</span></p>
-          <p><strong>Why this is hard today.</strong> OIG's wording is different. Its reports say things like "secure medication carts when not in use," which shares few words with how the manager put it. A word search depends on guessing the right words.</p>
-          <p><strong>What happened when we tried it.</strong> We ran that exact sentence against this project's copy of OIG's recommendations three ways on this project's data, and once on OIG's own recommendation search.</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Approach</th><th>Result</th></tr></thead>
-              <tbody>
-                <tr><td>Require every word to match</td><td>No results</td></tr>
-                <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
-                <tr><td>The assistant's search</td><td>Led with recommendations to secure medication carts</td></tr>
-                <tr><td>OIG's recommendation search, same sentence</td><td>No results</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>How it compared overall.</strong> We ran ten such questions through both searches, as full sentences and as short keywords, and compared the top five recommendations from each.</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Search</th><th class="num">Questions with a relevant result</th><th class="num">Relevant results, of those returned</th></tr></thead>
-              <tbody>
-                <tr><td>The assistant's search, full sentence</td><td class="num">8 of 10</td><td class="num">22 of 50</td></tr>
-                <tr><td>The assistant's search, short keywords</td><td class="num">7 of 10</td><td class="num">17 of 50</td></tr>
-                <tr><td>OIG, short keywords</td><td class="num">6 of 10</td><td class="num">14 of 28</td></tr>
-                <tr><td>OIG, full sentence</td><td class="num">0 of 10</td><td class="num">No results on any</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="small">Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.</p>
-          <div class="evidence"><strong>The difference.</strong> The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.</div>
-        </div>
-
-        <div class="scenario">
-          <h3>2. Preparing for an inspection</h3>
-          <p><strong>The situation.</strong> A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span></p>
-          <p><strong>Using the website.</strong> The manager can pull up El Paso's reports and filter peer reports by type and date. The findings are visible there, but what each facility committed to do is in its PDF. Comparing even a dozen peers means opening a dozen PDFs.</p>
-          <p><strong>Using the assistant.</strong> One request brings together:</p>
-          <ul class="clean">
-            <li><strong>The facility's own history:</strong> prior findings, whether they closed, and anything cited in more than one report.</li>
-            <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is.</li>
-            <li><strong>What peers did about it:</strong> their committed corrective actions and target dates.</li>
-            <li><strong>A realistic timeline:</strong> how long that kind of finding has typically taken to close.</li>
-            <li><strong>The likely timing:</strong> an estimated next inspection window, labeled as an estimate, because OIG publishes no schedule.</li>
-          </ul>
-          <p>These are real records. The most common recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. El Paso's July 2026 report (25-00193-155) includes the open recommendation that leaders "ensure staff maintain a clean and safe environment." The facility concurred, set a target of January 29, 2027, and described its cleaning inspections and procedures. That response appears only in the PDF, and it can now sit alongside what peers committed to for the same finding. El Paso's next inspection window is estimated at about January 2028.</p>
-          <div class="evidence"><strong>The difference.</strong> The manager starts from an evidence-based checklist instead of a blank page.</div>
-        </div>
-
-        <div class="scenario">
-          <h3>3. Reading a trend honestly</h3>
-          <p><strong>The situation.</strong> A VISN patient safety officer asks whether communicating test results to patients is still a problem.</p>
-          <p><strong>Using the website.</strong> The officer can repeat a search for each year and tally the totals by hand, which gives counts but no context.</p>
-          <p><strong>Using the assistant.</strong> One question returns the pattern. These are reports with recommendations that mention test or laboratory results:</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Years</th><th class="num">Reports per year</th></tr></thead>
-              <tbody>
-                <tr><td>2015 and 2016</td><td class="num">32 and 27</td></tr>
-                <tr><td>2017 through 2024</td><td class="num">2 to 11</td></tr>
-                <tr><td>2025 and 2026 (to date)</td><td class="num">21 and 28</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p>Taken alone, that looks like facilities improved and then slipped. The data cannot support that by itself. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, where this finding appears in 20 of 45 reports in 2025 and 28 of 61 so far in 2026. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop.</p>
-          <div class="evidence"><strong>The difference.</strong> The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="status">
-      <div class="wrap">
-        <h2>Where it stands today</h2>
+        <h2>The tools</h2>
+        <p>The server exposes a short, deliberately small set of goal-level tools. New facts become fields on these tools rather than new tools, and it also publishes reference lists of topics, offices, and facilities, and guided prompts for clients that support them.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Status</th><th>Capability</th></tr></thead>
+            <thead><tr><th>Tool</th><th>What it answers</th></tr></thead>
             <tbody>
-              <tr><td>Working now</td><td>Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility</td></tr>
-              <tr><td>Tested</td><td>24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a></td></tr>
-              <tr><td>Not yet done</td><td>Connecting it to a hosted assistant. It currently runs on one computer</td></tr>
+              <tr><td>Search findings</td><td>Recommendations and corrective actions matching a question in any wording, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
+              <tr><td>Analyze recommendations</td><td>Exact counts and measures grouped by year, office, topic, or report type: trends, open counts, time to closure, and aging</td></tr>
+              <tr><td>Systemic clusters</td><td>Recurring recommendations across reports, with how common each one is and how long similar findings take to close</td></tr>
+              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses, closure dates, repeat findings, and an estimated next inspection window</td></tr>
+              <tr><td>Report detail</td><td>One report with every recommendation, status, closure date, response, and standards cited</td></tr>
+              <tr><td>Inspection brief</td><td>One facility's preparation in one request: its history and open findings, the most common peer findings, what peers committed to do, and an estimated next window</td></tr>
+              <tr><td>Dataset status</td><td>What the data covers, when it was collected, and how it compares with OIG's published totals</td></tr>
             </tbody>
           </table>
         </div>
-        <p style="margin-top:18px">Search results are mixed: fewer than half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.</p>
-        <p>Closure dates need care. A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to close describes OIG's process as well as the facility's, and this project does not report whether facilities met their target dates.</p>
+      </div>
+    </section>
+
+    <section id="safeguards">
+      <div class="wrap">
+        <h2>Safeguards</h2>
+        <ul class="clean">
+          <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
+          <li>Every finding the server returns carries a report number and link, and every response states when its data was collected.</li>
+          <li>Where data supports more than one interpretation, the server says so.</li>
+          <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="evaluation">
+      <div class="wrap">
+        <h2>Evaluation</h2>
+        <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. On the final build, two Claude models each passed 23 of 24 questions and cited no report that does not exist. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
       </div>
     </section>
 
@@ -274,7 +195,7 @@
   <footer>
     <div class="wrap">
       <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
-      <p><a href="/">Troy E. Sybert, MD</a></p>
+      <p><a href="/mcp-hackathon-test-bank">Test Bank</a> · <a href="/">Troy E. Sybert, MD</a></p>
     </div>
   </footer>
 

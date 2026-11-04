@@ -131,10 +131,8 @@
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every finding it returns carries a report number and a link.</p>
       <p class="meta">For hackathon judges and technical reviewers · Status as of November 4, 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
       <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon-overview">MCP Exec Summary</a>
+        <a href="/mcp-hackathon-overview">MCP Overview</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
-        <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
-        <a href="/mcp-hackathon-test-bank">Test Bank</a>
       </nav>
     </div>
   </div>
@@ -154,7 +152,7 @@
         </div>
         <p class="small">Sources: VA OIG data dashboard; GAO-26-108978.</p>
 
-        <p style="margin-top:22px">VA acts on most of what it is told. The gap this project addresses is not whether VA closes recommendations. It is whether one facility can learn from the findings issued to the others.</p>
+        <p style="margin-top:22px">The VA has a culture of continuous improvement. The gap this project addresses is not whether VA closes recommendations. It is whether one facility can learn from the findings issued to the others.</p>
         <p>vaoig.gov offers full-text search and filters by report type, topic, office, state, VISN, status, and age. Those tools return lists of documents; the person searching still has to open each report, compare it with others, and count. There is no API or bulk export, and the most actionable content, each facility's response with its target date and corrective action, appears only in the report PDFs.</p>
       </div>
     </section>
@@ -198,68 +196,26 @@
             </tbody>
           </table>
         </div>
-        <p class="small" style="margin-top:10px">Worked examples, with what they look like against OIG's website, are in the <a href="/mcp-hackathon-overview">MCP Exec Summary</a>. Real answers are in the <a href="/mcp-hackathon-test-bank">Test Bank</a>.</p>
+        <p class="small" style="margin-top:10px">Real answers from a live MCP session are in the <a href="/mcp-hackathon-test-bank">Test Bank</a>.</p>
+      </div>
+    </section>
+
+    <section id="use-cases">
+      <div class="wrap">
+        <h2>Three use cases</h2>
+        <div class="cards">
+          <div class="card"><h3><a href="/mcp-hackathon-use-cases">1. "Has OIG cited this?"</a></h3><p>A patient safety manager describes a problem in plain language and finds out whether OIG has cited it before, and where.</p></div>
+          <div class="card"><h3><a href="/mcp-hackathon-use-cases">2. Preparing for an inspection</a></h3><p>A facility manager gets its own history, what peers were cited for, and what peers committed to do, in one request.</p></div>
+          <div class="card"><h3><a href="/mcp-hackathon-use-cases">3. Reading a trend honestly</a></h3><p>A VISN safety officer checks whether a theme is growing, and gets the limits of what that count can show.</p></div>
+        </div>
+        <p class="small" style="margin-top:14px">All three, worked in detail against OIG's website: <a href="/mcp-hackathon-use-cases">see the use cases page &rarr;</a></p>
       </div>
     </section>
 
     <section id="approach">
       <div class="wrap">
         <h2>Approach</h2>
-        <p>Two parts: a data service that turns OIG's public pages and PDFs into a structured, queryable dataset, and an MCP server that gives AI assistants goal-level tools over that dataset.</p>
-
-        <figure>
-          <img src="/assets/mcp-hackathon/architecture.png" alt="Public OIG sources flow through collection into a database and API inside the data service. The MCP server calls the API, an AI assistant calls the MCP server, and the user receives answers that cite a report number and link." width="1344" height="564">
-          <figcaption>Every answer the MCP server returns traces back to a source report.</figcaption>
-        </figure>
-
-        <h3>Data</h3>
-        <p>A polite, identified crawler that follows robots.txt collects OIG's report listings, report pages, and report PDFs. It captures OIG's own classifications (report type, topic, Major Management Challenge, action office, state, VISN), each recommendation's text, status, action office, and closure date, and, from inspection reports, the domain, concurrence, target completion date, corrective action, and standards cited for each recommendation. The data lives in a structured database behind a documented JSON API, with one search that blends keyword and semantic matching. Each build is compared with what OIG publishes, and a build that fails those checks is not published.</p>
-
-        <h3>MCP tools</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Tool</th><th>What it answers</th></tr></thead>
-            <tbody>
-              <tr><td>Search findings</td><td>Recommendations and corrective actions matching a question in any wording, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
-              <tr><td>Analyze recommendations</td><td>Exact counts and measures grouped by year, office, topic, or report type: trends, open counts, time to closure, and aging</td></tr>
-              <tr><td>Systemic clusters</td><td>Recurring recommendations across reports, with how common each one is and how long similar findings take to close</td></tr>
-              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses, closure dates, repeat findings, and an estimated next inspection window</td></tr>
-              <tr><td>Report detail</td><td>One report with every recommendation, status, closure date, response, and standards cited</td></tr>
-              <tr><td>Inspection brief</td><td>One facility's preparation in one request: its history and open findings, the most common peer findings, what peers committed to do, and an estimated next window</td></tr>
-              <tr><td>Dataset status</td><td>What the data covers, when it was collected, and how it compares with OIG's published totals</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="small" style="margin-top:10px">The tool list is deliberately short: new facts become fields on these tools rather than new tools. The server also publishes reference lists of topics, offices, and facilities, and guided prompts for clients that support them.</p>
-
-        <h3>Safeguards</h3>
-        <ul class="clean">
-          <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
-          <li>Every finding the server returns carries a report number and link, and every response states when its data was collected.</li>
-          <li>Where data supports more than one interpretation, the server says so.</li>
-          <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
-        </ul>
-
-        <h3>Evaluation</h3>
-        <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. On the final build, two Claude models each passed 23 of 24 questions and cited no report that does not exist. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
-      </div>
-    </section>
-
-    <section id="fit">
-      <div class="wrap">
-        <h2>Fit with the hackathon</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Criterion</th><th>How the project meets it</th></tr></thead>
-            <tbody>
-              <tr><td>Dataset Access track</td><td>OIG's recommendations are public but have no API. The project makes them queryable by any MCP-capable assistant.</td></tr>
-              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation.</td></tr>
-              <tr><td>Innovation</td><td>Cross-report analysis the source does not offer: recurring findings, time to closure, and peer corrective actions from 11,264 published facility responses.</td></tr>
-              <tr><td>Mission alignment</td><td>Public accountability data made usable by the people expected to act on it, on patient safety topics such as test-result follow-up, suicide prevention, medication security, and credentialing.</td></tr>
-              <tr><td>Presentation</td><td>A live inspection-readiness walkthrough on a real facility, backed by evaluation results.</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p>Two parts: a data service that turns OIG's public pages and PDFs into a structured, queryable dataset, and an MCP server that gives AI assistants goal-level tools over that dataset. The <a href="/mcp-hackathon-overview">MCP Overview</a> covers what the server itself does, its tools, and how it has been evaluated. The <a href="/mcp-hackathon-backend">Data Source Overview</a> covers how the dataset is built.</p>
       </div>
     </section>
 

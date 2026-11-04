@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Data Source Overview: How the OIG Data Service Works</title>
-  <meta name="description" content="What the VA OIG data service adds beyond OIG&#39;s website, why an AI assistant needs it, three use cases, and its safeguards and limits.">
+  <meta name="description" content="How the VA OIG data service is collected, structured, and checked, why an AI assistant needs this layer, and its safeguards and limits.">
   <meta property="og:title" content="Data Source Overview: How the OIG Data Service Works">
-  <meta property="og:description" content="What the VA OIG data service adds beyond OIG&#39;s website, why an AI assistant needs it, three use cases, and its safeguards and limits.">
+  <meta property="og:description" content="How the VA OIG data service is collected, structured, and checked, why an AI assistant needs this layer, and its safeguards and limits.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-backend">
   <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-backend">
@@ -95,9 +95,7 @@
       <p class="lead">This project gives an AI assistant working access to the public record of the VA Office of Inspector General (OIG). Without it, an assistant can read only a few of OIG's pages at a time.</p>
       <p class="meta">Status as of November 4, 2026. The figures come from a full crawl of vaoig.gov on that date. The technology stack, test results, and engineering detail are on the companion <a href="/mcp-hackathon-architecture">technical page</a>.</p>
       <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon-overview">MCP Exec Summary</a>
         <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
-        <a href="/mcp-hackathon-test-bank">Test Bank</a>
       </nav>
       <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
     </div>
@@ -127,85 +125,12 @@
     <p>Each search runs two methods at once. Keyword search matches the words used. Semantic search matches meaning, using an embedding model that runs locally. Both look at the recommendations and at the corrective actions facilities committed to.</p>
     <p>The results are merged by rank, so a finding that several searches agree on rises to the top. If the semantic model is ever unavailable, search continues on keywords and the response says so.</p>
     </div></section>
-    <section id="what-this-adds-beyond-oig-s-search"><div class="wrap">
-    <h2>What this adds beyond OIG's search</h2>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Question</th><th>OIG website</th><th>This service</th></tr></thead>
-    <tbody>
-    <tr><td>Can an AI assistant use it directly, with citations?</td><td>No API</td><td>Yes</td></tr>
-    <tr><td>Find a report or filter by state, office, or status</td><td>Yes</td><td>Yes, not the reason to use this</td></tr>
-    <tr><td>Describe a problem in your own words</td><td>Keyword matching: full sentences found nothing in our test, while short keywords often worked</td><td>Matches on meaning as well as words, with mixed results</td></tr>
-    <tr><td>What did other facilities commit to do about this?</td><td>Read each PDF</td><td>Searchable across reports</td></tr>
-    <tr><td>Which findings recur across facilities?</td><td>Compare by hand</td><td>Grouped automatically, with how common each one is</td></tr>
-    <tr><td>Was this facility cited for this before?</td><td>Compare by hand</td><td>Listed in the facility's profile</td></tr>
-    <tr><td>Is this theme growing?</td><td>Count by hand</td><td>Counts by year</td></tr>
-    <tr><td>How long do fixes take?</td><td>Not available</td><td>Time to closure by office, topic, and finding</td></tr>
-    </tbody></table></div>
-    <p>The first row is the main difference, and the others are what it makes possible. Corrective actions and cross-report analysis take hours of reading PDFs to assemble today, so much of this learning across facilities does not happen.</p>
-    <h3 id="why-an-ai-assistant-needs-this-layer">Why an AI assistant needs this layer</h3>
+    <section id="why-an-ai-assistant-needs-this-layer"><div class="wrap">
+    <h2>Why an AI assistant needs this layer</h2>
+    <p>A full comparison of what this adds beyond OIG's own search is on the <a href="/mcp-hackathon-overview">MCP Overview</a> page. The short version: OIG has no API or bulk export, so an assistant working the website directly is limited to reading a few pages at a time.</p>
     <p>OIG's website is built for a person reading one page at a time. An AI assistant with a browser can open those pages, but it cannot work effectively across them. The record is spread over thousands of web pages and PDFs, and there is no API or bulk export. Consider two ordinary questions. <em>How long do VHA recommendations typically take to close?</em> OIG shows a closure date on each closed recommendation, but across 223 listing pages and with no averages. <em>What did other facilities commit to do about this finding?</em> That answer sits inside about 2,200 PDFs, or roughly 89,000 pages. Building this dataset took about 6,100 fetches over nearly three hours, far more than an assistant can read while answering one question. In practice, we would expect it to sample a few pages and estimate, and its answer could sound just as confident.</p>
     <p>Through MCP, the first question is one tool call that returns an exact figure, computed the same way each time, along with the data's date and how many recommendations it rests on. The work divides cleanly: the service does the collecting, counting, and matching, and the assistant does what it does well, which is interpreting those records, connecting them to the user's situation, and explaining them in plain language.</p>
     <p>This does not make the assistant's conclusions correct by default. It means they start from complete, organized, citable evidence, and a reader can check each one against the source report.</p>
-    </div></section>
-    <section id="use-cases"><div class="wrap">
-    <h2>Use cases</h2>
-    <div class="scenario">
-    <h3 id="1-has-oig-cited-this">1. "Has OIG cited this?"</h3>
-    <p>A patient safety manager notices a problem on rounds and asks in plain language: <em>"Staff left medication carts unlocked in a hallway."</em></p>
-    <p>We tested this exact sentence against our own recommendation data, using three approaches:</p>
-    <div class="table-wrap"><table>
-    <thead><tr><th>Approach</th><th>Result</th></tr></thead>
-    <tbody>
-    <tr><td>Require every word to match</td><td>No results</td></tr>
-    <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
-    <tr><td>Blended search</td><td>Led with recommendations to secure medication carts</td></tr>
-    <tr><td>OIG's recommendation search, same sentence</td><td>No results</td></tr>
-    </tbody></table></div>
-    <p>The report wording is "secure medication carts when not in use," which shares few words with how the manager put it. The manager gets the relevant findings, each with its report number and link, plus what facilities committed to do where that has been extracted.</p>
-    <h4 id="how-search-compares-with-oig-s-own">How search compares with OIG's own</h4>
-    <p>On November 4 we ran ten such questions through OIG's recommendation search as well, both as full sentences and as short keywords such as "medication carts." We then compared the top five recommendations from each search for relevance.</p>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Search</th><th class="num">Questions with at least one relevant result</th><th class="num">Relevant results, of those returned</th></tr></thead>
-    <tbody>
-    <tr><td>This service, full sentence</td><td class="num">8 of 10</td><td class="num">22 of 50</td></tr>
-    <tr><td>This service, short keywords</td><td class="num">7 of 10</td><td class="num">17 of 50</td></tr>
-    <tr><td>OIG, short keywords</td><td class="num">6 of 10</td><td class="num">14 of 28</td></tr>
-    <tr><td>OIG, full sentence</td><td class="num">0 of 10</td><td class="num">No results on any</td></tr>
-    </tbody></table></div>
-    <ul class="clean">
-    <li><strong>This service reaches further on plain language.</strong> A full sentence works here, and it found something relevant on the most questions. OIG's search needs the right keywords, and even in short form it returned nothing on two questions.</li>
-    <li><strong>Precision is no better than OIG's.</strong> A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords. On identical keywords, OIG's did better, at 50 percent against 34. Part of the reason is that OIG returns only matches, while this service always returns five, whether or not five good ones exist. So results still need checking against the cited reports.</li>
-    <li><strong>Results varied by question.</strong> OIG matched or beat this service on the biopsy and community care consult questions. This service did clearly better on medication carts, and found something relevant on the locked unit and check-in kiosk questions, where OIG did not. On two questions, about infusion pump training and an unreported fall injury, no search returned anything relevant.</li>
-    </ul>
-    <p class="evidence"><strong>Treat this as directional. The relevance judgments were made by AI, not by a person.</strong> Two separate runs of Claude judged each result without seeing which search found it, and a result counted as relevant only if both agreed. They agreed on 106 of 107, but they are the same model, so that is not independent confirmation. The test is small, and we wrote the questions knowing how this service performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. OIG also lists reports without showing a matching recommendation, and those were not judged. Corrective actions, this service's main addition, were not judged either. These figures are from a rerun of this service's searches after a cleanup of the extracted text on the same date. OIG's results were not fetched again, since they do not depend on this data. The method and per-question scores are on the <a href="/mcp-hackathon-architecture#search-comparison">technical page</a>.</p>
-    <p>Search quality is not the main reason this service exists. The larger difference is access: through this service, an AI assistant can search, count, and compare the whole record, and cite each result.</p>
-    </div>
-    <div class="scenario">
-    <h3 id="2-preparing-for-an-inspection">2. Preparing for an inspection</h3>
-    <p>A manager at the VA El Paso Healthcare System asks: <em>"Help me prepare for our next inspection."</em> One tool call, the inspection brief, assembles:</p>
-    <ul class="clean">
-    <li><strong>The facility's own history:</strong> prior findings, whether they closed, and any finding cited in more than one report.</li>
-    <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is across inspections.</li>
-    <li><strong>What peers did about it:</strong> their committed corrective actions and target dates.</li>
-    <li><strong>A realistic timeline:</strong> how long that kind of finding has typically taken to close.</li>
-    <li><strong>The likely timing:</strong> an estimated next inspection window, clearly labeled as an estimate, because OIG publishes no schedule. A clean inspection, one with no recommendations, counts as the latest inspection too. Its estimate starts from the publication date, because its report text is not collected, so it tends to run later than the others. The response says which date was used.</li>
-    </ul>
-    <p>The peer view is a real one: the largest recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. That is a lower bound, because differently worded versions of the theme sit in other groups. The source material is detailed too. In El Paso's July 2026 report (25-00193-155), for example, OIG recommended that leaders maintain a clean and safe environment. The facility concurred, set a target of January 29, 2027, and described its cleaning logs, inspections, and procedures. This response exists only in the PDF. As structured data, it can sit alongside what peers committed to for the same finding.</p>
-    <p>Peer findings are listed by how common they are, not by severity, and they do not predict what an inspection will find. The manager starts from an evidence-based checklist instead of a blank page.</p>
-    </div>
-    <div class="scenario">
-    <h3 id="3-reading-a-trend-honestly">3. Reading a trend honestly</h3>
-    <p>A VISN patient safety officer asks whether test-result communication is still a problem. Counting reports with recommendations that mention test or laboratory results gives this pattern:</p>
-    <div class="table-wrap"><table>
-    <thead><tr><th>Years</th><th class="num">Reports per year</th></tr></thead>
-    <tbody>
-    <tr><td>2015 and 2016</td><td class="num">32 and 27</td></tr>
-    <tr><td>2017 through 2024</td><td class="num">2 to 11</td></tr>
-    <tr><td>2025 and 2026 (to date)</td><td class="num">21 and 28</td></tr>
-    </tbody></table></div>
-    <p>The counts for 2025 and 2026 come almost entirely from the current inspection program, where recommendations about communicating test results appear in 20 of 45 Healthcare Facility Inspection reports in 2025 and 28 of 61 so far in 2026. Counts depend on the search words: this count includes "laboratory results" because the 2015 and 2016 recommendations use that wording, and a narrower search for "communicating test results" finds only 5 and 2 reports in those years.</p>
-    <p>A simple reading is that facilities improved, then slipped. The data cannot support that alone. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop. The assistant should give the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.</p>
-    </div>
     </div></section>
     <section id="safeguards-and-limits"><div class="wrap">
     <h2>Safeguards and limits</h2>
@@ -222,10 +147,6 @@
     <li><strong>Availability.</strong> The service currently runs on a single local machine. A dated snapshot allows it to be moved to a cloud host if needed.</li>
     </ul>
     <p>The full technical list is on the <a href="/mcp-hackathon-architecture#known-limits">technical page</a>.</p>
-    </div></section>
-    <section id="where-things-stand"><div class="wrap">
-    <h2>Where things stand</h2>
-    <p>The data service is complete and live: collection, database, search, analysis, and secure hosting. Facility responses were fully extracted from all 90 Healthcare Facility Inspection reports and 96% of the 312 CHIP reports from 2018 on, and each was checked against OIG's own text for the recommendation it belongs to. Seven MCP tools are built against this API and running on the same machine, with deployment to IBM Cloud to follow. A formal evaluation scores the assistant's answers against gold answers computed directly from the data. On this build, two Claude models each passed 23 of 24 questions, in a small test written by the people who built the service. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>. The search comparison above is the only relevance test so far.</p>
     </div></section>
   </main>
 

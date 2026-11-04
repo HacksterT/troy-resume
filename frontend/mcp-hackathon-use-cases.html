@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use Cases: VA OIG Recommendations Assistant</title>
+  <meta name="description" content="Three worked use cases for the VA OIG Recommendations MCP server, each compared against what OIG's own website can do today.">
+  <meta property="og:title" content="Use Cases: VA OIG Recommendations Assistant">
+  <meta property="og:description" content="Three worked use cases, each compared against what OIG's own website can do today.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-use-cases">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-use-cases">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      --ink: #2c3e50;
+      --ink-2: #555;
+      --ink-3: #777;
+      --accent: #3498db;
+      --accent-soft: #eaf4fb;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --rule: #e0e0e0;
+      --hero: #2c3e50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px; }
+    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
+
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    h3 { font-size: 19px; margin: 28px 0 8px; }
+    p + p { margin-top: 14px; }
+    .small { font-size: 14px; color: var(--ink-3); margin-top: 10px; }
+
+    .scenario { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 24px 26px; margin-top: 18px; }
+    .scenario h3 { margin-top: 0; font-size: 21px; }
+    .scenario p { color: var(--ink-2); font-size: 16px; margin-top: 12px; }
+    .scenario p strong { color: var(--ink); }
+    .scenario .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
+    .quote { font-style: italic; }
+
+    .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td:first-child { font-weight: 600; }
+    td.num, th.num { text-align: right; }
+
+    ul.clean { list-style: none; margin-top: 12px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 8px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+    .scenario ul.clean li { color: var(--ink-2); font-size: 16px; }
+
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+    footer p + p { margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .hero { padding: 44px 0 40px; }
+      .hero p.lead { font-size: 17px; }
+      section { padding: 40px 0; }
+      h2 { font-size: 24px; }
+      .scenario { padding: 20px; }
+    }
+    /* hero-nav start */
+    .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
+    .hero-back:hover { color: #fff; text-decoration: underline; }
+    /* hero-nav end */
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/">troymd.com</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Use Cases</div>
+      <h1>Three Ways This Gets Used</h1>
+      <p class="lead">Three plain-language questions, each run against OIG's own website and against this project, to show what changes and what does not.</p>
+      <p class="meta">Status and figures as of November 4, 2026</p>
+      <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
+    </div>
+  </div>
+
+  <main>
+
+    <section id="use-cases">
+      <div class="wrap">
+
+        <div class="scenario">
+          <h3>1. "Has OIG cited this?"</h3>
+          <p><strong>The situation.</strong> A patient safety manager notices a problem on rounds and describes it in plain language: <span class="quote">"Staff left medication carts unlocked in a hallway."</span></p>
+          <p><strong>Why this is hard today.</strong> OIG's wording is different. Its reports say things like "secure medication carts when not in use," which shares few words with how the manager put it. A word search depends on guessing the right words.</p>
+          <p><strong>What happened when we tried it.</strong> We ran that exact sentence against this project's copy of OIG's recommendations three ways on this project's data, and once on OIG's own recommendation search.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Approach</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Require every word to match</td><td>No results</td></tr>
+                <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
+                <tr><td>The assistant's search</td><td>Led with recommendations to secure medication carts</td></tr>
+                <tr><td>OIG's recommendation search, same sentence</td><td>No results</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>How it compared overall.</strong> We ran ten such questions through both searches, as full sentences and as short keywords, and compared the top five recommendations from each.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Search</th><th class="num">Questions with a relevant result</th><th class="num">Relevant results, of those returned</th></tr></thead>
+              <tbody>
+                <tr><td>The assistant's search, full sentence</td><td class="num">8 of 10</td><td class="num">22 of 50</td></tr>
+                <tr><td>The assistant's search, short keywords</td><td class="num">7 of 10</td><td class="num">17 of 50</td></tr>
+                <tr><td>OIG, short keywords</td><td class="num">6 of 10</td><td class="num">14 of 28</td></tr>
+                <tr><td>OIG, full sentence</td><td class="num">0 of 10</td><td class="num">No results on any</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.</p>
+          <div class="evidence"><strong>The difference.</strong> The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>2. Preparing for an inspection</h3>
+          <p><strong>The situation.</strong> A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span></p>
+          <p><strong>Using the website.</strong> The manager can pull up El Paso's reports and filter peer reports by type and date. The findings are visible there, but what each facility committed to do is in its PDF. Comparing even a dozen peers means opening a dozen PDFs.</p>
+          <p><strong>Using the assistant.</strong> One request brings together:</p>
+          <ul class="clean">
+            <li><strong>The facility's own history:</strong> prior findings, whether they closed, and anything cited in more than one report.</li>
+            <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is.</li>
+            <li><strong>What peers did about it:</strong> their committed corrective actions and target dates.</li>
+            <li><strong>A realistic timeline:</strong> how long that kind of finding has typically taken to close.</li>
+            <li><strong>The likely timing:</strong> an estimated next inspection window, labeled as an estimate, because OIG publishes no schedule.</li>
+          </ul>
+          <p>These are real records. The most common recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. El Paso's July 2026 report (25-00193-155) includes the open recommendation that leaders "ensure staff maintain a clean and safe environment." The facility concurred, set a target of January 29, 2027, and described its cleaning inspections and procedures. That response appears only in the PDF, and it can now sit alongside what peers committed to for the same finding. El Paso's next inspection window is estimated at about January 2028.</p>
+          <div class="evidence"><strong>The difference.</strong> The manager starts from an evidence-based checklist instead of a blank page.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>3. Reading a trend honestly</h3>
+          <p><strong>The situation.</strong> A VISN patient safety officer asks whether communicating test results to patients is still a problem.</p>
+          <p><strong>Using the website.</strong> The officer can repeat a search for each year and tally the totals by hand, which gives counts but no context.</p>
+          <p><strong>Using the assistant.</strong> One question returns the pattern. These are reports with recommendations that mention test or laboratory results:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Years</th><th class="num">Reports per year</th></tr></thead>
+              <tbody>
+                <tr><td>2015 and 2016</td><td class="num">32 and 27</td></tr>
+                <tr><td>2017 through 2024</td><td class="num">2 to 11</td></tr>
+                <tr><td>2025 and 2026 (to date)</td><td class="num">21 and 28</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Taken alone, that looks like facilities improved and then slipped. The data cannot support that by itself. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, where this finding appears in 20 of 45 reports in 2025 and 28 of 61 so far in 2026. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop.</p>
+          <div class="evidence"><strong>The difference.</strong> The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+      <p><a href="/">Troy E. Sybert, MD</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
