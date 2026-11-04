@@ -67,17 +67,8 @@
     footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
     footer p + p { margin-top: 8px; }
     @media (max-width: 600px) { body { font-size: 16px; } .hero { padding: 44px 0 40px; } .hero p.lead { font-size: 17px; } section { padding: 40px 0; } h2 { font-size: 24px; } .scenario { padding: 20px; } .stats { grid-template-columns: repeat(2, 1fr); } }
-    /* hero-nav start */
-    .hero-nav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; margin-top: 26px; }
-    .hero-nav a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 10px; background: #fff; color: #2c3e50; font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; border-radius: 7px; }
-    .hero-nav a:hover { background: #eaf4fb; text-decoration: none; }
     .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
     .hero-back:hover { color: #fff; text-decoration: underline; }
-    @media (max-width: 600px) {
-      .hero-nav { gap: 6px; margin-top: 22px; }
-      .hero-nav a { min-height: 52px; padding: 6px 4px; font-size: 12px; }
-    }
-    /* hero-nav end */
   </style>
 </head>
 <body>
@@ -94,10 +85,7 @@
       <h1>How the OIG Data Service Works</h1>
       <p class="lead">This project gives an AI assistant working access to the public record of the VA Office of Inspector General (OIG). Without it, an assistant can read only a few of OIG's pages at a time.</p>
       <p class="meta">Status as of November 4, 2026. The figures come from a full crawl of vaoig.gov on that date. The technology stack, test results, and engineering detail are on the companion <a href="/mcp-hackathon-architecture">technical page</a>.</p>
-      <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
-      </nav>
-      <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
+      <a class="hero-back" href="/mcp-hackathon">&larr; Back to Project Summary</a>
     </div>
   </div>
 
@@ -113,38 +101,24 @@
       <div class="scroll"><img src="assets/mcp-hackathon/system-architecture.svg?v=3" alt="System architecture: OIG&#39;s public pages flow through a polite crawl into a pipeline on a local Mac mini, which gets document vectors from a local Ollama model and stores them with the records in SQLite, then publishes a read-only copy. A containerized API reads it, asks Ollama only for each query&#39;s vector, and reaches the internet only through an outbound Cloudflare tunnel, where Cloudflare Access requires a service token. The oig-mcp server calls the API and serves tools to any MCP client." width="940" height="446"></div>
       <figcaption>Two-way arrows are requests and responses; the one-way arrow is the publish step, a copy of the build database. Document vectors are computed during the build and stored in the database. At query time, the API asks Ollama only for the query&#39;s vector, reads the stored vectors from the database, and compares them in its own code with NumPy.</figcaption>
     </figure>
-    <p><strong>Collect.</strong> A crawler reads OIG's public pages and report PDFs, one request at a time, and identifies itself to the site. Everything it fetches is saved untouched, so a parsing error can be fixed and rerun without contacting OIG again.</p>
-    <p><strong>Structure.</strong> Each recommendation becomes a record with its status, responsible office, and closure date. For inspection reports, rules (not AI) read the PDF to pull out what the facility committed to: whether it agreed, its target date, and its corrective action.</p>
-    <p><strong>Analyze.</strong> Once per build, the service works out which facility each report belongs to, groups near-identical recommendations issued across many reports, and prepares the data for search.</p>
-    <p><strong>Check.</strong> Each build is compared with what OIG publishes and tested for missing data. A build that fails these checks is not published. Every build compares all recommendations with OIG's listing, row by row. On November 4 they matched exactly, with none missing either way, and all 14,223 closure dates agreed. The method, gates, and defects found are on the <a href="/mcp-hackathon-architecture#data-quality">technical page</a>.</p>
-    <p><strong>Serve.</strong> A read-only API runs on a local machine, reachable only through Cloudflare with a service token. The AI assistant connects through a separate Model Context Protocol (MCP) server. That server runs on the same machine today, and IBM Cloud is its deployment target.</p>
-    <h3 id="two-design-decisions-that-matter">Two design decisions that matter</h3>
-    <p><strong>Finding and counting are handled differently.</strong> Finding uses one search that blends two methods, because people describe problems in their own words. Counting uses only exact database queries. The same question always returns the same number, so results can be checked and repeated.</p>
-    <p><strong>The AI never writes database queries.</strong> It can only ask for what the service offers, using set options such as a status or a date range. This closes off a common failure, where an AI writes its own query and confidently reports a wrong number.</p>
-    <h3 id="how-search-works">How search works</h3>
-    <p>Each search runs two methods at once. Keyword search matches the words used. Semantic search matches meaning, using an embedding model that runs locally. Both look at the recommendations and at the corrective actions facilities committed to.</p>
-    <p>The results are merged by rank, so a finding that several searches agree on rises to the top. If the semantic model is ever unavailable, search continues on keywords and the response says so.</p>
+    <p>A crawler collects OIG's report pages and PDFs, one request at a time, identifying itself to the site, and saves everything untouched, so a parsing error can be fixed without re-fetching from OIG. Each recommendation becomes a structured record with its status, responsible office, and closure date; for inspection reports, rule-based parsing, not AI, pulls out what the facility committed to: whether it agreed, its target date, and its corrective action. The service then works out which facility each report belongs to and groups near-identical recommendations issued across many reports.</p>
+    <p>Every build is checked against what OIG publishes, row by row, before anything is served, and a build that fails those checks is never published. On November 4 the comparison matched exactly, with none missing either way, and all 14,223 closure dates agreed. The method, gates, and defects found are on the <a href="/mcp-hackathon-architecture#data-quality">technical page</a>. A read-only API then serves the result, reachable only through Cloudflare with a service token.</p>
+    <p>Finding and counting are handled differently, which is what keeps the numbers trustworthy. Search blends keyword and semantic matching, because people describe problems in their own words, and the two are merged by rank. Counting never touches similarity: it always runs on fixed, exact database queries, so the same question returns the same number every time.</p>
     </div></section>
-    <section id="why-an-ai-assistant-needs-this-layer"><div class="wrap">
-    <h2>Why an AI assistant needs this layer</h2>
-    <p>A full comparison of what this adds beyond OIG's own search is on the <a href="/mcp-hackathon-overview">MCP Overview</a> page. The short version: OIG has no API or bulk export, so an assistant working the website directly is limited to reading a few pages at a time.</p>
-    <p>OIG's website is built for a person reading one page at a time. An AI assistant with a browser can open those pages, but it cannot work effectively across them. The record is spread over thousands of web pages and PDFs, and there is no API or bulk export. Consider two ordinary questions. <em>How long do VHA recommendations typically take to close?</em> OIG shows a closure date on each closed recommendation, but across 223 listing pages and with no averages. <em>What did other facilities commit to do about this finding?</em> That answer sits inside about 2,200 PDFs, or roughly 89,000 pages. Building this dataset took about 6,100 fetches over nearly three hours, far more than an assistant can read while answering one question. In practice, we would expect it to sample a few pages and estimate, and its answer could sound just as confident.</p>
-    <p>Through MCP, the first question is one tool call that returns an exact figure, computed the same way each time, along with the data's date and how many recommendations it rests on. The work divides cleanly: the service does the collecting, counting, and matching, and the assistant does what it does well, which is interpreting those records, connecting them to the user's situation, and explaining them in plain language.</p>
-    <p>This does not make the assistant's conclusions correct by default. It means they start from complete, organized, citable evidence, and a reader can check each one against the source report.</p>
+    <section id="why-this-layer-is-needed"><div class="wrap">
+    <h2>Why a safety manager needs this layer</h2>
+    <p>OIG's website is built for a person reading one page at a time, with no API or bulk export, and the record is spread across thousands of web pages and PDFs. A safety manager asking how long VHA recommendations typically take to close is stuck repeating a search across 223 listing pages by hand, because OIG shows a closure date on each one but no average. A manager asking what other facilities committed to do about a finding is stuck opening PDFs one at a time: about 2,200 of them, roughly 89,000 pages. Collecting this dataset alone took about 6,300 fetches over nearly three hours.</p>
+    <p>This service does that collecting, counting, and matching once, so the question above becomes one request that returns an exact figure, computed the same way every time, with the data's date and how many recommendations it rests on. A full comparison of what this adds beyond OIG's own search is on the <a href="/mcp-hackathon-overview">MCP Overview</a> page.</p>
     </div></section>
     <section id="safeguards-and-limits"><div class="wrap">
     <h2>Safeguards and limits</h2>
     <ul class="clean">
-    <li><strong>Every claim is traceable.</strong> Results carry a report number and link, along with the date the data was collected.</li>
+    <li><strong>Traceable by design.</strong> Every record carries a report number and link, so a claim can be checked against its source. Getting an assistant to repeat that link consistently in its own answer proved harder than expected; that wasn't worth tuning further for a competition entry.</li>
     <li><strong>No ratings.</strong> The service describes what OIG found and what facilities reported. It does not score facilities or individuals.</li>
-    <li><strong>Recurrence needs care.</strong> OIG inspects against a standard protocol, so it finds what it looks for. A repeat finding means an issue was cited again, not that nothing was done in between. Grouping is automated and imperfect: a facility missing from a group may still have been cited for that theme, and a few grouped findings are off theme.</li>
-    <li><strong>Gaps in the source are stated.</strong> About 6 percent of closed recommendations show no closure date on OIG's site, mostly from 2013 to 2016, and OIG tagged only about a quarter of reports with a topic.</li>
-    <li><strong>Closure dates need care.</strong> A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to closure describes OIG's process as well as the facility's, and we do not report whether facilities met their target dates.</li>
-    <li><strong>Reports OIG lists twice.</strong> Five reports appear twice on OIG's site. Both entries stay visible, linked to each other, and each report counts once.</li>
-    <li><strong>Facility numbers are sometimes corrected.</strong> A few report memos give a parent station or a mistyped number. Where the title and OIG's other reports show the right facility, we link the report there and leave OIG's own text unchanged.</li>
-    <li><strong>Partial PDF coverage.</strong> PDFs are collected for reports with recommendations. The 2,186 reports without recommendations remain listed and searchable by title, but their full text is not included.</li>
+    <li><strong>Recurrence needs care.</strong> A repeat finding means an issue was cited again, not that nothing was done. Grouping is automated and imperfect.</li>
+    <li><strong>Known data gaps.</strong> About 6 percent of closed recommendations have no closure date on OIG's site, mostly from 2013 to 2016, and a closure date reflects when OIG recorded closure, not when the work finished.</li>
     <li><strong>Not a system of record.</strong> This does not replace VA's internal tracking of OIG recommendations. It is built for learning across facilities.</li>
-    <li><strong>Availability.</strong> The service currently runs on a single local machine. A dated snapshot allows it to be moved to a cloud host if needed.</li>
+    <li><strong>Single machine today.</strong> The service runs on one local Mac. A dated snapshot would let it move to a cloud host if needed.</li>
     </ul>
     <p>The full technical list is on the <a href="/mcp-hackathon-architecture#known-limits">technical page</a>.</p>
     </div></section>
