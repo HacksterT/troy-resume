@@ -108,7 +108,7 @@
     <section id="brief">
       <div class="wrap">
         <h2>In brief</h2>
-        <p>This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,415 reports, 15,649 recommendations, and 11,240 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.</p>
+        <p>This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,410 reports, 15,649 recommendations, and 11,264 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.</p>
         <p>It uses only public information from vaoig.gov and no internal VA systems. It is not an official VA or OIG product, and it does not replace VA's own tracking of recommendations.</p>
       </div>
     </section>
@@ -186,15 +186,15 @@
             <table>
               <thead><tr><th>Search</th><th class="num">Questions with a relevant result</th><th class="num">Relevant results, of those returned</th></tr></thead>
               <tbody>
-                <tr><td>The assistant's search, full sentence</td><td class="num">8 of 10</td><td class="num">24 of 50</td></tr>
-                <tr><td>The assistant's search, short keywords</td><td class="num">7 of 10</td><td class="num">18 of 50</td></tr>
+                <tr><td>The assistant's search, full sentence</td><td class="num">8 of 10</td><td class="num">22 of 50</td></tr>
+                <tr><td>The assistant's search, short keywords</td><td class="num">7 of 10</td><td class="num">17 of 50</td></tr>
                 <tr><td>OIG, short keywords</td><td class="num">6 of 10</td><td class="num">14 of 28</td></tr>
                 <tr><td>OIG, full sentence</td><td class="num">0 of 10</td><td class="num">No results on any</td></tr>
               </tbody>
             </table>
           </div>
           <p class="small">Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.</p>
-          <div class="evidence"><strong>The difference.</strong> The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. About half of the results from each search were relevant, and on identical keywords OIG's did better. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.</div>
+          <div class="evidence"><strong>The difference.</strong> The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.</div>
         </div>
 
         <div class="scenario">
@@ -243,11 +243,12 @@
             <thead><tr><th>Status</th><th>Capability</th></tr></thead>
             <tbody>
               <tr><td>Working now</td><td>Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility</td></tr>
-              <tr><td>Not yet done</td><td>Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer</td></tr>
+              <tr><td>Tested</td><td>24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a></td></tr>
+              <tr><td>Not yet done</td><td>Connecting it to a hosted assistant. It currently runs on one computer</td></tr>
             </tbody>
           </table>
         </div>
-        <p style="margin-top:18px">Search results are mixed: about half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.</p>
+        <p style="margin-top:18px">Search results are mixed: fewer than half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.</p>
         <p>Closure dates need care. A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to close describes OIG's process as well as the facility's, and this project does not report whether facilities met their target dates.</p>
       </div>
     </section>

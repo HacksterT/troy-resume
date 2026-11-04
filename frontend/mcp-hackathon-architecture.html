@@ -89,7 +89,7 @@
   <main>
     <section id="purpose-and-boundaries"><div class="wrap">
     <h2>Purpose and boundaries</h2>
-    <div class="stats"><div class="stat"><div class="num">4,415</div><div class="lbl">reports</div></div><div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div><div class="stat"><div class="num">89,261</div><div class="lbl">pages of PDF text</div></div><div class="stat"><div class="num">11,240</div><div class="lbl">facility responses</div></div><div class="stat"><div class="num">7</div><div class="lbl">MCP tools</div></div><div class="stat"><div class="num">160</div><div class="lbl">automated test cases</div></div></div>
+    <div class="stats"><div class="stat"><div class="num">4,410</div><div class="lbl">reports</div></div><div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div><div class="stat"><div class="num">89,188</div><div class="lbl">pages of PDF text</div></div><div class="stat"><div class="num">11,264</div><div class="lbl">facility responses</div></div><div class="stat"><div class="num">7</div><div class="lbl">MCP tools</div></div><div class="stat"><div class="num">187</div><div class="lbl">automated test cases</div></div></div>
         <p>VA OIG publishes its reports and recommendations at vaoig.gov, with no API or bulk export. This repository turns that public record into a structured dataset and serves it through a read-only JSON API. A separate repository, <code>oig-mcp</code>, wraps the API in goal-level Model Context Protocol (MCP) tools that AI assistants call.</p>
     <p>The split is deliberate: this repository owns data, search, and computation, and has no knowledge of any tool. An endpoint that mirrors one tool is treated as logic leaking across the boundary. The contract between the two is a documented API specification.</p>
     </div></section>
@@ -101,11 +101,11 @@
     <tbody>
     <tr><td>Language and packaging</td><td>Python 3.11, uv with a lockfile, hatchling</td><td>Dependency resolution ignores releases under two weeks old, with explicit exceptions for security fixes</td></tr>
     <tr><td>Crawling</td><td>httpx 0.28 behind a custom <code>PoliteClient</code>, selectolax 1.0 (Lexbor)</td><td>The client enforces site rules in one place, and parsing runs offline over a raw store</td></tr>
-    <tr><td>PDF text</td><td>pypdf 6.20 with cryptography</td><td>Every document has a text layer, so OCR and layout models add cost and no coverage</td></tr>
+    <tr><td>PDF text</td><td>pypdfium2 5.14 (PDFium)</td><td>Keeps words whole where pypdf split them, and reads VA's encrypted PDFs. Every document has a text layer, so OCR and layout models add cost and no coverage</td></tr>
     <tr><td>Structured extraction</td><td>Rule-based parsers, versioned per template</td><td>Deterministic and testable, with no LLM in the data path</td></tr>
     <tr><td>Storage</td><td>SQLite 3.46 with FTS5 (<code>porter unicode61</code>), forward-only SQL migrations</td><td>One portable file that snapshots and checksums cleanly, with no database server</td></tr>
     <tr><td>Embeddings</td><td>Ollama 0.32 running <code>nomic-embed-text:v1.5</code>, 768 dimensions</td><td>Local, with no per-query cost and no query text leaving the machine</td></tr>
-    <tr><td>Vector search</td><td>NumPy 2.4, exact cosine scan over vectors held in memory</td><td>26,049 vectors do not justify a vector database</td></tr>
+    <tr><td>Vector search</td><td>NumPy 2.4, exact cosine scan over vectors held in memory</td><td>26,077 vectors do not justify a vector database</td></tr>
     <tr><td>Rank fusion</td><td>Reciprocal rank fusion, k = 60, implemented here</td><td>Needs no score calibration, and adds no model or dependency</td></tr>
     <tr><td>Validation</td><td>Pydantic 2.14, pydantic-settings 2.15</td><td>Row checks at ingest, parameters at the API, typed configuration</td></tr>
     <tr><td>API</td><td>FastAPI 0.143 on uvicorn 0.54</td><td>Typed, read-only JSON, with synchronous routes over per-request connections</td></tr>
@@ -136,7 +136,8 @@
     <tbody>
     <tr><td><code>crawl listing</code></td><td><code>/reports/all</code></td><td>Raw pages</td><td>Ascending date order, so new reports append; the tail is fetched again to catch them</td></tr>
     <tr><td><code>crawl facets</code></td><td>One filtered view per facet value</td><td>Raw pages</td><td>Row markup prints only topics, so membership in a filtered view is how a report gets OIG's VISN, state, and other labels</td></tr>
-    <tr><td><code>crawl reports</code></td><td>Report pages</td><td>Raw pages</td><td>PDF links and summaries exist only here, and closure dates are read here too. A refresh fetches only reports whose statuses changed</td></tr>
+    <tr><td><code>crawl closures</code></td><td>Every page of <code>/recommendations-all</code></td><td>Raw pages</td><td>About 223 pages. The source of closure dates, and of OIG's full list of recommendation IDs for validation</td></tr>
+    <tr><td><code>crawl reports</code></td><td>Report pages</td><td>Raw pages</td><td>PDF links and summaries exist only here. A refresh fetches only reports not seen in the previous listing</td></tr>
     <tr><td><code>crawl pdfs</code></td><td>PDFs under <code>/sites/default/files/</code></td><td>Raw PDFs</td><td>Host and path allow-list. A URL already fetched is not fetched again</td></tr>
     <tr><td><code>parse *</code></td><td>Raw store</td><td>Parsed records, summaries, anomalies</td><td>Offline. A parser fix never requires a new crawl</td></tr>
     <tr><td><code>ingest</code></td><td>Parsed JSONL</td><td><code>work.sqlite</code></td><td>Idempotent per run. Invalid or unattachable rows go to a rejects file with the reason</td></tr>
@@ -147,20 +148,29 @@
     <tr><td><code>snapshot</code></td><td><code>work.sqlite</code></td><td>A dated, checksummed copy</td><td><code>VACUUM INTO</code>, manifest, <code>SHA256SUMS</code>. The evaluation pins one by checksum</td></tr>
     <tr><td><code>publish</code></td><td><code>work.sqlite</code></td><td><code>oig.sqlite</code></td><td>Vacuumed copy, FTS rebuilt on the copy, then <code>os.replace</code></td></tr>
     </tbody></table></div>
-    <p>The cold-start crawl was 6,122 requests over 2 hours 41 minutes, with no errors and 3.5 GB of PDFs. Parsing, ingest, and derive take minutes.</p>
+    <p>The cold-start crawl was 6,122 requests over 2 hours 41 minutes, with no errors and 3.5 GB of PDFs. The closures stage, added afterward, adds 223 requests, about 6 minutes, to every crawl. Parsing, ingest, and derive take minutes.</p>
     <h3 id="crawling-rules">Crawling rules</h3>
     <p><code>PoliteClient</code> enforces the rules by construction: one request at a time, at least 1.5 seconds apart including redirect hops, backoff on 429 and 5xx, <code>Retry-After</code> honored, and redirects followed only within the allowed hosts. A stage stops after 10 consecutive failures, because the site policy says to stop rather than push through. Failed items stay eligible for retry, so a rerun with the same <code>--run-id</code> resumes.</p>
     <h3 id="pdf-extraction">PDF extraction</h3>
-    <p>pypdf extracts text page by page, with its <code>crypto</code> extra because VA's PDFs use AES owner-password encryption. Lines repeated at the top or bottom of more than half of a document's pages move out of the text, so running footers do not pollute search or split a table of contents. Page numbers are physical PDF pages.</p>
-    <p>All 2,214 extracted documents have a usable text layer (<code>ocr_needed</code> = 0), so OCR and layout-model parsing are not used. One PDF could not be read (<code>PdfStreamError</code>), and 14 reports with recommendations have no PDF link.</p>
+    <p>PDFium extracts text page by page, through pypdfium2. It replaced pypdf, which split words at font changes, as in "r andom" and "medica tion." No repair step was added, because a wrong join is worse than a stray space, and the better extractor made one unnecessary. Lines repeated at the top or bottom of more than half of a document's pages move out of the text, with page numbers masked when comparing them, and OIG's footers are also removed by exact pattern. So footers do not pollute search, split a table of contents, or end up inside a facility's response. Page numbers are physical PDF pages.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Measure, whole corpus</th><th>With pypdf</th><th>With PDFium</th></tr></thead>
+    <tbody>
+    <tr><td>Corrective actions containing a page footer</td><td>1,813 of 10,400</td><td>1 of 10,428</td></tr>
+    <tr><td>Split words in corrective actions</td><td>13,392, in 4,619 responses</td><td>60, in 49 responses</td></tr>
+    <tr><td>Split words per 10,000 words of PDF page text</td><td>52.6</td><td>0.34</td></tr>
+    <tr><td>Facility names with a split word</td><td>20</td><td>0</td></tr>
+    </tbody></table></div>
+    <p>A split word here means two adjacent tokens that join to a word in OIG's own web text, where at least one is not a word alone. It is an estimate, and many of what remains are real two-word forms, such as "eye wash" and "roll out," which were left alone.</p>
+    <p>All 2,214 extracted documents have a usable text layer (<code>ocr_needed</code> = 0), so OCR and layout-model parsing are not used. One PDF could not be read (PDFium reports a data format error), and 14 reports with recommendations have no PDF link.</p>
     <h3 id="inspection-parsing">Inspection parsing</h3>
     <p>Rule-based, with no LLM. The target-date line is the most consistent marker across the corpus, so each block is built outward from it: search up to 40 lines back for its heading (<code>Recommendation N</code>, or a numbered <code>N. The ...</code>), then read the verdict above and the labeled response below. Facility identity comes from memo headers (<code>From: Director, VA El Paso Healthcare System (756)</code>).</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Template</th><th class="num">Reports</th><th class="num">Fully parsed</th><th class="num">Target</th></tr></thead>
     <tbody>
     <tr><td>Healthcare Facility Inspection (HFI)</td><td class="num">90</td><td class="num">90 (100%)</td><td class="num">100%</td></tr>
-    <tr><td>Comprehensive Healthcare Inspection Program (CHIP), 2018 on</td><td class="num">312</td><td class="num">297 (95.2%)</td><td class="num">90%</td></tr>
-    <tr><td>All other reports, best effort</td><td class="num">1,812</td><td class="num">731 (40.3%)</td><td class="num">None</td></tr>
+    <tr><td>Comprehensive Healthcare Inspection Program (CHIP), 2018 on</td><td class="num">312</td><td class="num">300 (96.2%)</td><td class="num">90%</td></tr>
+    <tr><td>All other reports, best effort</td><td class="num">1,812</td><td class="num">741 (40.9%)</td><td class="num">None</td></tr>
     </tbody></table></div>
     <p>"Fully parsed" means every recommendation has a verdict, a target, and an action. It does not require a domain.</p>
     <p>A parse rate says fields were filled, not that they are right. So the stage also compares each block's text with the listing's text for that recommendation number, an independent record. A response with under 50% word agreement is dropped and logged as an anomaly, because the likely cause is a corrective action attached to the wrong recommendation. On this build, no HFI or CHIP response was dropped, and 45 others were.</p>
@@ -171,22 +181,25 @@
     <div class="table-wrap wide"><table>
     <thead><tr><th>Table</th><th class="num">Rows</th><th>Key and purpose</th></tr></thead>
     <tbody>
-    <tr><td><code>reports</code></td><td class="num">4,415</td><td>Keyed by site <code>path</code>. <code>node_id</code> is nullable, because vaoig.gov exposes it only for reports with recommendations</td></tr>
+    <tr><td><code>reports</code></td><td class="num">4,415</td><td>One row per listing on OIG's site, so 4,410 distinct reports. Keyed by site <code>path</code>. <code>node_id</code> is nullable, because vaoig.gov exposes it only for reports with recommendations</td></tr>
     <tr><td><code>recommendations</code></td><td class="num">15,649</td><td><code>rec_id</code> = <code>&lt;node_id&gt;-&lt;rec_no&gt;</code></td></tr>
     <tr><td><code>status_observations</code></td><td class="num">31,296</td><td>Append-only, one per recommendation per run, so history accumulates</td></tr>
     <tr><td><code>report_facets</code></td><td class="num">17,734</td><td>OIG's own classifications</td></tr>
-    <tr><td><code>pdf_documents</code>, <code>pdf_pages</code></td><td class="num">2,214, 89,261</td><td>Page text</td></tr>
-    <tr><td><code>rec_responses</code></td><td class="num">11,240</td><td>Domain, concurrence, target date with precision, corrective action</td></tr>
-    <tr><td><code>standards_cited</code></td><td class="num">23,750</td><td>Directive, handbook, and regulation citations, at report level</td></tr>
-    <tr><td><code>facilities</code>, <code>report_facilities</code></td><td class="num">162, 2,283</td><td>Keyed by VA station number. Each link records its method</td></tr>
-    <tr><td><code>inspections</code></td><td class="num">815</td><td>Per facility, with a view for the latest one and its next-window estimate</td></tr>
+    <tr><td><code>pdf_documents</code>, <code>pdf_pages</code></td><td class="num">2,214, 89,188</td><td>Page text</td></tr>
+    <tr><td><code>rec_responses</code></td><td class="num">11,264</td><td>Domain, concurrence, target date with precision, corrective action</td></tr>
+    <tr><td><code>standards_cited</code></td><td class="num">23,627</td><td>Directive, handbook, and regulation citations, at report level</td></tr>
+    <tr><td><code>report_duplicates</code></td><td class="num">5</td><td>Reports OIG lists twice, each pointing to the listing that is kept</td></tr>
+    <tr><td><code>facilities</code>, <code>report_facilities</code></td><td class="num">159, 2,332</td><td>Keyed by VA station number. Each link records its method</td></tr>
+    <tr><td><code>inspections</code></td><td class="num">1,232</td><td>Keyed by report <code>path</code>, because a clean inspection has no <code>node_id</code>. A view gives each facility's latest and its next-window estimate</td></tr>
     <tr><td><code>clusters</code>, <code>rec_clusters</code></td><td class="num">283, 2,591</td><td>Recurring recommendations. Each cluster records its method and threshold</td></tr>
-    <tr><td><code>text_embeddings</code></td><td class="num">26,049</td><td>768-dimension float32 vectors as BLOBs, with model name and text hash</td></tr>
+    <tr><td><code>text_embeddings</code></td><td class="num">26,077</td><td>768-dimension float32 vectors as BLOBs, with model name and text hash</td></tr>
     </tbody></table></div>
     </div></section>
     <section id="derived-data"><div class="wrap">
     <h2>Derived data</h2>
-    <p><strong>Facilities.</strong> Keyed by station number from memo headers. Central-office routing symbols (station numbers below 300) look identical in those headers, so they are excluded, along with names that are roles or offices. Of 2,283 report links, 1,311 use a station number from the PDF and 972 are inferred from a facility name in the title. Each link records its method in <code>link_method</code>, and names shared by two stations are not used for title matching.</p>
+    <p><strong>Facilities.</strong> Keyed by station number from memo headers. Central-office routing symbols (station numbers below 300) look identical in those headers, so they are excluded, along with names that are roles or offices. Of 2,332 report links, 1,311 use a station number from the PDF and 1,021 are inferred from a facility name in the title. Each link records its method in <code>link_method</code>.</p>
+    <p><strong>Hand corrections.</strong> <code>curation.py</code> holds a short, reviewed list, applied when the derived tables are built, so OIG's own text is never rewritten. Twelve report memos give a parent station or a wrong number, such as Wichita under Kansas City's 589, and are linked to the facility the title names. Eleven names used in inspection report titles, where no memo gives a station, are mapped to their stations. Three names are shared by a parent station and its division, so a title using only that name links to the parent. Any other name shared by two stations is not used for title matching.</p>
+    <p><strong>Reports listed twice.</strong> All 15 same-title, same-date pairs are OIG's own listings. Five are one report under two numbers: four link to the same PDF, and one has no PDF but the same title, date, and summary. Both rows stay, flagged in <code>report_duplicates</code> and through <code>duplicate_of</code> on the report list, and the extra listing is left out of counts, facility links, and inspections. The other ten pairs are separate reports under a generic title. A new pair that nobody has classified is reported on each build.</p>
     <p><strong>Clusters</strong> use two methods, because the corpus has two kinds of wording.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Method</th><th>Scope</th><th>How</th><th>Result</th></tr></thead>
@@ -194,8 +207,9 @@
     <tr><td><code>normalized-prefix-1</code></td><td>All reports</td><td>First 12 words after removing the addressee, stock openers, numbers, punctuation, and facility names; 5+ reports</td><td>259 clusters, 2,426 recommendations</td></tr>
     <tr><td><code>semantic-seed-1</code></td><td>HFI reports</td><td>Cosine similarity of at least 0.88 to one central recommendation; 3+ reports</td><td>24 clusters, 165 recommendations</td></tr>
     </tbody></table></div>
-    <p>Prefix matching suits older templated language. It found only one recurring HFI finding, because the current program's wording varies. In the semantic method, each group is everything directly similar to a seed, rather than linked neighbors, because linking chained unrelated findings into a single group of 72 reports. Seeds are chosen by density, and the threshold was set by reviewing results on this data. The same theme can still split across clusters: test-result communication appears in several.</p>
-    <p><strong>Next inspection window.</strong> The latest inspection plus three years, based on the HFI program's stated approximate cycle. OIG publishes no schedule, so the API labels it an estimate in every response.</p>
+    <p>Prefix matching suits older templated language. It found only one recurring HFI finding, because the current program's wording varies. In the semantic method, each group is everything directly similar to a seed, rather than linked neighbors, because linking chained unrelated findings into a single group of 72 reports. Seeds are chosen by density, and the threshold was set by reviewing results on this data. The same theme can still split across clusters: test-result communication appears in six, so a cluster's report count is a lower bound for its theme.</p>
+    <p>A review of the three weakest members of each semantic cluster found that most fit, and a few are clearly off theme, such as a recommendation on securing medications in a test-result cluster. The likely cause is that the embedding gives weight to the addressee and stock opening, such as "The Medical Center Director ensures staff." The method was left as it is, because changing it would move published prevalence figures with no gold answers yet to show an improvement. Removing addressees before embedding is the first thing to try if the evaluation shows trouble here.</p>
+    <p><strong>Next inspection window.</strong> The latest inspection plus three years, based on the HFI program's stated approximate cycle. OIG publishes no schedule, so the API labels it an estimate in every response. "Latest" goes by publication date, the one date every inspection has. The count starts from the inspection's end date, or from the publication date for a clean inspection, whose PDF is not collected, and <code>next_window_based_on</code> says which. HFI reports are published a median of 308 days after the inspection ends, so an estimate from the publication date tends to run later by about that much. Reviews of benefits offices are not treated as inspections here, because this cycle does not apply to them.</p>
     </div></section>
     <section id="api"><div class="wrap">
     <h2>API</h2>
@@ -246,7 +260,7 @@
     <section id="data-quality"><div class="wrap">
     <h2>Data quality</h2>
     <p>Three layers keep a pipeline that "succeeds" with bad data from going unnoticed.</p>
-    <p><strong>Reconciliation with OIG.</strong> Each build compares itself with what OIG publishes. Totals alone proved misleading: OIG prints 586 open and 15,778 total, against our 567 and 15,649. A row-by-row comparison on November 4 found the same recommendation IDs in both, with none missing either way. The whole difference was blank rows on OIG's pages: 19 in the open view and 129 overall. So <code>validate</code> now compares the open view by ID on every build, and any difference fails it. The full-listing comparison was a one-time check. It also compared closure dates, which <code>/recommendations-all</code> shows independently of report pages: all 14,223 agreed, and none of the 859 recommendations without a date had one there.</p>
+    <p><strong>Reconciliation with OIG.</strong> Each build compares itself with what OIG publishes. Totals alone proved misleading: OIG prints 586 open and 15,778 total, against our 567 and 15,649. A row-by-row comparison on November 4 found the same recommendation IDs in both, with none missing either way. The whole difference was blank rows on OIG's pages: 19 in the open view and 129 overall. So <code>validate</code> now compares both the open view and the full list by ID on every build, and any difference fails it. Closure dates were also compared across two independent sources on OIG's site, report pages and <code>/recommendations-all</code>: all 14,223 agreed, and none of the 859 recommendations without a date had one in either. Dates now come from <code>/recommendations-all</code>, so that cross-check will not repeat by itself.</p>
     <p><strong>Data gates.</strong> Thresholds that catch silent loss, such as a markup change that empties a field. These thresholds are judgment calls, informed by this one build.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Gate</th><th class="num">Value</th><th class="num">Threshold</th></tr></thead>
@@ -258,7 +272,7 @@
     <tr><td>Corrective actions with a vector</td><td class="num">100%</td><td class="num">99%</td></tr>
     <tr><td>Reports with a state or VISN</td><td class="num">74.3%</td><td class="num">25%</td></tr>
     </tbody></table></div>
-    <p><strong>Quality checks</strong> report without failing: orphan rows, count mismatches, impossible dates, link methods, recommendations missing from the latest listing, and office labels not on OIG's list. On this build, none were missing and no labels were unmapped.</p>
+    <p><strong>Quality checks</strong> report without failing: orphan rows, count mismatches, impossible dates, link methods, recommendations missing from the latest listing, office labels not on OIG's list, same-title reports nobody has classified, names shared by two stations, HFI reports with no facility, and page footers in responses. On this build, no recommendations were missing, no labels were unmapped, no same-title pair was unclassified, every HFI report had a facility, and one response held a footer.</p>
     </div></section>
     <section id="observability"><div class="wrap">
     <h2>Observability</h2>
@@ -304,13 +318,13 @@
     <h2>Testing</h2>
     <p>Testing has three layers: an automated suite that runs offline, checks against the full build and OIG's live site, and measurements of the running service.</p>
     <h3 id="automated-suite">Automated suite</h3>
-    <p><code>uv run pytest</code> runs 160 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
+    <p><code>uv run pytest</code> runs 187 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Test file</th><th class="num">Cases</th><th>Covers</th></tr></thead>
     <tbody>
-    <tr><td><code>test_pipeline.py</code></td><td class="num">43</td><td>Report page parsing, later-stage ingest, re-ingest by content hash, rejected rows, missing recommendations, office labels, derive, clusters, gates, reconciliation, snapshots, refresh stopping at a failure</td></tr>
-    <tr><td><code>test_api_analytics.py</code></td><td class="num">35</td><td>Page search, facilities, clusters, and metrics, including hand-computed medians and quartiles</td></tr>
-    <tr><td><code>test_pdf_parsers.py</code></td><td class="num">26</td><td>Page extraction, and HFI and CHIP parsing against the real PDFs</td></tr>
+    <tr><td><code>test_pipeline.py</code></td><td class="num">58</td><td>Report page and closure parsing, later-stage ingest, re-ingest by content hash, rejected rows, missing recommendations, office labels, derive, clean inspections, station corrections, duplicate listings, clusters, gates, reconciliation, snapshots, refresh stopping at a failure</td></tr>
+    <tr><td><code>test_api_analytics.py</code></td><td class="num">37</td><td>Page search, facilities, inspections, clusters, and metrics, including hand-computed medians and quartiles, and duplicate listings counted once</td></tr>
+    <tr><td><code>test_pdf_parsers.py</code></td><td class="num">36</td><td>Page extraction, footers, split words, and HFI and CHIP parsing against the real PDFs</td></tr>
     <tr><td><code>test_api_v1.py</code></td><td class="num">18</td><td>Response contracts for list and detail endpoints, strict parameters, and concurrency</td></tr>
     <tr><td><code>test_hybrid.py</code></td><td class="num">14</td><td>Fusion, filters on every list, keyword fallback when the model is down, query text never logged, counting endpoints rejecting similarity</td></tr>
     <tr><td><code>test_listing_parser.py</code></td><td class="num">7</td><td>Listing rows, statuses, and text repair</td></tr>
@@ -324,15 +338,19 @@
     <div class="table-wrap wide"><table>
     <thead><tr><th>Check</th><th>Method</th><th>Result</th></tr></thead>
     <tbody>
-    <tr><td>Recommendations against OIG</td><td>Compared every ID and closure date with <code>/recommendations-all</code>, once</td><td>Same 15,649 IDs, none missing either way, and all 14,223 closure dates agree</td></tr>
+    <tr><td>Recommendations against OIG</td><td>Compared every ID with <code>/recommendations-all</code> on every build</td><td>Same 15,649 IDs, none missing either way</td></tr>
     <tr><td>Open recommendations against OIG</td><td>Compared by ID on every build</td><td>567 in both</td></tr>
+    <tr><td>Closure dates, two sources</td><td>Compared report pages with <code>/recommendations-all</code>, using the production parser</td><td>All 14,223 agree</td></tr>
     <tr><td>Re-ingest is stable</td><td>Loaded the full run twice on a copy and compared content hashes</td><td>Hash unchanged, 0 rejected rows</td></tr>
-    <tr><td>Rebuild is stable</td><td>Reran ingest, index, embed, and derive with no new crawl</td><td>Hash unchanged, 0 texts re-embedded</td></tr>
+    <tr><td>Rebuild is stable</td><td>Reran ingest, index, embed, and derive with no new crawl, including on the PDFium text</td><td>Hash unchanged each time, 0 texts re-embedded</td></tr>
+    <tr><td>Extractor swap</td><td>Compared every parsed response and memo with the pypdf build</td><td>24 responses gained, none lost, 1 action removed because it had been attached to the wrong recommendation, HFI and CHIP rates held or rose</td></tr>
+    <tr><td>Changed facility links</td><td>Read every link added or removed since the previous build, and every recent inspection report with no link</td><td>One lost link and two missing links found and fixed, and the rest correct, apart from the limits listed below. Those still unlinked are VISN-level and national reports</td></tr>
+    <tr><td>Estimates that should not move</td><td>Compared each facility's latest inspection with the previous build</td><td>118 unchanged, including El Paso at 2028-01-16; 25 changed, each from a newer report now counted or a corrected station</td></tr>
     <tr><td>Responses attached to the right recommendation</td><td>Word agreement between each parsed block and the listing's text</td><td>No HFI or CHIP response dropped, 45 others dropped</td></tr>
     <tr><td>Data gates</td><td>Six thresholds on every build</td><td>All passed (see Data quality)</td></tr>
     <tr><td>Overlapping requests</td><td>15 rounds of 60 requests across seven live endpoints</td><td>No 500s, dropped connections, or thread errors</td></tr>
     <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, and the real token</td><td>401, 401, 200, run from the host machine</td></tr>
-    <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build</td></tr>
+    <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build, and passed the MCP server's authentication checks and evaluation</td></tr>
     </tbody></table></div>
     <h3 id="bugs-these-checks-found">Bugs these checks found</h3>
     <p>Most of the serious defects appeared only on real data or under load, so a passing suite is necessary here but not sufficient.</p>
@@ -346,9 +364,13 @@
     <tr><td>A data gate computed on the wrong denominator</td><td>Reading the validation report</td><td>Denominator corrected</td></tr>
     <tr><td>500s and dropped connections on overlapping requests</td><td>The MCP server's parallel calls</td><td>Connections may be closed on another pool thread</td></tr>
     <tr><td>Re-ingest changed the content hash</td><td>Running the check on real data, after the fixture test passed</td><td>Surrogate ids left out of the hash</td></tr>
+    <tr><td>Clean inspections missing, so estimates were years early</td><td>Checking a gold question in the MCP evaluation</td><td><code>inspections</code> keyed by path, with clean reports included</td></tr>
+    <tr><td>Split words and page footers in responses</td><td>An independent test of the MCP tools</td><td>PDFium in place of pypdf, and footers removed by pattern</td></tr>
+    <tr><td>Wrong station on report memos, which made Wichita VA Kansas City's latest inspection</td><td>Reviewing names shared between stations</td><td>Reviewed corrections applied at derive</td></tr>
+    <tr><td>Reparsing left old responses and vectors behind</td><td>Reading the ingest code during the extractor swap</td><td>A reparse replaces each report's rows, and <code>embed</code> removes vectors whose text is gone</td></tr>
     </tbody></table></div>
     <h3 id="measurements">Measurements</h3>
-    <p>Measured against the running container, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks.</p>
+    <p>Measured against the running container, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks. These are from the build before the extractor change and were not repeated. The row counts behind them differ by well under 1 percent.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Request</th><th class="num">Requests</th><th class="num">Median</th><th class="num">Slowest</th></tr></thead>
     <tbody>
@@ -364,31 +386,32 @@
     </tbody></table></div>
     <p>All of these returned 200. Parallel searches queue at about 14 per second on this machine, so latency grows with concurrency. These are small samples, not a sustained load test.</p>
     <h3 id="search-relevance-test">Search relevance test</h3>
-    <p>Compared <code>/v1/search</code> with OIG's <code>/recommendations-all</code> search on 10 plain-language questions, each as a full sentence and as short keywords fixed before any results were read. OIG returned no results for any full sentence. The top 5 recommendations from the other three searches were pooled into 99 distinct results and shuffled. Two separate Claude agents judged each result with no project context and no view of which search found it, and a result counted as relevant only if both marked it so. They agreed on 98 of 99, but they are the same model, so that is not independent confirmation. No person judged the results.</p>
+    <p>Compared <code>/v1/search</code> with OIG's <code>/recommendations-all</code> search on 10 plain-language questions, each as a full sentence and as short keywords fixed before any results were read. OIG returned no results for any full sentence. The top 5 recommendations from the other three searches were pooled into 99 distinct results and shuffled. After the text rebuild, this service's searches were run again, and 14 of the 20 returned a different list, because corrective actions were re-embedded from clean text. Recommendation text did not change, so earlier judgments stand, and the 8 new results were judged the same way. OIG's results were not fetched again. Two separate Claude agents judged each result with no project context and no view of which search found it, and a result counted as relevant only if both marked it so. They agreed on 106 of 107, but they are the same model, so that is not independent confirmation. No person judged the results.</p>
     <p>Each cell shows relevant results in the top 3, relevant results in the top 5, and results returned.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Question</th><th class="num">This service, sentence</th><th class="num">This service, keywords</th><th class="num">OIG, keywords</th></tr></thead>
     <tbody>
     <tr><td>Abnormal biopsy result not communicated</td><td class="num">2 / 4 / 5</td><td class="num">1 / 3 / 5</td><td class="num">3 / 5 / 5</td></tr>
-    <tr><td>Medication carts left unlocked</td><td class="num">3 / 5 / 5</td><td class="num">2 / 3 / 5</td><td class="num">0 / 2 / 5</td></tr>
+    <tr><td>Medication carts left unlocked</td><td class="num">3 / 4 / 5</td><td class="num">2 / 3 / 5</td><td class="num">0 / 2 / 5</td></tr>
     <tr><td>Inpatient walked out of a locked unit</td><td class="num">0 / 1 / 5</td><td class="num">2 / 2 / 5</td><td class="num">0 / 0 / 5</td></tr>
     <tr><td>Nurses not trained on infusion pumps</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 0</td></tr>
     <tr><td>Practicing after a license lapsed</td><td class="num">1 / 2 / 5</td><td class="num">1 / 1 / 5</td><td class="num">1 / 1 / 1</td></tr>
-    <tr><td>High suicide risk, no follow-up call</td><td class="num">2 / 4 / 5</td><td class="num">1 / 3 / 5</td><td class="num">1 / 1 / 1</td></tr>
-    <tr><td>Expired supplies in sterile storage</td><td class="num">3 / 5 / 5</td><td class="num">3 / 5 / 5</td><td class="num">2 / 4 / 5</td></tr>
+    <tr><td>High suicide risk, no follow-up call</td><td class="num">2 / 4 / 5</td><td class="num">1 / 2 / 5</td><td class="num">1 / 1 / 1</td></tr>
+    <tr><td>Expired supplies in sterile storage</td><td class="num">3 / 4 / 5</td><td class="num">3 / 5 / 5</td><td class="num">2 / 4 / 5</td></tr>
     <tr><td>Fall injury never reported</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 1</td></tr>
     <tr><td>Community care consults not tracked</td><td class="num">0 / 1 / 5</td><td class="num">0 / 0 / 5</td><td class="num">1 / 1 / 5</td></tr>
     <tr><td>Blind patients and the check-in kiosk</td><td class="num">1 / 2 / 5</td><td class="num">1 / 1 / 5</td><td class="num">0 / 0 / 0</td></tr>
-    <tr><td><strong>All</strong></td><td class="num"><strong>12 / 24 / 50</strong></td><td class="num"><strong>11 / 18 / 50</strong></td><td class="num"><strong>8 / 14 / 28</strong></td></tr>
+    <tr><td><strong>All</strong></td><td class="num"><strong>12 / 22 / 50</strong></td><td class="num"><strong>11 / 17 / 50</strong></td><td class="num"><strong>8 / 14 / 28</strong></td></tr>
     </tbody></table></div>
     <p>Limits of this test: it is small, the questions favor this service because they were written knowing its results, OIG orders by date rather than relevance, OIG's report-level hits with no recommendation row were not judged, and corrective actions were not judged.</p>
     <h3 id="not-yet-tested">Not yet tested</h3>
     <ul class="clean">
-    <li>Answer quality end to end. A formal evaluation against gold answers computed from the data is planned in <code>oig-mcp</code>.</li>
+    <li>A full <code>refresh</code> run since closure dates moved to their own stage. Each stage ran by hand on the real run, and an automated test covers stopping at a failure, but the command has not run start to finish since that change.</li>
+    <li>Answer quality on watsonx Orchestrate's model. The evaluation against gold answers has run on two Claude models, and an independent agent answered a test bank.</li>
     <li>Search relevance as judged by a person.</li>
     <li>Sustained load, or more concurrency than the runs above.</li>
     <li>Access control from outside the host's network. The first call from IBM Cloud will serve as this check.</li>
-    <li>Recovery after a reboot of the host.</li>
+    <li>A planned recovery after a reboot of the host. The Mac restarted unexpectedly during the November 4 rebuild, and the API and its dependencies came back within about two minutes with the database intact.</li>
     </ul>
     </div></section>
     <section id="known-limits"><div class="wrap">
@@ -396,6 +419,10 @@
     <p><strong>Data</strong></p>
     <ul class="clean">
     <li>Page text and parsed responses cover only reports with recommendations. The other 2,186 reports have no node id in the schema, so they are listed but have no page text.</li>
+    <li>A clean inspection's estimate starts from its publication date, so it tends to run later than one based on an inspection's end date.</li>
+    <li>15 facilities still have an estimate already in the past. Some have been inspected under a name not linked here or are divisions of a larger system, and others are simply due. An estimate in the past does not show that an inspection is overdue.</li>
+    <li><code>facilities.visn</code> can mix numbering. OIG's 2026 reports use different VISN labels for some facilities, such as Philadelphia under VISN 1 and Pacific Islands under VISN 5, which may reflect a new network map. The most frequent label wins, and this was not reconciled.</li>
+    <li>Station corrections rest on report titles and OIG's other reports, not on an official VA station list.</li>
     <li><code>domain</code> is missing on 62% of HFI responses (208 of 338). Newer reports gather recommendations in an end section, with nothing tying them to a domain, so the field stays empty rather than guessing.</li>
     <li>OIG tagged only about a quarter of reports with a topic, so <code>group_by=topic</code> covers only those.</li>
     <li>859 closed recommendations (5.7%) show no closure date on OIG's site, mostly from 2013 to 2016.</li>
@@ -408,7 +435,7 @@
     <li>Search quality is only lightly measured (see Search relevance test). About half of the top results were relevant, and precision was about the same as OIG's. <code>/v1/search</code> always returns a full shortlist, relevant or not, because similarity has no natural cutoff, so its consumer has to read results critically.</li>
     <li>Under heavy parallel load, a query embedding can exceed its 5 second timeout, and that search then runs on keywords only. The response reports this in <code>search_mode</code>. It did not occur in the runs above.</li>
     <li>Near-duplicate templated recommendations can fill the top of a shortlist.</li>
-    <li>Title-based facility links were spot-checked, not systematically reviewed.</li>
+    <li>Title-based facility links were spot-checked, and each change on this build was read, but they have not all been reviewed. A title naming several facilities links to only one, and a title naming a system links to its parent station even when it also names a division's city.</li>
     </ul>
     <p><strong>Operations</strong></p>
     <ul class="clean">
