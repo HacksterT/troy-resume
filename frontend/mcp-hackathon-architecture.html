@@ -81,14 +81,13 @@
   </div>
 
   <main>
-    <section id="purpose-and-boundaries"><div class="wrap">
-    <h2>Purpose and boundaries</h2>
+    <section id="building-the-dataset"><div class="wrap">
+    <h2>Building the dataset</h2>
+    <h3 id="purpose-and-boundaries">Purpose and boundaries</h3>
     <div class="stats"><div class="stat"><div class="num">4,410</div><div class="lbl">reports</div></div><div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div><div class="stat"><div class="num">89,188</div><div class="lbl">pages of PDF text</div></div><div class="stat"><div class="num">11,264</div><div class="lbl">facility responses</div></div><div class="stat"><div class="num">7</div><div class="lbl">MCP tools</div></div><div class="stat"><div class="num">187</div><div class="lbl">automated test cases</div></div></div>
         <p>VA OIG publishes its reports and recommendations at vaoig.gov, with no API or bulk export. This repository turns that public record into a structured dataset and serves it through a read-only JSON API. A separate repository, <code>oig-mcp</code>, wraps the API in goal-level Model Context Protocol (MCP) tools that AI assistants call.</p>
     <p>The split is deliberate: this repository owns data, search, and computation, and has no knowledge of any tool. An endpoint that mirrors one tool is treated as logic leaking across the boundary. The contract between the two is a documented API specification.</p>
-    </div></section>
-    <section id="technology-stack"><div class="wrap">
-    <h2>Technology stack</h2>
+    <h3 id="technology-stack">Technology stack</h3>
     <p>Versions are what the running service used on November 4, 2026.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Layer</th><th>Technology</th><th>Why this choice</th></tr></thead>
@@ -108,22 +107,17 @@
     <tr><td>Quality</td><td>pytest 9.1, ruff 0.17</td><td>Fast offline suite, run locally. There is no CI pipeline</td></tr>
     <tr><td>Consumer</td><td><code>oig-mcp</code>, a separate MCP server built on FastMCP</td><td>Holds the tools, and calls this API over HTTPS</td></tr>
     </tbody></table></div>
-    <p>Deliberately not used: OCR or Docling, a vector database, a cross-encoder reranker, LLM extraction, and a hosted embedding service. Each would add operating cost or nondeterminism without a measured need on this data.</p>
-    </div></section>
-    <section id="the-pipeline"><div class="wrap">
-    <h2>The pipeline</h2>
+    <h3 id="the-pipeline">The pipeline</h3>
     <p>One image runs both the pipeline and the API. <code>oig-data refresh</code> runs these steps in order and stops at the first failure.</p>
     <figure>
       <div class="scroll"><img src="assets/mcp-hackathon/data-pipeline.svg?v=2" alt="Data pipeline in four stages that stop at the first failure. Collect: listing, facets, report pages, PDFs. Structure: parse, ingest, index. Analyze: embed, derive. Release: validate, snapshot, publish." width="930" height="378"></div>
       <figcaption>Collect also crawls OIG's closure listing, about 223 pages, not shown here, which feeds closure dates and validation.</figcaption>
     </figure>
-    <h3 id="crawling-rules">Crawling rules</h3>
+    <h4 id="crawling-rules">Crawling rules</h4>
     <p>A polite, identified crawler rate-limits itself, backs off on errors, and stays within allowed hosts, stopping a stage after repeated failures rather than pushing through. Everything fetched is saved untouched, so a parsing fix never requires re-crawling OIG, and a failed run resumes where it left off.</p>
-    <h3 id="extraction">Extraction</h3>
+    <h4 id="extraction">Extraction</h4>
     <p>PDF text comes from PDFium, which keeps words whole where an earlier extractor split them at font changes, and strips repeated headers, footers, and page numbers before anything reaches search. Facility responses, whether a facility agreed, its target date, and its corrective action, are pulled with rule-based parsing, not AI: fully reliable on the current report templates (Healthcare Facility Inspection and CHIP), with partial, best-effort coverage on older formats. Every parsed response is cross-checked against OIG's own listing text, and anything that doesn't agree is dropped and logged rather than trusted.</p>
-    </div></section>
-    <section id="data-model"><div class="wrap">
-    <h2>Data model</h2>
+    <h3 id="data-model">Data model</h3>
     <p>SQLite is the system of record, in a single file with forward-only migrations.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Table</th><th class="num">Rows</th><th>Key and purpose</th></tr></thead>
@@ -141,15 +135,14 @@
     <tr><td><code>clusters</code>, <code>rec_clusters</code></td><td class="num">283, 2,591</td><td>Recurring recommendations. Each cluster records its method and threshold</td></tr>
     <tr><td><code>text_embeddings</code></td><td class="num">26,077</td><td>768-dimension float32 vectors as BLOBs, with model name and text hash</td></tr>
     </tbody></table></div>
-    </div></section>
-    <section id="derived-data"><div class="wrap">
-    <h2>Derived data</h2>
+    <h3 id="derived-data">Derived data</h3>
     <p><strong>Facilities.</strong> Matched to a VA station number from report memo headers, with central-office routing symbols and role or office names excluded. About 44% of links are inferred from a facility name in the title rather than a station number in the PDF. A short, reviewed correction list fixes the handful of memos with a wrong or parent station, without altering OIG's own text.</p>
     <p><strong>Clusters</strong> use two methods, because the corpus has two kinds of wording: prefix matching for older templated language, and semantic similarity (cosine ≥ 0.88) for the current inspection program, where wording varies too much for prefix matching to find much. A theme can still split across clusters, so a cluster's report count is a lower bound, not a total.</p>
     <p><strong>Next inspection window.</strong> Latest inspection plus three years, the HFI program's stated cycle. OIG publishes no schedule, so every response labels this an estimate, and the count starts from the inspection's end date where one exists, or from publication for a clean inspection whose PDF isn't collected.</p>
     </div></section>
-    <section id="api"><div class="wrap">
-    <h2>API</h2>
+    <section id="serving-the-data"><div class="wrap">
+    <h2>Serving the data</h2>
+    <h3 id="api">API</h3>
     <p>FastAPI on uvicorn. Each request opens its own read-only connection, so a published database takes effect on the next request with no restart. A connection may move between pool threads during a request, but only one thread uses it at a time.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Endpoints</th><th>Purpose</th><th>How rows are found</th></tr></thead>
@@ -194,8 +187,9 @@
     <li><strong>Embedding PDF pages:</strong> chunking and a much larger index, for a narrative search that keywords serve adequately so far.</li>
     </ul>
     </div></section>
-    <section id="data-quality"><div class="wrap">
-    <h2>Data quality</h2>
+    <section id="quality-and-testing"><div class="wrap">
+    <h2>Quality and testing</h2>
+    <h3 id="data-quality">Data quality</h3>
     <p>Three layers keep a pipeline that "succeeds" with bad data from going unnoticed.</p>
     <p><strong>Reconciliation with OIG.</strong> Each build compares itself with what OIG publishes. Totals alone proved misleading: OIG prints 586 open and 15,778 total, against our 567 and 15,649. A row-by-row comparison on November 4 found the same recommendation IDs in both, with none missing either way. The whole difference was blank rows on OIG's pages: 19 in the open view and 129 overall. So <code>validate</code> now compares both the open view and the full list by ID on every build, and any difference fails it. Closure dates were also compared across two independent sources on OIG's site, report pages and <code>/recommendations-all</code>: all 14,223 agreed, and none of the 859 recommendations without a date had one in either. Dates now come from <code>/recommendations-all</code>, so that cross-check will not repeat by itself.</p>
     <p><strong>Data gates.</strong> Thresholds that catch silent loss, such as a markup change that empties a field. These thresholds are judgment calls, informed by this one build.</p>
@@ -210,51 +204,9 @@
     <tr><td>Reports with a state or VISN</td><td class="num">74.3%</td><td class="num">25%</td></tr>
     </tbody></table></div>
     <p><strong>Quality checks</strong> report without failing: orphan rows, count mismatches, impossible dates, link methods, recommendations missing from the latest listing, office labels not on OIG's list, same-title reports nobody has classified, names shared by two stations, HFI reports with no facility, and page footers in responses. On this build, no recommendations were missing, no labels were unmapped, no same-title pair was unclassified, every HFI report had a facility, and one response held a footer.</p>
-    </div></section>
-    <section id="observability"><div class="wrap">
-    <h2>Observability</h2>
-    <div class="table-wrap"><table>
-    <thead><tr><th>Signal</th><th>Where</th></tr></thead>
-    <tbody>
-    <tr><td>Request log: path, status, duration</td><td>API log</td></tr>
-    <tr><td>Search log: mode, query length, list sizes</td><td>API log. Query text is never logged, because a user may describe their own facility</td></tr>
-    <tr><td>Pipeline log, with a warning when a stage ends with problems</td><td>Pipeline log</td></tr>
-    <tr><td>Search health and fallback counters since start</td><td><code>GET /health/search</code></td></tr>
-    <tr><td>Stage counts, anomalies, parse rates, fetch failures</td><td>Per-stage run output</td></tr>
-    <tr><td>Rows ingest refused, with reasons</td><td>Rejects file</td></tr>
-    <tr><td>Build comparison with OIG</td><td>Validation report, and <code>reconciliation</code> in <code>GET /v1/meta</code></td></tr>
-    </tbody></table></div>
-    <p>Logs rotate. No alerting is configured, so a failure is visible only to someone who looks.</p>
-    </div></section>
-    <section id="security"><div class="wrap">
-    <h2>Security</h2>
-    <ul class="clean">
-    <li><strong>Public data, access-controlled API.</strong> All data is public. The token manages load and usage.</li>
-    <li><strong>Network.</strong> Loopback bind, outbound-only tunnel, and an Access policy allowing only the service token. Unauthenticated requests get <code>401</code>, verified with no token and with a fake one.</li>
-    <li><strong>Credentials.</strong> The token is held in secret stores and never in a repository.</li>
-    <li><strong>Read-only serving.</strong> The API opens the database with <code>mode=ro</code>, with bound parameters throughout. There are no write endpoints.</li>
-    <li><strong>Crawl boundary.</strong> HTTPS on allowed hosts only, on-site redirects only, and a path allow-list for PDFs.</li>
-    <li><strong>No rating of facilities.</strong> Metrics have no <code>group_by=facility</code>, and a test enforces that. Facility data is listed, not scored.</li>
-    </ul>
-    </div></section>
-    <section id="design-decisions"><div class="wrap">
-    <h2>Design decisions</h2>
-    <div class="table-wrap"><table>
-    <thead><tr><th>Decision</th><th>Trade-off accepted</th></tr></thead>
-    <tbody>
-    <tr><td>SQLite in one file</td><td>One writer, one host; no database server to run</td></tr>
-    <tr><td>Status as append-only observations</td><td>More rows, in exchange for history</td></tr>
-    <tr><td>Container on a local machine, not Cloudflare D1</td><td>Availability depends on one Mac</td></tr>
-    <tr><td>Reports keyed by path</td><td>A changed slug on a report with no recommendations and no number can duplicate it</td></tr>
-    <tr><td>One hybrid search, with local embeddings</td><td>Live semantic search depends on Ollama</td></tr>
-    <tr><td>Rule-based PDF parsing, no LLM extraction</td><td>Lower coverage on other report types, in exchange for deterministic, testable output</td></tr>
-    <tr><td>Vectors stored in the database file</td><td>A larger file, in exchange for snapshots that carry their exact index</td></tr>
-    </tbody></table></div>
-    </div></section>
-    <section id="testing"><div class="wrap">
-    <h2>Testing</h2>
+    <h3 id="testing">Testing</h3>
     <p>Testing has three layers: an automated suite that runs offline, checks against the full build and OIG's live site, and measurements of the running service.</p>
-    <h3 id="automated-suite">Automated suite</h3>
+    <h4 id="automated-suite">Automated suite</h4>
     <p><code>uv run pytest</code> runs 187 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Test file</th><th class="num">Cases</th><th>Covers</th></tr></thead>
@@ -271,7 +223,7 @@
     <tr><td><code>test_ingest.py</code>, <code>test_rawstore.py</code></td><td class="num">2</td><td>Status history across runs, and raw store de-duplication</td></tr>
     </tbody></table></div>
     <p>The concurrency test runs a real uvicorn server, because <code>TestClient</code> did not reproduce the bug it guards against. It was confirmed to fail without the fix.</p>
-    <h3 id="checks-on-the-full-build">Checks on the full build</h3>
+    <h4 id="checks-on-the-full-build">Checks on the full build</h4>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Check</th><th>Method</th><th>Result</th></tr></thead>
     <tbody>
@@ -289,7 +241,7 @@
     <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, and the real token</td><td>401, 401, 200, run from the host machine</td></tr>
     <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build, and passed the MCP server's authentication checks and evaluation</td></tr>
     </tbody></table></div>
-    <h3 id="bugs-these-checks-found">Bugs these checks found</h3>
+    <h4 id="bugs-these-checks-found">Bugs these checks found</h4>
     <p>Most of the serious defects appeared only on real data or under load, so a passing suite is necessary here but not sufficient.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Defect</th><th>How it surfaced</th><th>Fix</th></tr></thead>
@@ -306,7 +258,7 @@
     <tr><td>Wrong station on report memos, which made Wichita VA Kansas City's latest inspection</td><td>Reviewing names shared between stations</td><td>Reviewed corrections applied at derive</td></tr>
     <tr><td>Reparsing left old responses and vectors behind</td><td>Reading the ingest code during the extractor swap</td><td>A reparse replaces each report's rows, and <code>embed</code> removes vectors whose text is gone</td></tr>
     </tbody></table></div>
-    <h3 id="measurements">Measurements</h3>
+    <h4 id="measurements">Measurements</h4>
     <p>Measured against the running container, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks. These are from the build before the extractor change and were not repeated. The row counts behind them differ by well under 1 percent.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Request</th><th class="num">Requests</th><th class="num">Median</th><th class="num">Slowest</th></tr></thead>
@@ -322,7 +274,7 @@
     <tr><td><code>/v1/reports/{id}</code></td><td class="num">30</td><td class="num">2 ms</td><td class="num">2 ms</td></tr>
     </tbody></table></div>
     <p>All of these returned 200. Parallel searches queue at about 14 per second on this machine, so latency grows with concurrency. These are small samples, not a sustained load test.</p>
-    <h3 id="search-relevance-test">Search relevance test</h3>
+    <h4 id="search-relevance-test">Search relevance test</h4>
     <p>Compared <code>/v1/search</code> with OIG's <code>/recommendations-all</code> search on 10 plain-language questions, each as a full sentence and as short keywords fixed before any results were read. OIG returned no results for any full sentence. The top 5 recommendations from the other three searches were pooled into 99 distinct results and shuffled. After the text rebuild, this service's searches were run again, and 14 of the 20 returned a different list, because corrective actions were re-embedded from clean text. Recommendation text did not change, so earlier judgments stand, and the 8 new results were judged the same way. OIG's results were not fetched again. Two separate Claude agents judged each result with no project context and no view of which search found it, and a result counted as relevant only if both marked it so. They agreed on 106 of 107, but they are the same model, so that is not independent confirmation. No person judged the results.</p>
     <p>Each cell shows relevant results in the top 3, relevant results in the top 5, and results returned.</p>
     <div class="table-wrap wide"><table>
@@ -341,7 +293,7 @@
     <tr><td><strong>All</strong></td><td class="num"><strong>12 / 22 / 50</strong></td><td class="num"><strong>11 / 17 / 50</strong></td><td class="num"><strong>8 / 14 / 28</strong></td></tr>
     </tbody></table></div>
     <p>Limits of this test: it is small, the questions favor this service because they were written knowing its results, OIG orders by date rather than relevance, OIG's report-level hits with no recommendation row were not judged, and corrective actions were not judged.</p>
-    <h3 id="not-yet-tested">Not yet tested</h3>
+    <h4 id="not-yet-tested">Not yet tested</h4>
     <ul class="clean">
     <li>A full <code>refresh</code> run since closure dates moved to their own stage. Each stage ran by hand on the real run, and an automated test covers stopping at a failure, but the command has not run start to finish since that change.</li>
     <li>Answer quality on watsonx Orchestrate's model. The evaluation against gold answers has run on two Claude models, and an independent agent answered a test bank.</li>
@@ -350,9 +302,7 @@
     <li>Access control from outside the host's network. The first call from IBM Cloud will serve as this check.</li>
     <li>A planned recovery after a reboot of the host. The Mac restarted unexpectedly during the November 4 rebuild, and the API and its dependencies came back within about two minutes with the database intact.</li>
     </ul>
-    </div></section>
-    <section id="known-limits"><div class="wrap">
-    <h2>Known limits</h2>
+    <h3 id="known-limits">Known limits</h3>
     <p><strong>Data</strong></p>
     <ul class="clean">
     <li>Page text and parsed responses cover only reports with recommendations. The other 2,186 reports have no node id in the schema, so they are listed but have no page text.</li>
@@ -380,6 +330,43 @@
     <li>Scheduled refresh is not installed, so <code>data_as_of</code> ages until someone runs <code>refresh</code>. The MCP server flags data older than 30 days.</li>
     <li>There is no alerting and no rate limiting beyond the token.</li>
     </ul>
+    </div></section>
+    <section id="operations-and-design"><div class="wrap">
+    <h2>Operations and design</h2>
+    <h3 id="observability">Observability</h3>
+    <div class="table-wrap"><table>
+    <thead><tr><th>Signal</th><th>Where</th></tr></thead>
+    <tbody>
+    <tr><td>Request log: path, status, duration</td><td>API log</td></tr>
+    <tr><td>Search log: mode, query length, list sizes</td><td>API log. Query text is never logged, because a user may describe their own facility</td></tr>
+    <tr><td>Pipeline log, with a warning when a stage ends with problems</td><td>Pipeline log</td></tr>
+    <tr><td>Search health and fallback counters since start</td><td><code>GET /health/search</code></td></tr>
+    <tr><td>Stage counts, anomalies, parse rates, fetch failures</td><td>Per-stage run output</td></tr>
+    <tr><td>Rows ingest refused, with reasons</td><td>Rejects file</td></tr>
+    <tr><td>Build comparison with OIG</td><td>Validation report, and <code>reconciliation</code> in <code>GET /v1/meta</code></td></tr>
+    </tbody></table></div>
+    <p>Logs rotate. No alerting is configured, so a failure is visible only to someone who looks.</p>
+    <h3 id="security">Security</h3>
+    <ul class="clean">
+    <li><strong>Public data, access-controlled API.</strong> All data is public. The token manages load and usage.</li>
+    <li><strong>Network.</strong> Loopback bind, outbound-only tunnel, and an Access policy allowing only the service token. Unauthenticated requests get <code>401</code>, verified with no token and with a fake one.</li>
+    <li><strong>Credentials.</strong> The token is held in secret stores and never in a repository.</li>
+    <li><strong>Read-only serving.</strong> The API opens the database with <code>mode=ro</code>, with bound parameters throughout. There are no write endpoints.</li>
+    <li><strong>Crawl boundary.</strong> HTTPS on allowed hosts only, on-site redirects only, and a path allow-list for PDFs.</li>
+    <li><strong>No rating of facilities.</strong> Metrics have no <code>group_by=facility</code>, and a test enforces that. Facility data is listed, not scored.</li>
+    </ul>
+    <h3 id="design-decisions">Design decisions</h3>
+    <div class="table-wrap"><table>
+    <thead><tr><th>Decision</th><th>Trade-off accepted</th></tr></thead>
+    <tbody>
+    <tr><td>SQLite in one file</td><td>One writer, one host; no database server to run</td></tr>
+    <tr><td>Status as append-only observations</td><td>More rows, in exchange for history</td></tr>
+    <tr><td>Container on a local machine, not Cloudflare D1</td><td>Availability depends on one Mac</td></tr>
+    <tr><td>Reports keyed by path</td><td>A changed slug on a report with no recommendations and no number can duplicate it</td></tr>
+    <tr><td>One hybrid search, with local embeddings</td><td>Live semantic search depends on Ollama</td></tr>
+    <tr><td>Rule-based PDF parsing, no LLM extraction</td><td>Lower coverage on other report types, in exchange for deterministic, testable output</td></tr>
+    <tr><td>Vectors stored in the database file</td><td>A larger file, in exchange for snapshots that carry their exact index</td></tr>
+    </tbody></table></div>
     </div></section>
   </main>
 
