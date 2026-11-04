@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Source Tech Summary: VA OIG Data Service</title>
+  <meta name="description" content="How the VA OIG data service is built and tested: technology stack, pipeline, data model, API, hybrid search design, test results, and known limits.">
+  <meta property="og:title" content="Data Source Tech Summary: VA OIG Data Service">
+  <meta property="og:description" content="How the VA OIG data service is built and tested: technology stack, pipeline, data model, API, hybrid search design, test results, and known limits.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-architecture">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-architecture">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root { --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; --ink: #2c3e50; --ink-2: #555; --ink-3: #777; --accent: #3498db; --accent-soft: #eaf4fb; --bg: #f8f9fa; --card: #ffffff; --rule: #e0e0e0; --hero: #2c3e50; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+    .topbar .wrap { display: flex; align-items: center; gap: 16px; height: 52px; }
+    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+    .hero .meta a { color: #fff; text-decoration: underline; }
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    h3 { font-size: 19px; margin: 28px 0 8px; }
+    h4 { font-size: 17px; margin: 22px 0 6px; }
+    p + p { margin-top: 14px; }
+    .table-wrap + p, ul.clean + p, figure + p { margin-top: 16px; }
+    .small { font-size: 14px; color: var(--ink-3); margin-top: 10px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+    .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; }
+    .stat .num { font-size: 27px; font-weight: 700; line-height: 1.1; }
+    .stat .lbl { font-size: 13.5px; color: var(--ink-2); margin-top: 6px; }
+    figure { margin: 24px 0 8px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; padding: 12px; }
+    figure .scroll { overflow-x: auto; }
+    figure img { display: block; width: 100%; height: auto; min-width: 680px; }
+    figcaption { font-size: 14px; color: var(--ink-3); margin-top: 8px; padding: 0 4px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .88em; overflow-wrap: anywhere; }
+    .scenario { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 24px 26px; margin-top: 18px; }
+    .scenario h3 { margin-top: 0; font-size: 21px; }
+    .scenario p, .scenario ul.clean li { color: var(--ink-2); font-size: 16px; }
+    .scenario p { margin-top: 12px; }
+    .scenario strong { color: var(--ink); }
+    .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; }
+    .scenario p.evidence { color: var(--ink); }
+    .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    .table-wrap.wide table { min-width: 620px; }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td:first-child { font-weight: 600; }
+    td.num, th.num { text-align: right; }
+    td.num { white-space: nowrap; }
+    ul.clean { list-style: none; margin-top: 12px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 8px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+    footer p + p { margin-top: 8px; }
+    @media (max-width: 600px) { body { font-size: 16px; } .hero { padding: 44px 0 40px; } .hero p.lead { font-size: 17px; } section { padding: 40px 0; } h2 { font-size: 24px; } .scenario { padding: 20px; } .stats { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/mcp-hackathon">&larr; Back to the project page</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Data Source Tech Summary</div>
+      <h1>How the OIG Data Service Is Built</h1>
+      <p class="lead">How the OIG data service is built and tested, and why. This is the engineering companion to the <a href="/mcp-hackathon-backend" style="color:#fff;text-decoration:underline">Data Source Overview</a>, which covers what the service adds, the use cases, and the safeguards.</p>
+      <p class="meta">Figures are from the build of November 4, 2026.</p>
+    </div>
+  </div>
+
+  <main>
+    <section id="purpose-and-boundaries"><div class="wrap">
+    <h2>Purpose and boundaries</h2>
+    <div class="stats"><div class="stat"><div class="num">4,415</div><div class="lbl">reports</div></div><div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div><div class="stat"><div class="num">89,261</div><div class="lbl">pages of PDF text</div></div><div class="stat"><div class="num">11,240</div><div class="lbl">facility responses</div></div><div class="stat"><div class="num">7</div><div class="lbl">MCP tools</div></div><div class="stat"><div class="num">160</div><div class="lbl">automated test cases</div></div></div>
+        <p>VA OIG publishes its reports and recommendations at vaoig.gov, with no API or bulk export. This repository turns that public record into a structured dataset and serves it through a read-only JSON API. A separate repository, <code>oig-mcp</code>, wraps the API in goal-level Model Context Protocol (MCP) tools that AI assistants call.</p>
+    <p>The split is deliberate: this repository owns data, search, and computation, and has no knowledge of any tool. An endpoint that mirrors one tool is treated as logic leaking across the boundary. The contract between the two is a documented API specification.</p>
+    </div></section>
+    <section id="technology-stack"><div class="wrap">
+    <h2>Technology stack</h2>
+    <p>Versions are what the running service used on November 4, 2026.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Why this choice</th></tr></thead>
+    <tbody>
+    <tr><td>Language and packaging</td><td>Python 3.11, uv with a lockfile, hatchling</td><td>Dependency resolution ignores releases under two weeks old, with explicit exceptions for security fixes</td></tr>
+    <tr><td>Crawling</td><td>httpx 0.28 behind a custom <code>PoliteClient</code>, selectolax 1.0 (Lexbor)</td><td>The client enforces site rules in one place, and parsing runs offline over a raw store</td></tr>
+    <tr><td>PDF text</td><td>pypdf 6.20 with cryptography</td><td>Every document has a text layer, so OCR and layout models add cost and no coverage</td></tr>
+    <tr><td>Structured extraction</td><td>Rule-based parsers, versioned per template</td><td>Deterministic and testable, with no LLM in the data path</td></tr>
+    <tr><td>Storage</td><td>SQLite 3.46 with FTS5 (<code>porter unicode61</code>), forward-only SQL migrations</td><td>One portable file that snapshots and checksums cleanly, with no database server</td></tr>
+    <tr><td>Embeddings</td><td>Ollama 0.32 running <code>nomic-embed-text:v1.5</code>, 768 dimensions</td><td>Local, with no per-query cost and no query text leaving the machine</td></tr>
+    <tr><td>Vector search</td><td>NumPy 2.4, exact cosine scan over vectors held in memory</td><td>26,049 vectors do not justify a vector database</td></tr>
+    <tr><td>Rank fusion</td><td>Reciprocal rank fusion, k = 60, implemented here</td><td>Needs no score calibration, and adds no model or dependency</td></tr>
+    <tr><td>Validation</td><td>Pydantic 2.14, pydantic-settings 2.15</td><td>Row checks at ingest, parameters at the API, typed configuration</td></tr>
+    <tr><td>API</td><td>FastAPI 0.143 on uvicorn 0.54</td><td>Typed, read-only JSON, with synchronous routes over per-request connections</td></tr>
+    <tr><td>Packaging and runtime</td><td>Docker image on <code>python:3.11-slim</code>, non-root user, Compose on OrbStack</td><td>One image runs both the pipeline and the API</td></tr>
+    <tr><td>Exposure</td><td>cloudflared 2026.10 under launchd, Cloudflare Access service token</td><td>Outbound-only tunnel, with no inbound port open</td></tr>
+    <tr><td>Quality</td><td>pytest 9.1, ruff 0.17</td><td>Fast offline suite, run locally. There is no CI pipeline</td></tr>
+    <tr><td>Consumer</td><td><code>oig-mcp</code>, a separate MCP server built on FastMCP</td><td>Holds the tools, and calls this API over HTTPS</td></tr>
+    </tbody></table></div>
+    <p>Deliberately not used: OCR or Docling, a vector database, a cross-encoder reranker, LLM extraction, and a hosted embedding service. Each would add operating cost or nondeterminism without a measured need on this data.</p>
+    </div></section>
+    <section id="system-context"><div class="wrap">
+    <h2>System context</h2>
+    <figure>
+      <div class="scroll"><img src="assets/mcp-hackathon/system-architecture.svg?v=3" alt="System architecture: OIG&#39;s public pages flow through a polite crawl into a pipeline on a local Mac mini, which gets document vectors from a local Ollama model and stores them with the records in SQLite, then publishes a read-only copy. A containerized API reads it, asks Ollama only for each query&#39;s vector, and reaches the internet only through an outbound Cloudflare tunnel, where Cloudflare Access requires a service token. The oig-mcp server calls the API and serves tools to any MCP client." width="940" height="446"></div>
+      <figcaption>Two-way arrows are requests and responses; the one-way arrow is the publish step, a copy of the build database. Document vectors are computed during the build and stored in the database. At query time, the API asks Ollama only for the query&#39;s vector, reads the stored vectors from the database, and compares them in its own code with NumPy.</figcaption>
+    </figure>
+    <p>No inbound port is open on the host. The API binds to loopback, and the only public path runs through the tunnel, where Access rejects any request without the service token (<code>401</code>).</p>
+    </div></section>
+    <section id="the-pipeline"><div class="wrap">
+    <h2>The pipeline</h2>
+    <p>One image runs both the pipeline and the API. <code>oig-data refresh</code> runs these steps in order and stops at the first failure.</p>
+    <figure>
+      <div class="scroll"><img src="assets/mcp-hackathon/data-pipeline.svg?v=2" alt="Data pipeline in four stages that stop at the first failure. Collect: listing, facets, report pages, PDFs. Structure: parse, ingest, index. Analyze: embed, derive. Release: validate, snapshot, publish." width="930" height="378"></div>
+      <figcaption>The refresh, grouped into four stages. The table below gives each step.</figcaption>
+    </figure>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Step</th><th>Input</th><th>Output</th><th>Notes</th></tr></thead>
+    <tbody>
+    <tr><td><code>crawl listing</code></td><td><code>/reports/all</code></td><td>Raw pages</td><td>Ascending date order, so new reports append; the tail is fetched again to catch them</td></tr>
+    <tr><td><code>crawl facets</code></td><td>One filtered view per facet value</td><td>Raw pages</td><td>Row markup prints only topics, so membership in a filtered view is how a report gets OIG's VISN, state, and other labels</td></tr>
+    <tr><td><code>crawl reports</code></td><td>Report pages</td><td>Raw pages</td><td>PDF links and summaries exist only here, and closure dates are read here too. A refresh fetches only reports whose statuses changed</td></tr>
+    <tr><td><code>crawl pdfs</code></td><td>PDFs under <code>/sites/default/files/</code></td><td>Raw PDFs</td><td>Host and path allow-list. A URL already fetched is not fetched again</td></tr>
+    <tr><td><code>parse *</code></td><td>Raw store</td><td>Parsed records, summaries, anomalies</td><td>Offline. A parser fix never requires a new crawl</td></tr>
+    <tr><td><code>ingest</code></td><td>Parsed JSONL</td><td><code>work.sqlite</code></td><td>Idempotent per run. Invalid or unattachable rows go to a rejects file with the reason</td></tr>
+    <tr><td><code>index</code></td><td>Content tables</td><td>FTS5 indexes</td><td>Rebuilt, not maintained with triggers</td></tr>
+    <tr><td><code>embed</code></td><td>Recommendation and response text</td><td><code>text_embeddings</code></td><td>Keyed by text hash, so only changed text is embedded</td></tr>
+    <tr><td><code>derive</code></td><td>Base tables, vectors</td><td>Facilities, inspections, clusters</td><td>Rebuilt in one transaction</td></tr>
+    <tr><td><code>validate</code></td><td>Build and OIG's live pages</td><td><code>validation.md</code>, <code>validation.json</code></td><td>Failure stops the refresh before publish</td></tr>
+    <tr><td><code>snapshot</code></td><td><code>work.sqlite</code></td><td>A dated, checksummed copy</td><td><code>VACUUM INTO</code>, manifest, <code>SHA256SUMS</code>. The evaluation pins one by checksum</td></tr>
+    <tr><td><code>publish</code></td><td><code>work.sqlite</code></td><td><code>oig.sqlite</code></td><td>Vacuumed copy, FTS rebuilt on the copy, then <code>os.replace</code></td></tr>
+    </tbody></table></div>
+    <p>The cold-start crawl was 6,122 requests over 2 hours 41 minutes, with no errors and 3.5 GB of PDFs. Parsing, ingest, and derive take minutes.</p>
+    <h3 id="crawling-rules">Crawling rules</h3>
+    <p><code>PoliteClient</code> enforces the rules by construction: one request at a time, at least 1.5 seconds apart including redirect hops, backoff on 429 and 5xx, <code>Retry-After</code> honored, and redirects followed only within the allowed hosts. A stage stops after 10 consecutive failures, because the site policy says to stop rather than push through. Failed items stay eligible for retry, so a rerun with the same <code>--run-id</code> resumes.</p>
+    <h3 id="pdf-extraction">PDF extraction</h3>
+    <p>pypdf extracts text page by page, with its <code>crypto</code> extra because VA's PDFs use AES owner-password encryption. Lines repeated at the top or bottom of more than half of a document's pages move out of the text, so running footers do not pollute search or split a table of contents. Page numbers are physical PDF pages.</p>
+    <p>All 2,214 extracted documents have a usable text layer (<code>ocr_needed</code> = 0), so OCR and layout-model parsing are not used. One PDF could not be read (<code>PdfStreamError</code>), and 14 reports with recommendations have no PDF link.</p>
+    <h3 id="inspection-parsing">Inspection parsing</h3>
+    <p>Rule-based, with no LLM. The target-date line is the most consistent marker across the corpus, so each block is built outward from it: search up to 40 lines back for its heading (<code>Recommendation N</code>, or a numbered <code>N. The ...</code>), then read the verdict above and the labeled response below. Facility identity comes from memo headers (<code>From: Director, VA El Paso Healthcare System (756)</code>).</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Template</th><th class="num">Reports</th><th class="num">Fully parsed</th><th class="num">Target</th></tr></thead>
+    <tbody>
+    <tr><td>Healthcare Facility Inspection (HFI)</td><td class="num">90</td><td class="num">90 (100%)</td><td class="num">100%</td></tr>
+    <tr><td>Comprehensive Healthcare Inspection Program (CHIP), 2018 on</td><td class="num">312</td><td class="num">297 (95.2%)</td><td class="num">90%</td></tr>
+    <tr><td>All other reports, best effort</td><td class="num">1,812</td><td class="num">731 (40.3%)</td><td class="num">None</td></tr>
+    </tbody></table></div>
+    <p>"Fully parsed" means every recommendation has a verdict, a target, and an action. It does not require a domain.</p>
+    <p>A parse rate says fields were filled, not that they are right. So the stage also compares each block's text with the listing's text for that recommendation number, an independent record. A response with under 50% word agreement is dropped and logged as an anomaly, because the likely cause is a corrective action attached to the wrong recommendation. On this build, no HFI or CHIP response was dropped, and 45 others were.</p>
+    </div></section>
+    <section id="data-model"><div class="wrap">
+    <h2>Data model</h2>
+    <p>SQLite is the system of record, in a single file with forward-only migrations.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Table</th><th class="num">Rows</th><th>Key and purpose</th></tr></thead>
+    <tbody>
+    <tr><td><code>reports</code></td><td class="num">4,415</td><td>Keyed by site <code>path</code>. <code>node_id</code> is nullable, because vaoig.gov exposes it only for reports with recommendations</td></tr>
+    <tr><td><code>recommendations</code></td><td class="num">15,649</td><td><code>rec_id</code> = <code>&lt;node_id&gt;-&lt;rec_no&gt;</code></td></tr>
+    <tr><td><code>status_observations</code></td><td class="num">31,296</td><td>Append-only, one per recommendation per run, so history accumulates</td></tr>
+    <tr><td><code>report_facets</code></td><td class="num">17,734</td><td>OIG's own classifications</td></tr>
+    <tr><td><code>pdf_documents</code>, <code>pdf_pages</code></td><td class="num">2,214, 89,261</td><td>Page text</td></tr>
+    <tr><td><code>rec_responses</code></td><td class="num">11,240</td><td>Domain, concurrence, target date with precision, corrective action</td></tr>
+    <tr><td><code>standards_cited</code></td><td class="num">23,750</td><td>Directive, handbook, and regulation citations, at report level</td></tr>
+    <tr><td><code>facilities</code>, <code>report_facilities</code></td><td class="num">162, 2,283</td><td>Keyed by VA station number. Each link records its method</td></tr>
+    <tr><td><code>inspections</code></td><td class="num">815</td><td>Per facility, with a view for the latest one and its next-window estimate</td></tr>
+    <tr><td><code>clusters</code>, <code>rec_clusters</code></td><td class="num">283, 2,591</td><td>Recurring recommendations. Each cluster records its method and threshold</td></tr>
+    <tr><td><code>text_embeddings</code></td><td class="num">26,049</td><td>768-dimension float32 vectors as BLOBs, with model name and text hash</td></tr>
+    </tbody></table></div>
+    </div></section>
+    <section id="derived-data"><div class="wrap">
+    <h2>Derived data</h2>
+    <p><strong>Facilities.</strong> Keyed by station number from memo headers. Central-office routing symbols (station numbers below 300) look identical in those headers, so they are excluded, along with names that are roles or offices. Of 2,283 report links, 1,311 use a station number from the PDF and 972 are inferred from a facility name in the title. Each link records its method in <code>link_method</code>, and names shared by two stations are not used for title matching.</p>
+    <p><strong>Clusters</strong> use two methods, because the corpus has two kinds of wording.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Method</th><th>Scope</th><th>How</th><th>Result</th></tr></thead>
+    <tbody>
+    <tr><td><code>normalized-prefix-1</code></td><td>All reports</td><td>First 12 words after removing the addressee, stock openers, numbers, punctuation, and facility names; 5+ reports</td><td>259 clusters, 2,426 recommendations</td></tr>
+    <tr><td><code>semantic-seed-1</code></td><td>HFI reports</td><td>Cosine similarity of at least 0.88 to one central recommendation; 3+ reports</td><td>24 clusters, 165 recommendations</td></tr>
+    </tbody></table></div>
+    <p>Prefix matching suits older templated language. It found only one recurring HFI finding, because the current program's wording varies. In the semantic method, each group is everything directly similar to a seed, rather than linked neighbors, because linking chained unrelated findings into a single group of 72 reports. Seeds are chosen by density, and the threshold was set by reviewing results on this data. The same theme can still split across clusters: test-result communication appears in several.</p>
+    <p><strong>Next inspection window.</strong> The latest inspection plus three years, based on the HFI program's stated approximate cycle. OIG publishes no schedule, so the API labels it an estimate in every response.</p>
+    </div></section>
+    <section id="api"><div class="wrap">
+    <h2>API</h2>
+    <p>FastAPI on uvicorn. Each request opens its own read-only connection, so a published database takes effect on the next request with no restart. A connection may move between pool threads during a request, but only one thread uses it at a time.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Endpoints</th><th>Purpose</th><th>How rows are found</th></tr></thead>
+    <tbody>
+    <tr><td><code>GET /v1/search</code></td><td>Find, in any wording</td><td>Hybrid, fused (below)</td></tr>
+    <tr><td><code>GET /v1/recommendations</code>, <code>/v1/reports</code></td><td>Exact, countable lists</td><td>SQL filters, optional FTS5</td></tr>
+    <tr><td><code>GET /v1/reports/{node_id}</code>, <code>/v1/facilities/{station}</code>, <code>/v1/clusters/{id}</code></td><td>Detail</td><td>Exact key</td></tr>
+    <tr><td><code>GET /v1/facilities</code>, <code>/v1/clusters</code>, <code>/v1/inspections</code></td><td>Lookups</td><td>SQL, <code>LIKE</code></td></tr>
+    <tr><td><code>GET /v1/pages/search</code></td><td>Narrative text</td><td>FTS5 with snippets</td></tr>
+    <tr><td><code>GET /v1/metrics/closure</code>, <code>/v1/metrics/counts</code></td><td>Aggregates</td><td>SQL filters, computed in Python</td></tr>
+    <tr><td><code>GET /v1/taxonomy/{facet}</code>, <code>/v1/meta</code></td><td>Reference and freshness</td><td>SQL</td></tr>
+    <tr><td><code>GET /health</code>, <code>/health/search</code></td><td>Liveness; whether search runs both halves</td><td></td></tr>
+    </tbody></table></div>
+    <p><strong>Strict parameters.</strong> An unknown query parameter returns <code>422</code>, naming it and listing what is allowed. A misspelled filter would otherwise be ignored and return unfiltered numbers that look correct. The cost is a version dependency: the MCP server cannot send a new parameter until the API supports it.</p>
+    <p><strong>Queries.</strong> SQL is written ahead of time as fixed pieces and assembled per request. Values are always bound; sort options and table names come from allow-lists. Neither the assistant nor the MCP server writes SQL. That rules out injection and the failure where a model composes a plausible but wrong query. The one exception is <code>q_mode=raw</code>, which passes FTS5 syntax through as a bound value, so it can affect what is matched but not the SQL itself.</p>
+    <p><strong>Context budget.</strong> Lists page at 20 by default and 100 at most. Facility detail returns its 25 newest recommendations by default, because the largest facilities reached 360 KB unpaged. Search returns ranked records, and the assistant writes the answer.</p>
+    <h3 id="search">Search</h3>
+    <figure>
+      <div class="scroll"><img src="assets/mcp-hackathon/hybrid-search.svg" alt="Hybrid search: a query becomes a keyword query and a local query vector. Keywords run BM25 over recommendations, corrective actions, and PDF pages. The vector runs cosine similarity over recommendations and corrective actions. The four lists merge by reciprocal rank fusion with k of 60 into a shortlist of up to 100, returned with up to 5 PDF page hits." width="920" height="540"></div>
+      <figcaption>Every query runs all four recommendation lists. Filters apply to every list.</figcaption>
+    </figure>
+    <p>There are no modes to choose, and the MCP server exposes one search tool, so an assistant never guesses between similar tools. Rank fusion needs no score calibration, and a recommendation found through several lists rises. Filters apply to every list. Vectors are cached in memory until the database file changes, then scanned with NumPy, which is adequate at this size.</p>
+    <p><strong>Finding and counting are separate.</strong> Similarity has no natural cutoff, so a count built on it would depend on an arbitrary threshold. <code>total</code> on <code>/v1/search</code> is the shortlist size, not a count of findings. Every endpoint that counts uses exact SQL and rejects similarity, so a query returns the same number each time and can be checked against gold answers.</p>
+    <p><strong>If the model is down,</strong> the semantic lists are empty and the same pipeline runs on keywords. <code>search_mode</code> reports <code>keyword_fallback</code>, and <code>/health/search</code> reports <code>degraded</code>.</p>
+    <h4 id="search-settings">Search settings</h4>
+    <div class="table-wrap"><table>
+<thead><tr><th>Setting</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Keyword query</td><td>Stopwords removed, words joined with OR, ranked by BM25</td></tr>
+<tr><td>Embedding input</td><td><code>search_query:</code> and <code>search_document:</code> task prefixes; indexed text capped at 2,000 characters</td></tr>
+<tr><td>Vectors</td><td>Unit-length float32, stored in the database file, so a snapshot carries its exact index</td></tr>
+<tr><td>Candidates per list</td><td>200</td></tr>
+<tr><td>Fusion</td><td>Each list adds 1 / (60 + rank) to a recommendation's score</td></tr>
+<tr><td>Result</td><td>A shortlist of up to 100, paged, with <code>matched_by</code> naming the lists that found each item</td></tr>
+<tr><td>Embedding timeout</td><td>5 seconds, then keyword fallback for that search</td></tr>
+</tbody></table></div>
+    <h4 id="considered-and-left-out">Considered and left out</h4>
+    <ul class="clean">
+    <li><strong>Cross-encoder reranker:</strong> another service to keep up. It can be added after fusion if the evaluation shows ranking trouble, without changing the tool.</li>
+    <li><strong><code>sqlite-vec</code>:</strong> a native extension in the container, for no gain at this size.</li>
+    <li><strong>A larger embedding model (<code>qwen3-embedding:8b</code>):</strong> 35 minutes or more to embed, against about 2, with 19 GB held in memory. Ruled out on operating cost; its quality was not compared.</li>
+    <li><strong>Embedding PDF pages:</strong> chunking and a much larger index, for a narrative search that keywords serve adequately so far.</li>
+    </ul>
+    </div></section>
+    <section id="data-quality"><div class="wrap">
+    <h2>Data quality</h2>
+    <p>Three layers keep a pipeline that "succeeds" with bad data from going unnoticed.</p>
+    <p><strong>Reconciliation with OIG.</strong> Each build compares itself with what OIG publishes. Totals alone proved misleading: OIG prints 586 open and 15,778 total, against our 567 and 15,649. A row-by-row comparison on November 4 found the same recommendation IDs in both, with none missing either way. The whole difference was blank rows on OIG's pages: 19 in the open view and 129 overall. So <code>validate</code> now compares the open view by ID on every build, and any difference fails it. The full-listing comparison was a one-time check. It also compared closure dates, which <code>/recommendations-all</code> shows independently of report pages: all 14,223 agreed, and none of the 859 recommendations without a date had one there.</p>
+    <p><strong>Data gates.</strong> Thresholds that catch silent loss, such as a markup change that empties a field. These thresholds are judgment calls, informed by this one build.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Gate</th><th class="num">Value</th><th class="num">Threshold</th></tr></thead>
+    <tbody>
+    <tr><td>Closed recommendations with a closure date</td><td class="num">94.3%</td><td class="num">90%</td></tr>
+    <tr><td>Reports with recommendations having a PDF</td><td class="num">99.3%</td><td class="num">90%</td></tr>
+    <tr><td>Reports with recommendations having a summary</td><td class="num">99.9%</td><td class="num">80%</td></tr>
+    <tr><td>Recommendations with a vector</td><td class="num">100%</td><td class="num">99%</td></tr>
+    <tr><td>Corrective actions with a vector</td><td class="num">100%</td><td class="num">99%</td></tr>
+    <tr><td>Reports with a state or VISN</td><td class="num">74.3%</td><td class="num">25%</td></tr>
+    </tbody></table></div>
+    <p><strong>Quality checks</strong> report without failing: orphan rows, count mismatches, impossible dates, link methods, recommendations missing from the latest listing, and office labels not on OIG's list. On this build, none were missing and no labels were unmapped.</p>
+    </div></section>
+    <section id="observability"><div class="wrap">
+    <h2>Observability</h2>
+    <div class="table-wrap"><table>
+    <thead><tr><th>Signal</th><th>Where</th></tr></thead>
+    <tbody>
+    <tr><td>Request log: path, status, duration</td><td>API log</td></tr>
+    <tr><td>Search log: mode, query length, list sizes</td><td>API log. Query text is never logged, because a user may describe their own facility</td></tr>
+    <tr><td>Pipeline log, with a warning when a stage ends with problems</td><td>Pipeline log</td></tr>
+    <tr><td>Search health and fallback counters since start</td><td><code>GET /health/search</code></td></tr>
+    <tr><td>Stage counts, anomalies, parse rates, fetch failures</td><td>Per-stage run output</td></tr>
+    <tr><td>Rows ingest refused, with reasons</td><td>Rejects file</td></tr>
+    <tr><td>Build comparison with OIG</td><td>Validation report, and <code>reconciliation</code> in <code>GET /v1/meta</code></td></tr>
+    </tbody></table></div>
+    <p>Logs rotate. No alerting is configured, so a failure is visible only to someone who looks.</p>
+    </div></section>
+    <section id="security"><div class="wrap">
+    <h2>Security</h2>
+    <ul class="clean">
+    <li><strong>Public data, access-controlled API.</strong> All data is public. The token manages load and usage.</li>
+    <li><strong>Network.</strong> Loopback bind, outbound-only tunnel, and an Access policy allowing only the service token. Unauthenticated requests get <code>401</code>, verified with no token and with a fake one.</li>
+    <li><strong>Credentials.</strong> The token is held in secret stores and never in a repository.</li>
+    <li><strong>Read-only serving.</strong> The API opens the database with <code>mode=ro</code>, with bound parameters throughout. There are no write endpoints.</li>
+    <li><strong>Crawl boundary.</strong> HTTPS on allowed hosts only, on-site redirects only, and a path allow-list for PDFs.</li>
+    <li><strong>No rating of facilities.</strong> Metrics have no <code>group_by=facility</code>, and a test enforces that. Facility data is listed, not scored.</li>
+    </ul>
+    </div></section>
+    <section id="design-decisions"><div class="wrap">
+    <h2>Design decisions</h2>
+    <div class="table-wrap"><table>
+    <thead><tr><th>Decision</th><th>Trade-off accepted</th></tr></thead>
+    <tbody>
+    <tr><td>SQLite in one file</td><td>One writer, one host; no database server to run</td></tr>
+    <tr><td>Status as append-only observations</td><td>More rows, in exchange for history</td></tr>
+    <tr><td>Container on a local machine, not Cloudflare D1</td><td>Availability depends on one Mac</td></tr>
+    <tr><td>Reports keyed by path</td><td>A changed slug on a report with no recommendations and no number can duplicate it</td></tr>
+    <tr><td>One hybrid search, with local embeddings</td><td>Live semantic search depends on Ollama</td></tr>
+    <tr><td>Rule-based PDF parsing, no LLM extraction</td><td>Lower coverage on other report types, in exchange for deterministic, testable output</td></tr>
+    <tr><td>Vectors stored in the database file</td><td>A larger file, in exchange for snapshots that carry their exact index</td></tr>
+    </tbody></table></div>
+    </div></section>
+    <section id="testing"><div class="wrap">
+    <h2>Testing</h2>
+    <p>Testing has three layers: an automated suite that runs offline, checks against the full build and OIG's live site, and measurements of the running service.</p>
+    <h3 id="automated-suite">Automated suite</h3>
+    <p><code>uv run pytest</code> runs 160 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Test file</th><th class="num">Cases</th><th>Covers</th></tr></thead>
+    <tbody>
+    <tr><td><code>test_pipeline.py</code></td><td class="num">43</td><td>Report page parsing, later-stage ingest, re-ingest by content hash, rejected rows, missing recommendations, office labels, derive, clusters, gates, reconciliation, snapshots, refresh stopping at a failure</td></tr>
+    <tr><td><code>test_api_analytics.py</code></td><td class="num">35</td><td>Page search, facilities, clusters, and metrics, including hand-computed medians and quartiles</td></tr>
+    <tr><td><code>test_pdf_parsers.py</code></td><td class="num">26</td><td>Page extraction, and HFI and CHIP parsing against the real PDFs</td></tr>
+    <tr><td><code>test_api_v1.py</code></td><td class="num">18</td><td>Response contracts for list and detail endpoints, strict parameters, and concurrency</td></tr>
+    <tr><td><code>test_hybrid.py</code></td><td class="num">14</td><td>Fusion, filters on every list, keyword fallback when the model is down, query text never logged, counting endpoints rejecting similarity</td></tr>
+    <tr><td><code>test_listing_parser.py</code></td><td class="num">7</td><td>Listing rows, statuses, and text repair</td></tr>
+    <tr><td><code>test_http.py</code></td><td class="num">7</td><td>Request delay, honest User-Agent, <code>Retry-After</code>, giving up, off-site redirects refused</td></tr>
+    <tr><td><code>test_api.py</code></td><td class="num">5</td><td>Health and meta, and a republish served with no restart</td></tr>
+    <tr><td><code>test_db.py</code></td><td class="num">3</td><td>Migrations, foreign keys, read-only publish</td></tr>
+    <tr><td><code>test_ingest.py</code>, <code>test_rawstore.py</code></td><td class="num">2</td><td>Status history across runs, and raw store de-duplication</td></tr>
+    </tbody></table></div>
+    <p>The concurrency test runs a real uvicorn server, because <code>TestClient</code> did not reproduce the bug it guards against. It was confirmed to fail without the fix.</p>
+    <h3 id="checks-on-the-full-build">Checks on the full build</h3>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Check</th><th>Method</th><th>Result</th></tr></thead>
+    <tbody>
+    <tr><td>Recommendations against OIG</td><td>Compared every ID and closure date with <code>/recommendations-all</code>, once</td><td>Same 15,649 IDs, none missing either way, and all 14,223 closure dates agree</td></tr>
+    <tr><td>Open recommendations against OIG</td><td>Compared by ID on every build</td><td>567 in both</td></tr>
+    <tr><td>Re-ingest is stable</td><td>Loaded the full run twice on a copy and compared content hashes</td><td>Hash unchanged, 0 rejected rows</td></tr>
+    <tr><td>Rebuild is stable</td><td>Reran ingest, index, embed, and derive with no new crawl</td><td>Hash unchanged, 0 texts re-embedded</td></tr>
+    <tr><td>Responses attached to the right recommendation</td><td>Word agreement between each parsed block and the listing's text</td><td>No HFI or CHIP response dropped, 45 others dropped</td></tr>
+    <tr><td>Data gates</td><td>Six thresholds on every build</td><td>All passed (see Data quality)</td></tr>
+    <tr><td>Overlapping requests</td><td>15 rounds of 60 requests across seven live endpoints</td><td>No 500s, dropped connections, or thread errors</td></tr>
+    <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, and the real token</td><td>401, 401, 200, run from the host machine</td></tr>
+    <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build</td></tr>
+    </tbody></table></div>
+    <h3 id="bugs-these-checks-found">Bugs these checks found</h3>
+    <p>Most of the serious defects appeared only on real data or under load, so a passing suite is necessary here but not sufficient.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Defect</th><th>How it surfaced</th><th>Fix</th></tr></thead>
+    <tbody>
+    <tr><td>CHIP parsing at 29%</td><td>Parse rates on the full corpus</td><td>Rebuilt around target-date lines, reaching 95.2%</td></tr>
+    <tr><td>Central-office memos appearing as facilities</td><td>Reviewing the facility list</td><td>Station numbers below 300 and role names excluded</td></tr>
+    <tr><td>Search taking 900 ms</td><td>Timing live queries</td><td>Query plan fixed by removing a <code>LEFT JOIN</code>, reaching about 100 ms</td></tr>
+    <tr><td>Reports sharing a PDF lost their text</td><td>Full-build coverage</td><td>Parse results keyed by URL and node id</td></tr>
+    <tr><td>A data gate computed on the wrong denominator</td><td>Reading the validation report</td><td>Denominator corrected</td></tr>
+    <tr><td>500s and dropped connections on overlapping requests</td><td>The MCP server's parallel calls</td><td>Connections may be closed on another pool thread</td></tr>
+    <tr><td>Re-ingest changed the content hash</td><td>Running the check on real data, after the fixture test passed</td><td>Surrogate ids left out of the hash</td></tr>
+    </tbody></table></div>
+    <h3 id="measurements">Measurements</h3>
+    <p>Measured against the running container, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Request</th><th class="num">Requests</th><th class="num">Median</th><th class="num">Slowest</th></tr></thead>
+    <tbody>
+    <tr><td><code>/v1/search</code>, 10 test questions, one at a time</td><td class="num">50</td><td class="num">125 ms</td><td class="num">181 ms</td></tr>
+    <tr><td><code>/v1/search</code>, 25 at once</td><td class="num">100</td><td class="num">1,845 ms</td><td class="num">2,747 ms</td></tr>
+    <tr><td><code>/v1/metrics/closure</code></td><td class="num">30</td><td class="num">49 ms</td><td class="num">57 ms</td></tr>
+    <tr><td><code>/v1/facilities/{station}</code></td><td class="num">30</td><td class="num">9 ms</td><td class="num">10 ms</td></tr>
+    <tr><td><code>/v1/clusters</code></td><td class="num">30</td><td class="num">8 ms</td><td class="num">9 ms</td></tr>
+    <tr><td><code>/v1/metrics/counts</code></td><td class="num">30</td><td class="num">3 ms</td><td class="num">4 ms</td></tr>
+    <tr><td><code>/v1/recommendations</code>, with a keyword</td><td class="num">30</td><td class="num">2 ms</td><td class="num">5 ms</td></tr>
+    <tr><td><code>/v1/pages/search</code></td><td class="num">30</td><td class="num">2 ms</td><td class="num">3 ms</td></tr>
+    <tr><td><code>/v1/reports/{id}</code></td><td class="num">30</td><td class="num">2 ms</td><td class="num">2 ms</td></tr>
+    </tbody></table></div>
+    <p>All of these returned 200. Parallel searches queue at about 14 per second on this machine, so latency grows with concurrency. These are small samples, not a sustained load test.</p>
+    <h3 id="search-relevance-test">Search relevance test</h3>
+    <p>Compared <code>/v1/search</code> with OIG's <code>/recommendations-all</code> search on 10 plain-language questions, each as a full sentence and as short keywords fixed before any results were read. OIG returned no results for any full sentence. The top 5 recommendations from the other three searches were pooled into 99 distinct results and shuffled. Two separate Claude agents judged each result with no project context and no view of which search found it, and a result counted as relevant only if both marked it so. They agreed on 98 of 99, but they are the same model, so that is not independent confirmation. No person judged the results.</p>
+    <p>Each cell shows relevant results in the top 3, relevant results in the top 5, and results returned.</p>
+    <div class="table-wrap wide"><table>
+    <thead><tr><th>Question</th><th class="num">This service, sentence</th><th class="num">This service, keywords</th><th class="num">OIG, keywords</th></tr></thead>
+    <tbody>
+    <tr><td>Abnormal biopsy result not communicated</td><td class="num">2 / 4 / 5</td><td class="num">1 / 3 / 5</td><td class="num">3 / 5 / 5</td></tr>
+    <tr><td>Medication carts left unlocked</td><td class="num">3 / 5 / 5</td><td class="num">2 / 3 / 5</td><td class="num">0 / 2 / 5</td></tr>
+    <tr><td>Inpatient walked out of a locked unit</td><td class="num">0 / 1 / 5</td><td class="num">2 / 2 / 5</td><td class="num">0 / 0 / 5</td></tr>
+    <tr><td>Nurses not trained on infusion pumps</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 0</td></tr>
+    <tr><td>Practicing after a license lapsed</td><td class="num">1 / 2 / 5</td><td class="num">1 / 1 / 5</td><td class="num">1 / 1 / 1</td></tr>
+    <tr><td>High suicide risk, no follow-up call</td><td class="num">2 / 4 / 5</td><td class="num">1 / 3 / 5</td><td class="num">1 / 1 / 1</td></tr>
+    <tr><td>Expired supplies in sterile storage</td><td class="num">3 / 5 / 5</td><td class="num">3 / 5 / 5</td><td class="num">2 / 4 / 5</td></tr>
+    <tr><td>Fall injury never reported</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 5</td><td class="num">0 / 0 / 1</td></tr>
+    <tr><td>Community care consults not tracked</td><td class="num">0 / 1 / 5</td><td class="num">0 / 0 / 5</td><td class="num">1 / 1 / 5</td></tr>
+    <tr><td>Blind patients and the check-in kiosk</td><td class="num">1 / 2 / 5</td><td class="num">1 / 1 / 5</td><td class="num">0 / 0 / 0</td></tr>
+    <tr><td><strong>All</strong></td><td class="num"><strong>12 / 24 / 50</strong></td><td class="num"><strong>11 / 18 / 50</strong></td><td class="num"><strong>8 / 14 / 28</strong></td></tr>
+    </tbody></table></div>
+    <p>Limits of this test: it is small, the questions favor this service because they were written knowing its results, OIG orders by date rather than relevance, OIG's report-level hits with no recommendation row were not judged, and corrective actions were not judged.</p>
+    <h3 id="not-yet-tested">Not yet tested</h3>
+    <ul class="clean">
+    <li>Answer quality end to end. A formal evaluation against gold answers computed from the data is planned in <code>oig-mcp</code>.</li>
+    <li>Search relevance as judged by a person.</li>
+    <li>Sustained load, or more concurrency than the runs above.</li>
+    <li>Access control from outside the host's network. The first call from IBM Cloud will serve as this check.</li>
+    <li>Recovery after a reboot of the host.</li>
+    </ul>
+    </div></section>
+    <section id="known-limits"><div class="wrap">
+    <h2>Known limits</h2>
+    <p><strong>Data</strong></p>
+    <ul class="clean">
+    <li>Page text and parsed responses cover only reports with recommendations. The other 2,186 reports have no node id in the schema, so they are listed but have no page text.</li>
+    <li><code>domain</code> is missing on 62% of HFI responses (208 of 338). Newer reports gather recommendations in an end section, with nothing tying them to a domain, so the field stays empty rather than guessing.</li>
+    <li>OIG tagged only about a quarter of reports with a topic, so <code>group_by=topic</code> covers only those.</li>
+    <li>859 closed recommendations (5.7%) show no closure date on OIG's site, mostly from 2013 to 2016.</li>
+    <li><strong>The meaning of a closure date is inferred.</strong> It appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. 1,163 are dated the day the report was published, presumably fixed beforehand. So a closure date is not a facility's completion date, and the API refuses to report an on-time rate. Medians of small groups can be 0 for this reason.</li>
+    <li>12 closure dates precede publication. They are excluded from day statistics and counted.</li>
+    <li>Status history has only two observations so far.</li>
+    </ul>
+    <p><strong>Search and analysis</strong></p>
+    <ul class="clean">
+    <li>Search quality is only lightly measured (see Search relevance test). About half of the top results were relevant, and precision was about the same as OIG's. <code>/v1/search</code> always returns a full shortlist, relevant or not, because similarity has no natural cutoff, so its consumer has to read results critically.</li>
+    <li>Under heavy parallel load, a query embedding can exceed its 5 second timeout, and that search then runs on keywords only. The response reports this in <code>search_mode</code>. It did not occur in the runs above.</li>
+    <li>Near-duplicate templated recommendations can fill the top of a shortlist.</li>
+    <li>Title-based facility links were spot-checked, not systematically reviewed.</li>
+    </ul>
+    <p><strong>Operations</strong></p>
+    <ul class="clean">
+    <li>The backend is hosted on one personal Mac for the competition, a single point of failure.</li>
+    <li>Scheduled refresh is not installed, so <code>data_as_of</code> ages until someone runs <code>refresh</code>. The MCP server flags data older than 30 days.</li>
+    <li>There is no alerting and no rate limiting beyond the token.</li>
+    </ul>
+    </div></section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+      <p><a href="/mcp-hackathon-backend">Data Source Overview</a> · <a href="/">Troy E. Sybert, MD</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
