@@ -65,9 +65,11 @@
     .qa .note strong.result { display: block; font-size: 15.5px; margin-bottom: 3px; }
     footer { padding: 36px 0 56px; font-size: 14px; color: var(--ink-3); }
     /* hero-nav start */
-    .hero-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 26px; }
+    .hero-nav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; margin-top: 26px; }
     .hero-nav a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 10px; background: #fff; color: #2c3e50; font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; border-radius: 7px; }
     .hero-nav a:hover { background: #eaf4fb; text-decoration: none; }
+    .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
+    .hero-back:hover { color: #fff; text-decoration: underline; }
     @media (max-width: 600px) {
       .hero-nav { gap: 6px; margin-top: 22px; }
       .hero-nav a { min-height: 52px; padding: 6px 4px; font-size: 12px; }
@@ -76,18 +78,18 @@
   </style>
 </head>
 <body>
-  <div class="topbar"><div class="wrap"><a class="home" href="/mcp-hackathon">&larr; Back to the project page</a></div></div>
+  <div class="topbar"><div class="wrap"><a class="home" href="/">troymd.com</a></div></div>
   <header class="hero"><div class="wrap">
     <div class="eyebrow">Test Bank</div>
     <h1>Questions and Answers</h1>
     <p class="lead">Eighteen questions put to an AI agent that had nothing to do with building this project, using only the MCP server's tools. Each card shows the answer a user would normally get, word for word, with a note on how it checked out, including the misses.</p>
     <p class="meta">Agent: DeepSeek V4 Pro 0813, through Hermes Agent. Data as of November 4, 2026.</p>
       <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon">Project Home</a>
         <a href="/mcp-hackathon-overview">MCP Exec Summary</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
         <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
       </nav>
+      <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
   </div></header>
   <main>
     <section><div class="wrap">

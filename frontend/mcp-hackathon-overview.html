@@ -85,9 +85,11 @@
       .scenario { padding: 20px; }
     }
     /* hero-nav start */
-    .hero-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 26px; }
+    .hero-nav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; margin-top: 26px; }
     .hero-nav a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 10px; background: #fff; color: #2c3e50; font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; border-radius: 7px; }
     .hero-nav a:hover { background: #eaf4fb; text-decoration: none; }
+    .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
+    .hero-back:hover { color: #fff; text-decoration: underline; }
     @media (max-width: 600px) {
       .hero-nav { gap: 6px; margin-top: 22px; }
       .hero-nav a { min-height: 52px; padding: 6px 4px; font-size: 12px; }
@@ -99,7 +101,7 @@
 
   <header class="topbar">
     <div class="wrap">
-      <a class="home" href="/mcp-hackathon">&larr; Back to the project page</a>
+      <a class="home" href="/">troymd.com</a>
     </div>
   </header>
 
@@ -110,11 +112,11 @@
       <p class="lead">The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
       <p class="meta">Status and figures as of November 4, 2026</p>
       <nav class="hero-nav" aria-label="Project pages">
-        <a href="/mcp-hackathon">Project Home</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
         <a href="/mcp-hackathon-architecture">Data Source Tech Summary</a>
         <a href="/mcp-hackathon-test-bank">Test Bank</a>
       </nav>
+      <a class="hero-back" href="/mcp-hackathon">&larr; Back to the project page</a>
     </div>
   </div>
 
@@ -243,7 +245,6 @@
               </tbody>
             </table>
           </div>
-          <p class="small">Counts depend on the search words, so these differ from the theme-based counts through 2024 on the <a href="/mcp-hackathon">project page</a>.</p>
           <p>Taken alone, that looks like facilities improved and then slipped. The data cannot support that by itself. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, where this finding appears in 20 of 45 reports in 2025 and 28 of 61 so far in 2026. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop.</p>
           <div class="evidence"><strong>The difference.</strong> The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.</div>
         </div>

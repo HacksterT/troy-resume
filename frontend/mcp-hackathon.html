@@ -104,9 +104,11 @@
       td:first-child { white-space: normal; }
     }
     /* hero-nav start */
-    .hero-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 26px; }
+    .hero-nav { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; margin-top: 26px; }
     .hero-nav a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 8px 10px; background: #fff; color: #2c3e50; font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; border-radius: 7px; }
     .hero-nav a:hover { background: #eaf4fb; text-decoration: none; }
+    .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
+    .hero-back:hover { color: #fff; text-decoration: underline; }
     @media (max-width: 600px) {
       .hero-nav { gap: 6px; margin-top: 22px; }
       .hero-nav a { min-height: 52px; padding: 6px 4px; font-size: 12px; }
@@ -127,7 +129,7 @@
       <div class="eyebrow">GSA MCP Server and AI Agent Government Hackathon · Dataset Access track</div>
       <h1>VA OIG Recommendations MCP Server</h1>
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every finding it returns carries a report number and a link.</p>
-      <p class="meta">Status as of November 4, 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
+      <p class="meta">For hackathon judges and technical reviewers · Status as of November 4, 2026 · Built entirely from information VA OIG publishes at vaoig.gov</p>
       <nav class="hero-nav" aria-label="Project pages">
         <a href="/mcp-hackathon-overview">MCP Exec Summary</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
@@ -181,36 +183,22 @@
       </div>
     </section>
 
-    <section id="scenarios">
+    <section id="possible">
       <div class="wrap">
         <h2>What the server makes possible</h2>
-
-        <div class="scenario">
-          <h3>Preparing for an inspection</h3>
-          <p>OIG's Healthcare Facility Inspection program reviews each VHA medical facility on an approximately three-year cycle across five domains: culture, environment of care, patient safety, primary care, and the Veteran-centered safety net. A patient safety manager whose facility is coming due asks what peers were cited for, which findings recur, and what those facilities did in response. The server provides the facility's own prior findings and whether they closed, recurring peer findings and how common each one is, each peer's committed corrective action and target date, and links to every source report.</p>
-          <div class="evidence">The current data holds 283 groups of recurring findings. The largest in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports.</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Goal</th><th>What the server returns</th></tr></thead>
+            <tbody>
+              <tr><td>Prepare for an inspection</td><td>A facility's own findings and whether they closed, common peer findings, what peers committed to do, and an estimated next window</td></tr>
+              <tr><td>See whether a theme is growing</td><td>Counts by year from one question, with the limits of what a count can show</td></tr>
+              <tr><td>Find what recurs across facilities</td><td>Groups of near-identical findings, and how many reports contain them</td></tr>
+              <tr><td>Track closure</td><td>Time to closure, not-implemented rates, and how old open items are, by office, topic, and report type</td></tr>
+              <tr><td>Explain a facility to the public</td><td>Every report and recommendation for that facility, with status, closure date, and the published facility response</td></tr>
+            </tbody>
+          </table>
         </div>
-
-        <div class="scenario">
-          <h3>Seeing whether a theme is growing</h3>
-          <p>A VISN patient safety officer asks whether suicide-risk and safety-plan findings are rising. On the website, that means repeating a search for each year and tallying the results. The server returns it year by year with open counts and typical time to closure.</p>
-          <div class="evidence">Reports with a recommendation mentioning suicide: 7 in 2015, 35 in 2016, 23 in 2020, 34 in 2021, 32 in 2023, 56 in 2024, and 11 in 2025. A count like this cannot show on its own whether care improved or OIG's focus shifted.</div>
-        </div>
-
-        <div class="scenario">
-          <h3>Reading a pattern honestly</h3>
-          <p>Reports with recommendations that mention test or laboratory results numbered 32 and 27 in 2015 and 2016, then 2 to 11 a year through 2024, then 21 and 28 in 2025 and 2026 so far. It is tempting to say facilities improved and then slipped. The data cannot support that alone: OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop. On October 19, 2026, OIG issued an inspection report for the VA Phoenix Health Care System recommending written workflows for communicating test results under VHA Directive 1088. The server presents both readings with the counts rather than choosing one.</p>
-        </div>
-
-        <div class="scenario">
-          <h3>Tracking closure performance</h3>
-          <p>OIG publishes a closure date for each recommendation. The server turns those dates into time-to-closure figures and not-implemented rates by office, topic, and report type, compared against what OIG publishes. A closure date appears to record when OIG closed a recommendation after reviewing evidence, so these figures describe OIG's process as well as the facility's. The server does not report whether facilities met their target dates.</p>
-        </div>
-
-        <div class="scenario">
-          <h3>Explaining a facility to the public</h3>
-          <p>A Veteran or advocate asks what OIG has found at their medical center. The server returns every report and recommendation for that facility in plain language, with status, closure date, and the published facility response.</p>
-        </div>
+        <p class="small" style="margin-top:10px">Worked examples, with what they look like against OIG's website, are in the <a href="/mcp-hackathon-overview">MCP Exec Summary</a>. Real answers are in the <a href="/mcp-hackathon-test-bank">Test Bank</a>.</p>
       </div>
     </section>
 
@@ -278,13 +266,12 @@
     <section id="limits">
       <div class="wrap">
         <h2>Limits</h2>
-        <p>The server is not a replacement for VA's internal tracking of OIG recommendations, which is organized around compliance with each recommendation; it is built for learning across facilities. Recurrence of a finding does not by itself show that facilities fail to learn from one another, because OIG inspects against a standard protocol and will find what it looks for. Statuses change after each refresh, so every answer carries its data date.</p>
+        <p>The server is not a replacement for VA's internal tracking of OIG recommendations, which is organized around compliance with each recommendation; it is built for learning across facilities. Recurrence of a finding does not by itself show that facilities fail to learn from one another, because OIG inspects against a standard protocol and will find what it looks for. Statuses change after each refresh, so every answer carries its data date. A closure date appears to record when OIG closed a recommendation after reviewing evidence, so time to closure describes OIG's process as well as the facility's, and the server does not report whether facilities met their target dates.</p>
 
         <h3>Sources</h3>
         <ol class="sources">
           <li><a href="https://www.vaoig.gov/reports/data-dashboard">VA OIG Data Dashboard</a>, accessed October 19, 2026</li>
           <li>VA OIG <a href="https://www.vaoig.gov/reports/all">Reports</a> and <a href="https://www.vaoig.gov/recommendations-all">Recommendations</a> listings</li>
-          <li>VA OIG, <a href="https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-phoenix-health-care-system">Healthcare Facility Inspection of the VA Phoenix Health Care System in Arizona</a>, 26-00041-05, October 19, 2026</li>
           <li>GAO, <a href="https://www.gao.gov/products/gao-26-108978">Priority Open Recommendations: Department of Veterans Affairs</a>, GAO-26-108978, May 2026</li>
           <li><a href="https://www.oversight.gov/reports/recommendations">Oversight.gov open recommendations</a></li>
           <li><a href="https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
