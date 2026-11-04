@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VA OIG Recommendations Assistant: Overview</title>
+  <title>MCP Exec Summary: VA OIG Recommendations Assistant</title>
   <meta name="description" content="A plain-language overview for leaders and staff: what an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
-  <meta property="og:title" content="VA OIG Recommendations Assistant: Overview">
+  <meta property="og:title" content="MCP Exec Summary: VA OIG Recommendations Assistant">
   <meta property="og:description" content="What an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-overview">
@@ -96,7 +96,7 @@
 
   <div class="hero">
     <div class="wrap">
-      <div class="eyebrow">Plain-language overview · For leaders and staff</div>
+      <div class="eyebrow">MCP Exec Summary · For leaders and staff</div>
       <h1>VA OIG Recommendations Assistant</h1>
       <p class="lead">The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
       <p class="meta">Status and figures as of November 4, 2026</p>
@@ -168,7 +168,7 @@
           <h3>1. "Has OIG cited this?"</h3>
           <p><strong>The situation.</strong> A patient safety manager notices a problem on rounds and describes it in plain language: <span class="quote">"Staff left medication carts unlocked in a hallway."</span></p>
           <p><strong>Why this is hard today.</strong> OIG's wording is different. Its reports say things like "secure medication carts when not in use," which shares few words with how the manager put it. A word search depends on guessing the right words.</p>
-          <p><strong>What happened when we tried it.</strong> We ran that exact sentence against this project's copy of OIG's recommendations three ways. This tests word matching on our data, not OIG's website itself.</p>
+          <p><strong>What happened when we tried it.</strong> We ran that exact sentence against this project's copy of OIG's recommendations three ways on this project's data, and once on OIG's own recommendation search.</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Approach</th><th>Result</th></tr></thead>
@@ -176,9 +176,11 @@
                 <tr><td>Require every word to match</td><td>No results</td></tr>
                 <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
                 <tr><td>The assistant's search</td><td>Led with recommendations to secure medication carts</td></tr>
+                <tr><td>OIG's recommendation search, same sentence</td><td>No results</td></tr>
               </tbody>
             </table>
           </div>
+          <p>We ran ten such questions through OIG's search. All ten full sentences returned nothing. Because people type keywords into a keyword search, we also tried a short form of each, such as "medication carts," and eight of the ten returned at least one recommendation. Someone who knows OIG's wording will do well there. Someone who doesn't, or an assistant passing along what a person said, will find it much less forgiving. This shows which searches return results, not which results are better, and the questions were written with knowledge of our own results, so they favor this project.</p>
           <div class="evidence"><strong>The difference.</strong> The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The manager also sees what facilities committed to do where that has been extracted. The top results here come from older reports, 2013 to 2015, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.</div>
         </div>
 
