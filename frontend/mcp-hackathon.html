@@ -194,7 +194,7 @@
         <div class="scenario">
           <h3>Seeing whether a theme is growing</h3>
           <p>A VISN patient safety officer asks whether suicide-risk and safety-plan findings are rising. On the website, that means repeating a search for each year and tallying the results. The server returns it year by year with open counts and typical time to closure.</p>
-          <div class="evidence">Reports with such recommendations, from an earlier analysis through 2024: 7 in 2015, 35 in 2016, 23 in 2020, 35 in 2021, 31 in 2023, 51 in 2024.</div>
+          <div class="evidence">Reports with a recommendation mentioning suicide: 7 in 2015, 35 in 2016, 23 in 2020, 34 in 2021, 32 in 2023, 56 in 2024, and 11 in 2025. A count like this cannot show on its own whether care improved or OIG's focus shifted.</div>
         </div>
 
         <div class="scenario">
@@ -247,13 +247,13 @@
         <h3>Safeguards</h3>
         <ul class="clean">
           <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
-          <li>Every claim carries a report number and link, and every response states when its data was collected.</li>
+          <li>Every finding the server returns carries a report number and link, and every response states when its data was collected.</li>
           <li>Where data supports more than one interpretation, the server says so.</li>
           <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
         </ul>
 
         <h3>Evaluation</h3>
-        <p>Planned next, with results to follow. An AI assistant with no other context answers realistic multi-step questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, precision and recall on lists, tool selection, caveats, and a citation-integrity check that every cited report exists. Traces are logged with Arize Phoenix. PDF extraction is checked separately against a hand-labeled sample.</p>
+        <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. On the final build, two Claude models each passed 23 of 24 questions and cited no report that does not exist. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
       </div>
     </section>
 
@@ -265,8 +265,8 @@
             <thead><tr><th>Criterion</th><th>How the project meets it</th></tr></thead>
             <tbody>
               <tr><td>Dataset Access track</td><td>OIG's recommendations are public but have no API. The project makes them queryable by any MCP-capable assistant.</td></tr>
-              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation in progress.</td></tr>
-              <tr><td>Innovation</td><td>Cross-report analysis the source does not offer: recurring findings, time to closure, and peer corrective actions from 11,240 published facility responses.</td></tr>
+              <tr><td>Technical quality</td><td>Pydantic-typed tools named for user goals, pagination and provenance on every response, a separate documented data API, and a measured evaluation.</td></tr>
+              <tr><td>Innovation</td><td>Cross-report analysis the source does not offer: recurring findings, time to closure, and peer corrective actions from 11,264 published facility responses.</td></tr>
               <tr><td>Mission alignment</td><td>Public accountability data made usable by the people expected to act on it, on patient safety topics such as test-result follow-up, suicide prevention, medication security, and credentialing.</td></tr>
               <tr><td>Presentation</td><td>A live inspection-readiness walkthrough on a real facility, backed by evaluation results.</td></tr>
             </tbody>
@@ -288,7 +288,7 @@
           <li>GAO, <a href="https://www.gao.gov/products/gao-26-108978">Priority Open Recommendations: Department of Veterans Affairs</a>, GAO-26-108978, May 2026</li>
           <li><a href="https://www.oversight.gov/reports/recommendations">Oversight.gov open recommendations</a></li>
           <li><a href="https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
-          <li>Figures marked as earlier analysis come from an analysis of 14,084 recommendations in 1,958 OIG reports published May 2004 through December 2024, collected from vaoig.gov in March 2025. Theme counts use keyword rules. Other figures come from the project's data, collected November 4, 2026, and depend on the search words used.</li>
+          <li>Figures come from the project's data, collected November 4, 2026. Theme counts depend on the search words used.</li>
         </ol>
       </div>
     </section>
