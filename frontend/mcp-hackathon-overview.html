@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VA OIG Recommendations Assistant: Overview</title>
+  <meta name="description" content="A plain-language overview for leaders and staff: what an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
+  <meta property="og:title" content="VA OIG Recommendations Assistant: Overview">
+  <meta property="og:description" content="What an AI assistant connected to public VA OIG findings can do beyond OIG's website, with three worked use cases.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-overview">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-overview">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      --ink: #2c3e50;
+      --ink-2: #555;
+      --ink-3: #777;
+      --accent: #3498db;
+      --accent-soft: #eaf4fb;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --rule: #e0e0e0;
+      --hero: #2c3e50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px; }
+    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
+    .topbar nav { display: flex; gap: 18px; font-size: 14px; overflow-x: auto; white-space: nowrap; }
+    .topbar nav a { color: var(--ink-2); }
+
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+    .hero .meta a { color: #fff; text-decoration: underline; }
+
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    h3 { font-size: 19px; margin: 28px 0 8px; }
+    p + p { margin-top: 14px; }
+    .small { font-size: 14px; color: var(--ink-3); margin-top: 10px; }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+    .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; }
+    .card h3 { margin-top: 0; font-size: 17px; }
+    .card p { font-size: 15.5px; color: var(--ink-2); }
+
+    .scenario { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 24px 26px; margin-top: 18px; }
+    .scenario h3 { margin-top: 0; font-size: 21px; }
+    .scenario p { color: var(--ink-2); font-size: 16px; margin-top: 12px; }
+    .scenario p strong { color: var(--ink); }
+    .scenario .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
+    .quote { font-style: italic; }
+
+    .table-wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 12px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td:first-child { font-weight: 600; }
+    td.num, th.num { text-align: right; }
+
+    ul.clean { list-style: none; margin-top: 12px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 8px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+    .scenario ul.clean li { color: var(--ink-2); font-size: 16px; }
+
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+    footer p + p { margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .hero { padding: 44px 0 40px; }
+      .hero p.lead { font-size: 17px; }
+      section { padding: 40px 0; }
+      h2 { font-size: 24px; }
+      .scenario { padding: 20px; }
+      .topbar nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="home" href="/">troymd.com</a>
+      <nav aria-label="Sections">
+        <a href="#difference">The difference</a>
+        <a href="#leaders">Leaders</a>
+        <a href="#staff">Staff</a>
+        <a href="#use-cases">Use cases</a>
+        <a href="#status">Status</a>
+        <a href="/mcp-hackathon">Project page</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Plain-language overview · For leaders and staff</div>
+      <h1>VA OIG Recommendations Assistant</h1>
+      <p class="lead">The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
+      <p class="meta">Status and figures as of November 4, 2026, using data collected October 28, 2026 · <a href="/mcp-hackathon">Back to the project page</a></p>
+    </div>
+  </div>
+
+  <main>
+
+    <section id="brief">
+      <div class="wrap">
+        <h2>In brief</h2>
+        <p>This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,413 reports and 15,647 recommendations. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.</p>
+        <p>It uses only public information from vaoig.gov and no internal VA systems. It is not an official VA or OIG product, and it does not replace VA's own tracking of recommendations.</p>
+      </div>
+    </section>
+
+    <section id="difference">
+      <div class="wrap">
+        <h2>Where it goes beyond OIG's website</h2>
+        <p>OIG's search is solid, and this project does not try to replace it. If you know what you are looking for, the site's keywords and filters will find it, and every answer here links back to the site. The difference is in what happens after the search.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>What you need</th><th>On OIG's website</th><th>With this assistant</th></tr></thead>
+            <tbody>
+              <tr><td>Find a report or recommendation</td><td>Keywords plus filters for date, report type, topic, office, status, and location</td><td>Ask in your own words. It looks for matching meaning as well as matching words</td></tr>
+              <tr><td>See how an issue changes over time</td><td>One total per search, so you repeat the search for each year and tally the results</td><td>A year-by-year table from one question</td></tr>
+              <tr><td>See how old open items are</td><td>Site-wide totals in three age bands, and a filter for each band</td><td>Typical and oldest age, compared across offices, topics, or report types</td></tr>
+              <tr><td>Learn how long fixes take</td><td>A closure date on each closed recommendation, with no averages</td><td>Typical time to close, the usual range, and the share not implemented*</td></tr>
+              <tr><td>See what facilities committed to do</td><td>Only in the report PDFs</td><td>Searchable commitments and target dates across reports*</td></tr>
+              <tr><td>Spot what recurs across facilities</td><td>Read the reports and compare them yourself</td><td>Near-identical findings grouped, showing how many reports contain them*</td></tr>
+              <tr><td>Compare promises with results</td><td>Not available</td><td>Target dates compared with actual closure dates*</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">*Available when the current data build finishes. See <a href="#status">Where it stands today</a>.</p>
+      </div>
+    </section>
+
+    <section id="leaders">
+      <div class="wrap">
+        <h2>For leaders</h2>
+        <p>The value is turning a published archive into something an organization can learn from. A program office can see whether a finding is isolated or systemic before deciding on a national fix. A facility can learn from how its peers responded rather than starting from nothing. Oversight staff can see what is aging and where.</p>
+        <p>The design favors trust over polish:</p>
+        <div class="cards">
+          <div class="card"><h3>Every finding can be checked</h3><p>It carries a report number, a link to vaoig.gov, and the date the data was collected.</p></div>
+          <div class="card"><h3>It does not rate anyone</h3><p>It reports records and offers no facility scores or rankings. Grouping results by facility is deliberately not offered.</p></div>
+          <div class="card"><h3>It states its limits in the answer</h3><p>A repeat finding means the same issue was cited again, not that nothing was done. A next-inspection date is labeled as an estimate, because OIG publishes no schedule. Where a pattern has more than one explanation, it gives both.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="staff">
+      <div class="wrap">
+        <h2>For staff</h2>
+        <p>You would use this through an AI assistant, with no new search screens to learn. Ask the way you would ask a colleague:</p>
+        <ul class="clean">
+          <li>"What have facilities been cited for on securing medications, and which of those are still open?"</li>
+          <li>"How many suicide prevention findings has OIG made each year since 2020?"</li>
+          <li>"Which offices have the most recommendations open longer than a year?"</li>
+          <li>"Show me everything in report 24-03416-237."</li>
+        </ul>
+        <p style="margin-top:16px">Use the links to confirm anything you plan to act on or repeat. OIG's site remains the official record.</p>
+      </div>
+    </section>
+
+    <section id="use-cases">
+      <div class="wrap">
+        <h2>Three use cases</h2>
+
+        <div class="scenario">
+          <h3>1. "Has OIG cited this?"</h3>
+          <p><strong>The situation.</strong> A patient safety manager notices a problem on rounds and describes it in plain language: <span class="quote">"Staff left medication carts unlocked in a hallway."</span></p>
+          <p><strong>Why this is hard today.</strong> OIG's wording is different. Its reports say things like "secure medication carts when not in use," which shares few words with how the manager put it. A word search depends on guessing the right words.</p>
+          <p><strong>What happened when we tried it.</strong> We ran that exact sentence against this project's copy of OIG's recommendations three ways. This tests word matching on our data, not OIG's website itself.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Approach</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Require every word to match</td><td>No results</td></tr>
+                <tr><td>Match any word</td><td>Led with emergency exits, hallway obstructions, and handrails</td></tr>
+                <tr><td>The assistant's search</td><td>Led with recommendations to secure medication carts</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="evidence"><strong>The difference.</strong> The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The top results here are from 2015 and 2016, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>2. Preparing for an inspection</h3>
+          <p><strong>The situation.</strong> A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span></p>
+          <p><strong>Using the website.</strong> The manager can pull up El Paso's reports and filter peer reports by type and date. The findings are visible there, but what each facility committed to do is in its PDF. Comparing even a dozen peers means opening a dozen PDFs.</p>
+          <p><strong>Using the assistant.</strong> One conversation can bring together:</p>
+          <ul class="clean">
+            <li><strong>The facility's own history:</strong> prior findings, whether they closed, and anything cited in more than one report.</li>
+            <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is.</li>
+            <li><strong>What peers did about it:</strong> their committed corrective actions and target dates.</li>
+            <li><strong>A realistic timeline:</strong> how long that kind of finding has typically taken to close.</li>
+            <li><strong>The likely timing:</strong> an estimated next inspection window, labeled as an estimate, because OIG publishes no schedule.</li>
+          </ul>
+          <p>Here is what sits behind that. El Paso's July 2026 report (25-00193-155) includes the open recommendation that leaders "ensure staff maintain a clean and safe environment." The facility's written response, including whether it agreed, its target date, and its planned actions, appears only in the PDF. Once extracted, it can sit alongside what peers committed to for the same finding.</p>
+          <p>Peer findings can be searched today. The rest of this list arrives with the data build described under <a href="#status">Where it stands today</a>.</p>
+          <div class="evidence"><strong>The difference.</strong> The manager starts from an evidence-based checklist instead of a blank page.</div>
+        </div>
+
+        <div class="scenario">
+          <h3>3. Reading a trend honestly</h3>
+          <p><strong>The situation.</strong> A VISN patient safety officer asks whether communicating test results to patients is still a problem.</p>
+          <p><strong>Using the website.</strong> The officer can repeat a search for each year and tally the totals by hand, which gives counts but no context.</p>
+          <p><strong>Using the assistant.</strong> One question returns the table. These are recommendations containing the words "communicating test results":</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Year report was published</th><th class="num">Reports</th><th class="num">Recommendations</th><th class="num">Still open</th></tr></thead>
+              <tbody>
+                <tr><td>2022</td><td class="num">3</td><td class="num">4</td><td class="num">0</td></tr>
+                <tr><td>2023</td><td class="num">3</td><td class="num">3</td><td class="num">0</td></tr>
+                <tr><td>2024</td><td class="num">1</td><td class="num">1</td><td class="num">0</td></tr>
+                <tr><td>2025</td><td class="num">21</td><td class="num">26</td><td class="num">7</td></tr>
+                <tr><td>2026 (to date)</td><td class="num">28</td><td class="num">41</td><td class="num">25</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">Counted by these exact words, so the figures differ from the broader theme-based counts through 2024 on the <a href="/mcp-hackathon">project page</a>.</p>
+          <p>Taken alone, that looks like a problem that suddenly got much worse. The data supports a second reading. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, which grew from 6 reports in 2024 to 59 so far in 2026, and 28 of those 59 contain this finding. So the jump may reflect a real problem, or a newer program that looks for it and is reporting far more often.</p>
+          <div class="evidence"><strong>The difference.</strong> The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. The officer gets a useful number, 28 of 59 inspections this year, and a better question: is this a gap in our facilities or a change in what is being measured? Recent years also show more open items partly because those findings have had less time to close.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="status">
+      <div class="wrap">
+        <h2>Where it stands today</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Status</th><th>Capability</th></tr></thead>
+            <tbody>
+              <tr><td>Working now</td><td>Plain-language search of findings; full report details; counts and trends by year; open-item aging by office, topic, or report type</td></tr>
+              <tr><td>Built, waiting on data</td><td>Corrective actions and target dates from PDFs; facility profiles and repeat findings; recurring-finding groups; time to close; promised versus actual dates</td></tr>
+              <tr><td>Not built yet</td><td>An inspection readiness brief that brings these together for one facility</td></tr>
+              <tr><td>Not yet done</td><td>Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:18px">Search quality is good on many topics and uneven on others, and near-identical findings can crowd the top of the results. Treat the results as a strong starting point, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+      <p><a href="/mcp-hackathon">Project page</a> · <a href="/">Troy E. Sybert, MD</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
