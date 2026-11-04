@@ -145,15 +145,15 @@
         <p>VA OIG publishes every report and recommendation it issues, and its website is good at finding individual documents. It cannot answer questions that span documents. Today those answers take hours of reading PDFs, so much of the cross-facility learning they could support does not happen.</p>
 
         <div class="stats">
-          <div class="stat"><div class="num">182</div><div class="lbl">OIG reports published in the 12 months to Oct 19, 2026</div></div>
-          <div class="stat"><div class="num">718</div><div class="lbl">recommendations in those reports</div></div>
-          <div class="stat"><div class="num">605</div><div class="lbl">open OIG recommendations on Oct 19, 2026; 187 open more than a year</div></div>
+          <div class="stat"><div class="num">~4,410</div><div class="lbl">reports VA OIG has published, in this project's full copy of its public record</div></div>
+          <div class="stat"><div class="num">~15,640</div><div class="lbl">recommendations across those reports</div></div>
+          <div class="stat"><div class="num">~560</div><div class="lbl">of those recommendations still open, as of Nov 4, 2026</div></div>
           <div class="stat"><div class="num">88%</div><div class="lbl">of GAO's five-year-old recommendations VA has implemented, versus 77% government-wide</div></div>
         </div>
-        <p class="small">Sources: VA OIG data dashboard; GAO-26-108978.</p>
+        <p class="small">Sources: this project's full crawl of vaoig.gov, Nov 4, 2026; GAO-26-108978.</p>
 
         <p style="margin-top:22px">The VA has a culture of continuous improvement. The gap this project addresses is not whether VA closes recommendations. It is whether one facility can learn from the findings issued to the others.</p>
-        <p>vaoig.gov offers full-text search and filters by report type, topic, office, state, VISN, status, and age. Those tools return lists of documents; the person searching still has to open each report, compare it with others, and count. There is no API or bulk export, and the most actionable content, each facility's response with its target date and corrective action, appears only in the report PDFs.</p>
+        <p>OIG's site, vaoig.gov, offers full-text search and filters by report type, topic, office, state, VISN, status, and age. Those tools return lists of documents; the person searching still has to open each report, compare it with others, and count. There is no API or bulk export, and the most actionable content, each facility's response with its target date and corrective action, appears only in the report PDFs.</p>
       </div>
     </section>
 
@@ -165,38 +165,15 @@
             <h3>Facility patient safety and quality staff</h3>
             <p>Anticipate what an OIG inspection will examine, check whether the facility shares weaknesses peers were cited for, and show leadership that recurring national findings were addressed locally.</p>
           </div>
-          <div class="card">
+          <div class="card primary">
             <h3>VISN and VHA program offices</h3>
             <p>Spot systemic findings that call for a national fix rather than facility-by-facility correction.</p>
           </div>
-          <div class="card">
-            <h3>Oversight and accountability staff</h3>
-            <p>Track the age of open recommendations and closure performance by office and topic.</p>
-          </div>
-          <div class="card">
+          <div class="card primary">
             <h3>Veterans, VSOs, congressional staff, journalists</h3>
             <p>Ask in plain language what OIG found at a facility and what was done about it.</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section id="possible">
-      <div class="wrap">
-        <h2>What the server makes possible</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Goal</th><th>What the server returns</th></tr></thead>
-            <tbody>
-              <tr><td>Prepare for an inspection</td><td>A facility's own findings and whether they closed, common peer findings, what peers committed to do, and an estimated next window</td></tr>
-              <tr><td>See whether a theme is growing</td><td>Counts by year from one question, with the limits of what a count can show</td></tr>
-              <tr><td>Find what recurs across facilities</td><td>Groups of near-identical findings, and how many reports contain them</td></tr>
-              <tr><td>Track closure</td><td>Time to closure, not-implemented rates, and how old open items are, by office, topic, and report type</td></tr>
-              <tr><td>Explain a facility to the public</td><td>Every report and recommendation for that facility, with status, closure date, and the published facility response</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="small" style="margin-top:10px">Real answers from a live MCP session are in the <a href="/mcp-hackathon-test-bank">Test Bank</a>.</p>
       </div>
     </section>
 
@@ -215,7 +192,8 @@
     <section id="approach">
       <div class="wrap">
         <h2>Approach</h2>
-        <p>Two parts: a data service that turns OIG's public pages and PDFs into a structured, queryable dataset, and an MCP server that gives AI assistants goal-level tools over that dataset. The <a href="/mcp-hackathon-overview">MCP Overview</a> covers what the server itself does, its tools, and how it has been evaluated. The <a href="/mcp-hackathon-backend">Data Source Overview</a> covers how the dataset is built.</p>
+        <p>This project has two parts. A data service turns OIG's public pages and PDFs into a structured, queryable dataset, with every build checked against what OIG publishes before it ships. An MCP server sits on top of that dataset and gives AI assistants goal-level tools, so a plain-language question becomes an answer with a report number and a link attached.</p>
+        <p>The <a href="/mcp-hackathon-overview">MCP Overview</a> covers what the server itself does: its tools, its safeguards, and how it has been evaluated. The <a href="/mcp-hackathon-backend">Data Source Overview</a> covers how the dataset is collected, structured, and checked.</p>
       </div>
     </section>
 
