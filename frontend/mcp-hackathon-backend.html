@@ -59,6 +59,7 @@
     .scenario p strong { color: var(--ink); }
     .scenario .evidence { margin-top: 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
     .quote { font-style: italic; }
+    h4 { font-size: 17px; margin: 22px 0 6px; }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
     .stat { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; }
     .stat .num { font-size: 27px; font-weight: 700; line-height: 1.1; }
@@ -108,7 +109,7 @@
     <div class="wrap">
       <div class="eyebrow">Data Source Tech Summary</div>
       <h1>How the OIG Data Service Works</h1>
-      <p class="lead">The VA Office of Inspector General (OIG) publishes every report and recommendation it issues, and its website is good at finding them. It has keyword search and useful filters. What it cannot do is answer a question that spans many reports: what keeps recurring, whether a problem is growing, how long fixes take, or what other facilities did about the same finding.</p>
+      <p class="lead">This project gives an AI assistant working access to the public record of the VA Office of Inspector General (OIG). Without it, an assistant can read only a few of OIG's pages at a time.</p>
       <p class="meta">Status as of November 4, 2026. Figures come from a full crawl of vaoig.gov on that date.</p>
     </div>
   </div>
@@ -118,7 +119,8 @@
     <section id="short">
       <div class="wrap">
         <h2>The short version</h2>
-        <p>An AI assistant has the same limit, and a tighter one: it can read a few pages at a time, not thousands. We built a data service that turns OIG's public record into a structured dataset, and exposes it over the Model Context Protocol (MCP), so an assistant can answer those questions and cite the source report for each claim. It covers 4,415 reports, 15,649 recommendations, about 89,000 pages of report text, and 11,240 facility responses extracted from PDFs. The assistant reads records from this service and writes the answer from them. The service never generates findings of its own.</p>
+        <p>OIG publishes every report and recommendation it issues, and its website is good at finding them. It has keyword search and useful filters. What it cannot do is answer a question that spans many reports: what keeps recurring, whether a problem is growing, how long fixes take, or what other facilities did about the same finding. It also has no API or bulk export for an assistant to use.</p>
+        <p>We built a data service that turns OIG's public record into a structured dataset, and exposes it over the Model Context Protocol (MCP), so an assistant can answer those questions and cite the source report for each claim. It covers 4,415 reports, 15,649 recommendations, about 89,000 pages of report text, and 11,240 facility responses extracted from PDFs. The assistant reads records from this service and writes the answer from them. The service never generates findings of its own.</p>
         <div class="stats">
           <div class="stat"><div class="num">4,415</div><div class="lbl">reports</div></div>
           <div class="stat"><div class="num">15,649</div><div class="lbl">recommendations</div></div>
@@ -161,7 +163,7 @@
     <section id="search">
       <div class="wrap">
         <h2>Search specifics</h2>
-        <p>One pipeline, with no modes to choose. Each method covers what the other misses, and rank fusion needs no score calibration.</p>
+        <p>One pipeline, with no modes to choose. Each method covers what the other misses, and rank fusion needs no score calibration. For how it compares with OIG's search, see <a href="#use-cases">use case 1</a>.</p>
         <figure>
           <div class="scroll"><img src="assets/mcp-hackathon/hybrid-search.svg" alt="Hybrid search: a query becomes a keyword query and a local query vector. Keywords run BM25 over recommendations, corrective actions, and PDF pages. The vector runs cosine similarity over recommendations and corrective actions. The four lists merge by reciprocal rank fusion with k of 60 into a shortlist of up to 100, returned with up to 5 PDF page hits." width="920" height="540"></div>
           <figcaption>Every query runs all four recommendation lists. Filters apply to every list.</figcaption>
@@ -288,18 +290,18 @@
           <table>
             <thead><tr><th>Question</th><th>OIG website</th><th>This service</th></tr></thead>
             <tbody>
+              <tr><td>Can an AI assistant use it directly, with citations?</td><td>No API</td><td>Yes</td></tr>
               <tr><td>Find a report or filter by state, office, or status</td><td>Yes</td><td>Yes, not the reason to use this</td></tr>
-              <tr><td>Describe a problem in your own words</td><td>Keyword matching: all ten full sentences we tried found no recommendations</td><td>Matches on meaning as well as words</td></tr>
+              <tr><td>Describe a problem in your own words</td><td>Keyword matching: full sentences found nothing in our test, while short keywords often worked</td><td>Matches on meaning as well as words, with mixed results</td></tr>
               <tr><td>What did other facilities commit to do about this?</td><td>Read each PDF</td><td>Searchable across reports</td></tr>
               <tr><td>Which findings recur across facilities?</td><td>Compare by hand</td><td>Grouped automatically, with how common each one is</td></tr>
               <tr><td>Was this facility cited for this before?</td><td>Compare by hand</td><td>Listed in the facility's profile</td></tr>
               <tr><td>Is this theme growing?</td><td>Count by hand</td><td>Counts by year</td></tr>
               <tr><td>How long do fixes take?</td><td>Not available</td><td>Time to closure by office, topic, and finding</td></tr>
-              <tr><td>Can an AI assistant use it directly, with citations?</td><td>No API</td><td>Yes</td></tr>
             </tbody>
           </table>
         </div>
-        <p style="margin-top:18px">The main value lies in the corrective actions and the cross-report analysis. Today, that information takes hours of reading PDFs to assemble, so much of this learning across facilities does not happen.</p>
+        <p style="margin-top:18px">The first row is the main difference, and the others are what it makes possible. Corrective actions and cross-report analysis take hours of reading PDFs to assemble today, so much of this learning across facilities does not happen.</p>
 
         <h3>Why an AI assistant needs this layer</h3>
         <p>OIG's website is built for a person reading one page at a time. An AI assistant with a browser can open those pages, but it cannot work effectively across them. The record is spread over thousands of web pages and PDFs, and there is no API or bulk export. Consider two ordinary questions. <em>How long do VHA recommendations typically take to close?</em> OIG shows a closure date on each closed recommendation, but across 223 listing pages and with no averages. <em>What did other facilities commit to do about this finding?</em> That answer sits inside about 2,200 PDFs, or roughly 89,000 pages. Building this dataset took about 6,100 fetches over nearly three hours, far more than an assistant can read while answering one question. In practice, we would expect it to sample a few pages and estimate, and its answer could sound just as confident.</p>
@@ -328,14 +330,31 @@
             </table>
           </div>
           <p>The report wording is "secure medication carts when not in use," which shares few words with how the manager put it. The manager gets the relevant findings, each with its report number and link, plus what facilities committed to do where that has been extracted.</p>
-          <p>Blended search is not perfect. In our test of ten such questions, some answers were still only partly relevant, so a person should check results against the cited reports.</p>
-          <p>We also ran those ten questions through OIG's own recommendation search on November 4. All ten full sentences returned nothing. That isn't the fairest test, because people type keywords into a keyword search, so we also tried a short form of each, such as "medication carts." Eight of the ten then returned at least one recommendation, and two returned none. Results are listed newest first, and the site offers no sort by relevance. Someone who already knows the report's wording will do well on OIG's site. For someone who doesn't, or for an assistant passing along what a person said, it is much less forgiving.</p>
-          <p>This shows which searches return results, not which results are better. Our search returned five results every time, and returning something is not the same as being relevant. A blind relevance comparison is prepared but not yet scored. These questions were also written with knowledge of our own results, so they favor this service.</p>
+          <h4>How search compares with OIG's own</h4>
+          <p>On November 4 we ran ten such questions through OIG's recommendation search as well, both as full sentences and as short keywords such as "medication carts." We then compared the top five recommendations from each search for relevance.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Search</th><th class="num">Questions with at least one relevant result</th><th class="num">Relevant results, of those returned</th></tr></thead>
+              <tbody>
+                <tr><td>This service, full sentence</td><td class="num">8 of 10</td><td class="num">24 of 50</td></tr>
+                <tr><td>This service, short keywords</td><td class="num">7 of 10</td><td class="num">18 of 50</td></tr>
+                <tr><td>OIG, short keywords</td><td class="num">6 of 10</td><td class="num">14 of 28</td></tr>
+                <tr><td>OIG, full sentence</td><td class="num">0 of 10</td><td class="num">No results on any</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="clean">
+            <li><strong>This service reaches further on plain language.</strong> A full sentence works here, and it found something relevant on the most questions. OIG's search needs the right keywords, and even in short form it returned nothing on two questions.</li>
+            <li><strong>Precision is about the same.</strong> About half of the results from each search were relevant. On identical keywords, OIG's did better. Part of the reason is that OIG returns only matches, while this service always returns five, whether or not five good ones exist. So results still need checking against the cited reports.</li>
+            <li><strong>Results varied by question.</strong> OIG matched or beat this service on the biopsy and community care consult questions. This service did clearly better on medication carts, and found something relevant on the locked unit and check-in kiosk questions, where OIG did not. On two questions, about infusion pump training and an unreported fall injury, no search returned anything relevant.</li>
+          </ul>
+          <div class="evidence"><strong>Treat this as directional. The relevance judgments were made by AI, not by a person.</strong> Two separate runs of Claude judged each result without seeing which search found it, and a result counted as relevant only if both agreed. They agreed on 98 of 99, but they are the same model, so that is not independent confirmation. The test is small, and we wrote the questions knowing how this service performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. OIG also lists reports without showing a matching recommendation, and those were not judged. Corrective actions, this service's main addition, were not judged either.</div>
+          <p>Search quality is not the main reason this service exists. The larger difference is access: through this service, an AI assistant can search, count, and compare the whole record, and cite each result.</p>
         </div>
 
         <div class="scenario">
           <h3>2. Preparing for an inspection</h3>
-          <p>A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span> The assistant draws on several parts of the service to assemble:</p>
+          <p>A manager at the VA El Paso Healthcare System asks: <span class="quote">"Help me prepare for our next inspection."</span> One tool call, the inspection brief, assembles:</p>
           <ul class="clean">
             <li><strong>The facility's own history:</strong> prior findings, whether they closed, and any finding cited in more than one report.</li>
             <li><strong>What peers were cited for:</strong> recurring findings under the current inspection program, and how common each one is across inspections.</li>
@@ -344,7 +363,7 @@
             <li><strong>The likely timing:</strong> an estimated next inspection window, clearly labeled as an estimate, because OIG publishes no schedule.</li>
           </ul>
           <p>The peer view is a real one: the largest recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. The source material is detailed too. In El Paso's July 2026 report (25-00193-155), for example, OIG recommended that leaders maintain a clean and safe environment. The facility concurred, set a target of January 29, 2027, and described its cleaning logs, inspections, and procedures. This response exists only in the PDF. As structured data, it can sit alongside what peers committed to for the same finding.</p>
-          <p>The manager starts from an evidence-based checklist instead of a blank page.</p>
+          <p>Peer findings are listed by how common they are, not by severity, and they do not predict what an inspection will find. The manager starts from an evidence-based checklist instead of a blank page.</p>
         </div>
 
         <div class="scenario">
@@ -385,7 +404,7 @@
     <section id="status">
       <div class="wrap">
         <h2>Where things stand</h2>
-        <p>The data service is complete and live: collection, database, search, analysis, and secure hosting. Facility responses were fully extracted from all 90 Healthcare Facility Inspection reports and 95% of the 312 CHIP reports from 2018 on, and each was checked against OIG's own text for the recommendation it belongs to. Seven MCP tools are built against this API and running on the same machine, with deployment to IBM Cloud to follow. A formal evaluation comes next, scoring the assistant's answers against gold answers computed directly from the data. Accuracy figures will come from that evaluation, so none are claimed here.</p>
+        <p>The data service is complete and live: collection, database, search, analysis, and secure hosting. Facility responses were fully extracted from all 90 Healthcare Facility Inspection reports and 95% of the 312 CHIP reports from 2018 on, and each was checked against OIG's own text for the recommendation it belongs to. Seven MCP tools are built against this API and running on the same machine, with deployment to IBM Cloud to follow. A formal evaluation comes next, scoring the assistant's answers against gold answers computed directly from the data. Accuracy figures will come from that evaluation, so none are claimed here. The search comparison above is the only relevance test so far.</p>
       </div>
     </section>
 
