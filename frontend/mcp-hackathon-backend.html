@@ -19,9 +19,6 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
-    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
-    .topbar .wrap { display: flex; align-items: center; gap: 16px; height: 52px; }
-    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
     .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
     .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
     .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
@@ -73,12 +70,6 @@
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="wrap">
-      <a class="home" href="/">troymd.com</a>
-    </div>
-  </header>
-
   <div class="hero">
     <div class="wrap">
       <div class="eyebrow">Data Source Overview</div>
@@ -127,7 +118,7 @@
   <footer>
     <div class="wrap">
       <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
-      <p><a href="/mcp-hackathon-architecture">Data Source Tech Summary</a> · <a href="/">Troy E. Sybert, MD</a></p>
+      <p><a href="/mcp-hackathon-architecture">Data Source Tech Summary</a></p>
     </div>
   </footer>
 

@@ -19,9 +19,6 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
-    .topbar { background: var(--card); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 10; }
-    .topbar .wrap { display: flex; align-items: center; gap: 16px; height: 52px; }
-    .topbar .home { font-weight: 600; color: var(--ink); font-size: 15px; }
     .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
     .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
     .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
@@ -73,12 +70,6 @@
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="wrap">
-      <a class="home" href="/">troymd.com</a>
-    </div>
-  </header>
-
   <div class="hero">
     <div class="wrap">
       <div class="eyebrow">Data Source Tech Summary</div>
@@ -119,64 +110,17 @@
     </tbody></table></div>
     <p>Deliberately not used: OCR or Docling, a vector database, a cross-encoder reranker, LLM extraction, and a hosted embedding service. Each would add operating cost or nondeterminism without a measured need on this data.</p>
     </div></section>
-    <section id="system-context"><div class="wrap">
-    <h2>System context</h2>
-    <figure>
-      <div class="scroll"><img src="assets/mcp-hackathon/system-architecture.svg?v=3" alt="System architecture: OIG&#39;s public pages flow through a polite crawl into a pipeline on a local Mac mini, which gets document vectors from a local Ollama model and stores them with the records in SQLite, then publishes a read-only copy. A containerized API reads it, asks Ollama only for each query&#39;s vector, and reaches the internet only through an outbound Cloudflare tunnel, where Cloudflare Access requires a service token. The oig-mcp server calls the API and serves tools to any MCP client." width="940" height="446"></div>
-      <figcaption>Two-way arrows are requests and responses; the one-way arrow is the publish step, a copy of the build database. Document vectors are computed during the build and stored in the database. At query time, the API asks Ollama only for the query&#39;s vector, reads the stored vectors from the database, and compares them in its own code with NumPy.</figcaption>
-    </figure>
-    <p>No inbound port is open on the host. The API binds to loopback, and the only public path runs through the tunnel, where Access rejects any request without the service token (<code>401</code>).</p>
-    </div></section>
     <section id="the-pipeline"><div class="wrap">
     <h2>The pipeline</h2>
     <p>One image runs both the pipeline and the API. <code>oig-data refresh</code> runs these steps in order and stops at the first failure.</p>
     <figure>
       <div class="scroll"><img src="assets/mcp-hackathon/data-pipeline.svg?v=2" alt="Data pipeline in four stages that stop at the first failure. Collect: listing, facets, report pages, PDFs. Structure: parse, ingest, index. Analyze: embed, derive. Release: validate, snapshot, publish." width="930" height="378"></div>
-      <figcaption>The refresh, grouped into four stages. The table below gives each step.</figcaption>
+      <figcaption>Collect also crawls OIG's closure listing, about 223 pages, not shown here, which feeds closure dates and validation.</figcaption>
     </figure>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Step</th><th>Input</th><th>Output</th><th>Notes</th></tr></thead>
-    <tbody>
-    <tr><td><code>crawl listing</code></td><td><code>/reports/all</code></td><td>Raw pages</td><td>Ascending date order, so new reports append; the tail is fetched again to catch them</td></tr>
-    <tr><td><code>crawl facets</code></td><td>One filtered view per facet value</td><td>Raw pages</td><td>Row markup prints only topics, so membership in a filtered view is how a report gets OIG's VISN, state, and other labels</td></tr>
-    <tr><td><code>crawl closures</code></td><td>Every page of <code>/recommendations-all</code></td><td>Raw pages</td><td>About 223 pages. The source of closure dates, and of OIG's full list of recommendation IDs for validation</td></tr>
-    <tr><td><code>crawl reports</code></td><td>Report pages</td><td>Raw pages</td><td>PDF links and summaries exist only here. A refresh fetches only reports not seen in the previous listing</td></tr>
-    <tr><td><code>crawl pdfs</code></td><td>PDFs under <code>/sites/default/files/</code></td><td>Raw PDFs</td><td>Host and path allow-list. A URL already fetched is not fetched again</td></tr>
-    <tr><td><code>parse *</code></td><td>Raw store</td><td>Parsed records, summaries, anomalies</td><td>Offline. A parser fix never requires a new crawl</td></tr>
-    <tr><td><code>ingest</code></td><td>Parsed JSONL</td><td><code>work.sqlite</code></td><td>Idempotent per run. Invalid or unattachable rows go to a rejects file with the reason</td></tr>
-    <tr><td><code>index</code></td><td>Content tables</td><td>FTS5 indexes</td><td>Rebuilt, not maintained with triggers</td></tr>
-    <tr><td><code>embed</code></td><td>Recommendation and response text</td><td><code>text_embeddings</code></td><td>Keyed by text hash, so only changed text is embedded</td></tr>
-    <tr><td><code>derive</code></td><td>Base tables, vectors</td><td>Facilities, inspections, clusters</td><td>Rebuilt in one transaction</td></tr>
-    <tr><td><code>validate</code></td><td>Build and OIG's live pages</td><td><code>validation.md</code>, <code>validation.json</code></td><td>Failure stops the refresh before publish</td></tr>
-    <tr><td><code>snapshot</code></td><td><code>work.sqlite</code></td><td>A dated, checksummed copy</td><td><code>VACUUM INTO</code>, manifest, <code>SHA256SUMS</code>. The evaluation pins one by checksum</td></tr>
-    <tr><td><code>publish</code></td><td><code>work.sqlite</code></td><td><code>oig.sqlite</code></td><td>Vacuumed copy, FTS rebuilt on the copy, then <code>os.replace</code></td></tr>
-    </tbody></table></div>
-    <p>The cold-start crawl was 6,122 requests over 2 hours 41 minutes, with no errors and 3.5 GB of PDFs. The closures stage, added afterward, adds 223 requests, about 6 minutes, to every crawl. Parsing, ingest, and derive take minutes.</p>
     <h3 id="crawling-rules">Crawling rules</h3>
-    <p><code>PoliteClient</code> enforces the rules by construction: one request at a time, at least 1.5 seconds apart including redirect hops, backoff on 429 and 5xx, <code>Retry-After</code> honored, and redirects followed only within the allowed hosts. A stage stops after 10 consecutive failures, because the site policy says to stop rather than push through. Failed items stay eligible for retry, so a rerun with the same <code>--run-id</code> resumes.</p>
-    <h3 id="pdf-extraction">PDF extraction</h3>
-    <p>PDFium extracts text page by page, through pypdfium2. It replaced pypdf, which split words at font changes, as in "r andom" and "medica tion." No repair step was added, because a wrong join is worse than a stray space, and the better extractor made one unnecessary. Lines repeated at the top or bottom of more than half of a document's pages move out of the text, with page numbers masked when comparing them, and OIG's footers are also removed by exact pattern. So footers do not pollute search, split a table of contents, or end up inside a facility's response. Page numbers are physical PDF pages.</p>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Measure, whole corpus</th><th>With pypdf</th><th>With PDFium</th></tr></thead>
-    <tbody>
-    <tr><td>Corrective actions containing a page footer</td><td>1,813 of 10,400</td><td>1 of 10,428</td></tr>
-    <tr><td>Split words in corrective actions</td><td>13,392, in 4,619 responses</td><td>60, in 49 responses</td></tr>
-    <tr><td>Split words per 10,000 words of PDF page text</td><td>52.6</td><td>0.34</td></tr>
-    <tr><td>Facility names with a split word</td><td>20</td><td>0</td></tr>
-    </tbody></table></div>
-    <p>A split word here means two adjacent tokens that join to a word in OIG's own web text, where at least one is not a word alone. It is an estimate, and many of what remains are real two-word forms, such as "eye wash" and "roll out," which were left alone.</p>
-    <p>All 2,214 extracted documents have a usable text layer (<code>ocr_needed</code> = 0), so OCR and layout-model parsing are not used. One PDF could not be read (PDFium reports a data format error), and 14 reports with recommendations have no PDF link.</p>
-    <h3 id="inspection-parsing">Inspection parsing</h3>
-    <p>Rule-based, with no LLM. The target-date line is the most consistent marker across the corpus, so each block is built outward from it: search up to 40 lines back for its heading (<code>Recommendation N</code>, or a numbered <code>N. The ...</code>), then read the verdict above and the labeled response below. Facility identity comes from memo headers (<code>From: Director, VA El Paso Healthcare System (756)</code>).</p>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Template</th><th class="num">Reports</th><th class="num">Fully parsed</th><th class="num">Target</th></tr></thead>
-    <tbody>
-    <tr><td>Healthcare Facility Inspection (HFI)</td><td class="num">90</td><td class="num">90 (100%)</td><td class="num">100%</td></tr>
-    <tr><td>Comprehensive Healthcare Inspection Program (CHIP), 2018 on</td><td class="num">312</td><td class="num">300 (96.2%)</td><td class="num">90%</td></tr>
-    <tr><td>All other reports, best effort</td><td class="num">1,812</td><td class="num">741 (40.9%)</td><td class="num">None</td></tr>
-    </tbody></table></div>
-    <p>"Fully parsed" means every recommendation has a verdict, a target, and an action. It does not require a domain.</p>
-    <p>A parse rate says fields were filled, not that they are right. So the stage also compares each block's text with the listing's text for that recommendation number, an independent record. A response with under 50% word agreement is dropped and logged as an anomaly, because the likely cause is a corrective action attached to the wrong recommendation. On this build, no HFI or CHIP response was dropped, and 45 others were.</p>
+    <p>A polite, identified crawler rate-limits itself, backs off on errors, and stays within allowed hosts, stopping a stage after repeated failures rather than pushing through. Everything fetched is saved untouched, so a parsing fix never requires re-crawling OIG, and a failed run resumes where it left off.</p>
+    <h3 id="extraction">Extraction</h3>
+    <p>PDF text comes from PDFium, which keeps words whole where an earlier extractor split them at font changes, and strips repeated headers, footers, and page numbers before anything reaches search. Facility responses, whether a facility agreed, its target date, and its corrective action, are pulled with rule-based parsing, not AI: fully reliable on the current report templates (Healthcare Facility Inspection and CHIP), with partial, best-effort coverage on older formats. Every parsed response is cross-checked against OIG's own listing text, and anything that doesn't agree is dropped and logged rather than trusted.</p>
     </div></section>
     <section id="data-model"><div class="wrap">
     <h2>Data model</h2>
@@ -200,19 +144,9 @@
     </div></section>
     <section id="derived-data"><div class="wrap">
     <h2>Derived data</h2>
-    <p><strong>Facilities.</strong> Keyed by station number from memo headers. Central-office routing symbols (station numbers below 300) look identical in those headers, so they are excluded, along with names that are roles or offices. Of 2,332 report links, 1,311 use a station number from the PDF and 1,021 are inferred from a facility name in the title. Each link records its method in <code>link_method</code>.</p>
-    <p><strong>Hand corrections.</strong> <code>curation.py</code> holds a short, reviewed list, applied when the derived tables are built, so OIG's own text is never rewritten. Twelve report memos give a parent station or a wrong number, such as Wichita under Kansas City's 589, and are linked to the facility the title names. Eleven names used in inspection report titles, where no memo gives a station, are mapped to their stations. Three names are shared by a parent station and its division, so a title using only that name links to the parent. Any other name shared by two stations is not used for title matching.</p>
-    <p><strong>Reports listed twice.</strong> All 15 same-title, same-date pairs are OIG's own listings. Five are one report under two numbers: four link to the same PDF, and one has no PDF but the same title, date, and summary. Both rows stay, flagged in <code>report_duplicates</code> and through <code>duplicate_of</code> on the report list, and the extra listing is left out of counts, facility links, and inspections. The other ten pairs are separate reports under a generic title. A new pair that nobody has classified is reported on each build.</p>
-    <p><strong>Clusters</strong> use two methods, because the corpus has two kinds of wording.</p>
-    <div class="table-wrap wide"><table>
-    <thead><tr><th>Method</th><th>Scope</th><th>How</th><th>Result</th></tr></thead>
-    <tbody>
-    <tr><td><code>normalized-prefix-1</code></td><td>All reports</td><td>First 12 words after removing the addressee, stock openers, numbers, punctuation, and facility names; 5+ reports</td><td>259 clusters, 2,426 recommendations</td></tr>
-    <tr><td><code>semantic-seed-1</code></td><td>HFI reports</td><td>Cosine similarity of at least 0.88 to one central recommendation; 3+ reports</td><td>24 clusters, 165 recommendations</td></tr>
-    </tbody></table></div>
-    <p>Prefix matching suits older templated language. It found only one recurring HFI finding, because the current program's wording varies. In the semantic method, each group is everything directly similar to a seed, rather than linked neighbors, because linking chained unrelated findings into a single group of 72 reports. Seeds are chosen by density, and the threshold was set by reviewing results on this data. The same theme can still split across clusters: test-result communication appears in six, so a cluster's report count is a lower bound for its theme.</p>
-    <p>A review of the three weakest members of each semantic cluster found that most fit, and a few are clearly off theme, such as a recommendation on securing medications in a test-result cluster. The likely cause is that the embedding gives weight to the addressee and stock opening, such as "The Medical Center Director ensures staff." The method was left as it is, because changing it would move published prevalence figures with no gold answers yet to show an improvement. Removing addressees before embedding is the first thing to try if the evaluation shows trouble here.</p>
-    <p><strong>Next inspection window.</strong> The latest inspection plus three years, based on the HFI program's stated approximate cycle. OIG publishes no schedule, so the API labels it an estimate in every response. "Latest" goes by publication date, the one date every inspection has. The count starts from the inspection's end date, or from the publication date for a clean inspection, whose PDF is not collected, and <code>next_window_based_on</code> says which. HFI reports are published a median of 308 days after the inspection ends, so an estimate from the publication date tends to run later by about that much. Reviews of benefits offices are not treated as inspections here, because this cycle does not apply to them.</p>
+    <p><strong>Facilities.</strong> Matched to a VA station number from report memo headers, with central-office routing symbols and role or office names excluded. About 44% of links are inferred from a facility name in the title rather than a station number in the PDF. A short, reviewed correction list fixes the handful of memos with a wrong or parent station, without altering OIG's own text.</p>
+    <p><strong>Clusters</strong> use two methods, because the corpus has two kinds of wording: prefix matching for older templated language, and semantic similarity (cosine ≥ 0.88) for the current inspection program, where wording varies too much for prefix matching to find much. A theme can still split across clusters, so a cluster's report count is a lower bound, not a total.</p>
+    <p><strong>Next inspection window.</strong> Latest inspection plus three years, the HFI program's stated cycle. OIG publishes no schedule, so every response labels this an estimate, and the count starts from the inspection's end date where one exists, or from publication for a clean inspection whose PDF isn't collected.</p>
     </div></section>
     <section id="api"><div class="wrap">
     <h2>API</h2>
@@ -452,7 +386,7 @@
   <footer>
     <div class="wrap">
       <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
-      <p><a href="/mcp-hackathon-backend">Data Source Overview</a> · <a href="/">Troy E. Sybert, MD</a></p>
+      <p><a href="/mcp-hackathon-backend">Data Source Overview</a></p>
     </div>
   </footer>
 
