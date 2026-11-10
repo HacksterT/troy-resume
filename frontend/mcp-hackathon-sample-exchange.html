@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample Exchange: VA OIG Recommendations Assistant</title>
+  <meta name="description" content="A patient safety manager asks an AI assistant connected to the VA OIG Recommendations MCP server to help prepare for an OIG visit. The full answer, with notes on how it checks out against the data.">
+  <meta property="og:title" content="Sample Exchange: VA OIG Recommendations Assistant">
+  <meta property="og:description" content="One real question and answer: preparing a facility for an OIG visit, with notes on how the answer checks out.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.troymd.com/mcp-hackathon-sample-exchange">
+  <link rel="canonical" href="https://www.troymd.com/mcp-hackathon-sample-exchange">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      --ink: #2c3e50;
+      --ink-2: #555;
+      --ink-3: #777;
+      --accent: #3498db;
+      --accent-soft: #eaf4fb;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --rule: #e0e0e0;
+      --hero: #2c3e50;
+      --user: #2c3e50;
+      --ok: #1e8449;
+      --ok-soft: #e9f7ef;
+      --warn: #b9770e;
+      --warn-soft: #fdf3e6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: var(--font); color: var(--ink); background: var(--bg); line-height: 1.6; font-size: 17px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+    .hero { background: var(--hero); color: #fff; padding: 64px 0 56px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #a9cce3; font-weight: 600; }
+    .hero h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 12px 0 18px; font-weight: 700; }
+    .hero p.lead { font-size: 19px; color: #e5ecf2; max-width: 760px; }
+    .hero .meta { margin-top: 22px; font-size: 14px; color: #a9cce3; }
+    .hero-back { display: inline-block; margin-top: 14px; color: #fff; font-size: 15px; font-weight: 600; }
+    .hero-back:hover { color: #fff; text-decoration: underline; }
+
+    section { padding: 56px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { font-size: 28px; line-height: 1.25; margin-bottom: 16px; }
+    p + p { margin-top: 14px; }
+    .small { font-size: 14px; color: var(--ink-3); margin-top: 10px; }
+
+    /* Speaker labels */
+    .speaker { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin-bottom: 10px; }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0; }
+    .avatar.user { background: var(--user); }
+    .avatar.ai { background: var(--accent); }
+
+    /* The question */
+    .question { background: var(--hero); color: #fff; border-radius: 14px 14px 14px 4px; padding: 20px 24px; font-size: 19px; line-height: 1.5; max-width: 760px; }
+
+    /* The answer */
+    .answer { background: var(--card); border: 1px solid var(--rule); border-radius: 14px 14px 4px 14px; padding: 8px 28px 24px; margin-top: 32px; }
+    .answer .intro { font-size: 17px; color: var(--ink-2); margin-top: 16px; }
+    .answer h3 { font-size: 20px; margin: 30px 0 10px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; align-items: baseline; gap: 10px; }
+    .answer h3 .n { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+    .answer p { color: var(--ink-2); font-size: 16.5px; margin-top: 10px; }
+    .answer p strong, .answer li strong { color: var(--ink); }
+    .rpt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; background: #eef1f4; padding: 1px 6px; border-radius: 4px; color: var(--ink); white-space: nowrap; }
+
+    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+    .tile { background: var(--ok-soft); border-radius: 10px; padding: 14px 16px; }
+    .tile .v { font-size: 30px; font-weight: 700; color: var(--ok); line-height: 1.1; }
+    .tile .l { font-size: 13.5px; color: var(--ink-2); margin-top: 4px; }
+
+    .flag { margin-top: 12px; padding: 14px 18px; background: var(--warn-soft); border-left: 4px solid var(--warn); border-radius: 6px; }
+    .flag p { margin-top: 8px; }
+    .flag p:first-child { margin-top: 0; }
+
+    ul.clean { list-style: none; margin-top: 10px; }
+    ul.clean li { padding-left: 22px; position: relative; margin-top: 10px; color: var(--ink-2); font-size: 16.5px; }
+    ul.clean li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: absolute; left: 4px; top: 10px; }
+
+    .history { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .hcard { border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; background: #fbfcfd; }
+    .hcard .t { font-weight: 700; font-size: 16.5px; }
+    .hcard .m { font-size: 13.5px; color: var(--ink-3); margin-top: 2px; }
+    .hcard p { font-size: 15.5px; margin-top: 8px; }
+    .badge { display: inline-block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ok); background: var(--ok-soft); padding: 2px 8px; border-radius: 999px; margin-top: 8px; }
+
+    .table-wrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+    table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+    th, td { text-align: left; padding: 11px 14px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 0; }
+    th { background: #f1f4f7; font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+    td.rank { font-weight: 700; color: var(--accent); width: 36px; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    td .what { font-weight: 600; color: var(--ink); }
+    td .do { color: var(--ink-2); font-size: 14.5px; margin-top: 3px; }
+    .bar { height: 6px; background: #e3edf5; border-radius: 3px; margin-top: 6px; width: 120px; margin-left: auto; }
+    .bar span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+    .next { counter-reset: n; list-style: none; margin-top: 10px; }
+    .next li { counter-increment: n; position: relative; padding-left: 38px; margin-top: 12px; color: var(--ink-2); font-size: 16.5px; }
+    .next li::before { content: counter(n); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+    .sources { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-3); }
+    .closing { margin-top: 14px; font-weight: 600; color: var(--ink); font-size: 16.5px; }
+
+    /* How it checks out */
+    .checks { margin-top: 18px; display: grid; gap: 12px; }
+    .check { display: grid; grid-template-columns: 92px 1fr; gap: 14px; background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; align-items: start; }
+    .check .v { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 3px 8px; border-radius: 999px; text-align: center; }
+    .check .v.ok { color: var(--ok); background: var(--ok-soft); }
+    .check .v.fix { color: var(--warn); background: var(--warn-soft); }
+    .check .v.note { color: var(--accent); background: var(--accent-soft); }
+    .check p { font-size: 16px; color: var(--ink-2); margin: 0; }
+    .check p strong { color: var(--ink); }
+
+    .evidence { margin-top: 20px; padding: 14px 16px; background: var(--accent-soft); border-radius: 8px; font-size: 16px; color: var(--ink); }
+
+    footer { background: var(--card); border-top: 1px solid var(--rule); padding: 28px 0 36px; font-size: 14px; color: var(--ink-3); }
+
+    @media (max-width: 700px) {
+      body { font-size: 16px; }
+      .hero { padding: 44px 0 40px; }
+      .hero p.lead { font-size: 17px; }
+      section { padding: 40px 0; }
+      h2 { font-size: 24px; }
+      .answer { padding: 6px 18px 20px; }
+      .tiles { grid-template-columns: 1fr 1fr; }
+      .history { grid-template-columns: 1fr; }
+      .check { grid-template-columns: 1fr; gap: 8px; }
+      .check .v { justify-self: start; }
+      .bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Sample Exchange</div>
+      <h1>"The OIG Will Be Visiting Next Month"</h1>
+      <p class="lead">One real question to an AI assistant connected to this project's MCP server, and its full answer. A patient safety manager asks for help preparing for an OIG visit. The assistant pulls the facility's record, questions the premise, and builds a checklist from what OIG cites at peer facilities.</p>
+      <p class="meta">Data as of November 4, 2026. The answer is shown as the assistant gave it, with light formatting; notes on how it checks out follow.</p>
+      <a class="hero-back" href="/mcp-hackathon-overview">&larr; Back to the MCP overview</a>
+    </div>
+  </div>
+
+  <main>
+
+    <section id="exchange">
+      <div class="wrap">
+
+        <div class="speaker"><span class="avatar user">PSM</span>The question</div>
+        <div class="question">I am the Patient Safety Manager for Mt Home VA. The OIG will be visiting next month and I want to prepare. Can you help me do that?</div>
+
+        <div class="answer">
+          <div class="speaker" style="margin-top:16px"><span class="avatar ai">AI</span>The answer</div>
+          <p class="intro">Pulling the actual OIG record for James H. Quillen VAMC (station 621, VISN 9) gives a useful picture, plus one thing I need to flag before the prep is meaningful.</p>
+
+          <h3><span class="n">1</span>Bottom line</h3>
+          <p>Your facility's public OIG record is clean: 31 recommendations across 11 reports since 2006, <strong>zero open, zero repeat findings, and every single one closed as "implemented."</strong> There is no outstanding OIG obligation on the record. That's a strong starting position, and prep should focus on keeping the two patient-safety-relevant areas current and demonstrable, not on cleaning up a backlog.</p>
+          <div class="tiles">
+            <div class="tile"><div class="v">11</div><div class="l">Reports since 2006</div></div>
+            <div class="tile"><div class="v">31</div><div class="l">Recommendations</div></div>
+            <div class="tile"><div class="v">0</div><div class="l">Open</div></div>
+            <div class="tile"><div class="v">0</div><div class="l">Repeat findings</div></div>
+          </div>
+
+          <h3><span class="n">2</span>The timing flag: worth resolving first</h3>
+          <div class="flag">
+            <p>You said OIG is visiting next month, but the public record doesn't match that. The most recent inspection was a Healthcare Facility Inspection (HFI) on Dec 9 to 11, 2025 (report <span class="rpt">25-04252-256</span>, published Aug 28, 2026), and the routine ~3-year cycle puts the <em>next</em> window at roughly late 2028: an estimate only, since OIG publishes no schedule.</p>
+            <p>So "next month" is almost certainly one of these, not the routine cycle:</p>
+            <ul class="clean">
+              <li>a targeted or hotline inspection (complaint-driven, narrow scope), or</li>
+              <li>a specific program review (a single clinical area, not the full facility).</li>
+            </ul>
+            <p>Which it is changes how you prep. If you can tell me what kind of visit was announced, I'll aim the brief at that scope. Everything below is useful regardless.</p>
+          </div>
+
+          <h3><span class="n">3</span>Your patient-safety-relevant history (both now closed)</h3>
+          <p>Two recommendations touch your exact role:</p>
+          <div class="history">
+            <div class="hcard">
+              <div class="t">Sentinel event determination</div>
+              <div class="m"><span class="rpt">21-03311-15</span> &middot; Nov 2021 CHIP</div>
+              <p>OIG found leaders weren't consistently identifying adverse events as sentinel events when criteria were met. The response names the Patient Safety Manager directly: you built a tracking tool and reviewed all JPSR (Joint Patient Safety Reporting) entries against Joint Commission criteria. This is the single most PSM-specific finding in your record. Before any visit, that sentinel-event determination process and its tracking tool should be demonstrably current.</p>
+              <span class="badge">Closed, implemented</span>
+            </div>
+            <div class="hcard">
+              <div class="t">Test-result communication</div>
+              <div class="m"><span class="rpt">25-04252-256</span> &middot; Dec 2025 HFI, the most recent</div>
+              <p>Citing VHA Directive 1088(1). Closed implemented Aug 28, 2026 after the COS and Quality Management built service-level workflows. This one matters doubly, because it's also the single most common finding nationwide (next section).</p>
+              <span class="badge">Closed, implemented</span>
+            </div>
+          </div>
+
+          <h3><span class="n">4</span>What OIG actually cites at peer facilities: your prep checklist</h3>
+          <p>These are the top recurring findings across 112 peer HFI reports. They're listed by how common they are, not severity, and they don't predict what your visit will find, but they're the themes a PSM should make sure are covered and documented:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th></th><th>Finding, and what to check</th><th class="num">Peer reports</th></tr></thead>
+              <tbody>
+                <tr><td class="rank">1</td><td><div class="what">Test-result communication workflows (VHA Directive 1088)</div><div class="do">Your facility <em>was</em> in this group and just closed it. Verify each service's written workflow is on file, staff know their role in result notification, and someone audits compliance (the peer corrective actions use a &gt;90% training goal and standing QSB reporting).</div></td><td class="num">21 of 112<div class="bar"><span style="width:100%"></span></div></td></tr>
+                <tr><td class="rank">2</td><td><div class="what">Test-result policy, service-level workflows, and patient-notification monitoring</div><div class="do">Adjacent to #1; check the same machinery covers notification <em>to the patient</em>, not just the provider.</div></td><td class="num">12 of 112<div class="bar"><span style="width:57%"></span></div></td></tr>
+                <tr><td class="rank">3</td><td><div class="what">Environment of care cleanliness (VHA Directive 1608)</div><div class="do">CEOC rounds, escalation channels (LEAF), and documented cleaning schedules.</div></td><td class="num">11 of 112<div class="bar"><span style="width:52%"></span></div></td></tr>
+                <tr><td class="rank">4</td><td><div class="what">Stable and consistent facility leadership</div><div class="do">Rarely PSM-owned, but be ready to show stable governance bodies (MEC, QSB, Patient Safety committees).</div></td><td class="num">9 of 112<div class="bar"><span style="width:43%"></span></div></td></tr>
+                <tr><td class="rank">5</td><td><div class="what">Clean and safe patient care areas</div></td><td class="num">9 of 112<div class="bar"><span style="width:43%"></span></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The pattern is clear: <strong>test-result communication and environment-of-care are the two most common citations.</strong> As PSM, #1 and #2 are squarely yours; #3 and #5 overlap EOC and infection-control duties you'll likely co-own in a visit.</p>
+
+          <h3><span class="n">5</span>Suggested next moves</h3>
+          <ol class="next">
+            <li>Give me the visit type (routine, targeted, or program-specific), and I'll scope the brief accordingly.</li>
+            <li>I can pull the full text of your two PSM-relevant reports (<span class="rpt">25-04252-256</span> and <span class="rpt">21-03311-15</span>) with every recommendation, status history, and facility response, so you can see exactly what was asked and how it was verified.</li>
+            <li>I can also pull VISN 9's broader record for context, or run the peer facility profiles for the specific clusters above to show what "done" looked like elsewhere.</li>
+          </ol>
+
+          <div class="sources">Data as of 2026-11-04 (this MCP's snapshot of vaoig.gov). Reports cited: <a href="https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-mountain-home-healthcare">25-04252-256</a>, <a href="https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-mountain">21-03311-15</a>.</div>
+          <p class="closing">Which visit type are you preparing for?</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="checks">
+      <div class="wrap">
+        <h2>How it checks out</h2>
+        <p>Each claim below was checked against the same November 4, 2026 copy of OIG's data that the assistant used.</p>
+        <div class="checks">
+          <div class="check"><span class="v ok">Correct</span><p><strong>The facility's record.</strong> 11 linked reports, the earliest from September 2006; 31 recommendations, none open, all closed as implemented.</p></div>
+          <div class="check"><span class="v ok">Correct</span><p><strong>The latest inspection.</strong> Report 25-04252-256 covers an inspection on December 9 to 11, 2025, published August 28, 2026. Its test-result workflow recommendation is closed as implemented.</p></div>
+          <div class="check"><span class="v ok">Correct</span><p><strong>The sentinel event finding.</strong> Report 21-03311-15 asked leaders to identify adverse events as sentinel events, and it is closed as implemented.</p></div>
+          <div class="check"><span class="v fix">One error</span><p><strong>A date.</strong> Report 21-03311-15 was published in November 2022, not November 2021. The "21" in a report number is not its publication year.</p></div>
+          <div class="check"><span class="v note">Worth knowing</span><p><strong>"Closed" on the day of publication.</strong> Both recommendations show a closure date equal to the report's publication date. That usually means the facility fixed the issue before the report came out. The date records OIG's closure, not when the work finished.</p></div>
+          <div class="check"><span class="v note">Worth knowing</span><p><strong>VISN 9 is the former numbering.</strong> VA replaced its 18 VISNs with 5 on July 15, 2026, and OIG tags the August 2026 report under the new VISN 3. "VISN 9's broader record" still works for history before the change, but a VISN filter mixes the two maps, so a regional comparison is safer by state.</p></div>
+          <div class="check"><span class="v ok">Good judgment</span><p><strong>It questioned the premise.</strong> The record shows a full inspection in December 2025, so the assistant flagged that "next month" is unlikely to be a routine visit, labeled the next-window date as an estimate, and asked which kind of visit it is before narrowing the brief.</p></div>
+        </div>
+        <div class="evidence"><strong>The takeaway.</strong> In one answer, the manager gets the facility's full record, the two findings that belong to their role, and a checklist ranked by how often OIG cites each issue at peers. Every finding comes with a report number to check it against. One date was wrong, which is why the citations matter.</div>
+        <p class="small" style="margin-top:22px">More examples: the <a href="/mcp-hackathon-use-cases">use cases page</a> compares three questions against OIG's website, and the <a href="/mcp-hackathon-test-bank">test bank</a> holds an independent agent's answers with notes.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Built entirely from information VA OIG publishes at vaoig.gov. The project uses no internal VA systems, data, or nonpublic information. This page does not represent the views of the Department of Veterans Affairs or its Office of Inspector General.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
