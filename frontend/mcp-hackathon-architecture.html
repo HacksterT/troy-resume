@@ -102,8 +102,8 @@
     <tr><td>Rank fusion</td><td>Reciprocal rank fusion, k = 60, implemented here</td><td>Needs no score calibration, and adds no model or dependency</td></tr>
     <tr><td>Validation</td><td>Pydantic 2.14, pydantic-settings 2.15</td><td>Row checks at ingest, parameters at the API, typed configuration</td></tr>
     <tr><td>API</td><td>FastAPI 0.143 on uvicorn 0.54</td><td>Typed, read-only JSON, with synchronous routes over per-request connections</td></tr>
-    <tr><td>Packaging and runtime</td><td>Docker image on <code>python:3.11-slim</code>, non-root user, Compose on OrbStack</td><td>One image runs both the pipeline and the API</td></tr>
-    <tr><td>Exposure</td><td>cloudflared 2026.10 under launchd, Cloudflare Access service token</td><td>Outbound-only tunnel, with no inbound port open</td></tr>
+    <tr><td>Packaging and runtime</td><td>Docker image on <code>python:3.11-slim</code> pinned by digest, non-root user, read-only container, Compose on OrbStack</td><td>One image runs both the pipeline and the API</td></tr>
+    <tr><td>Exposure</td><td>cloudflared 2026.10 under launchd, Cloudflare Access service token, and the API's own key</td><td>Outbound-only tunnel, with no inbound port open, and a second lock if the Access policy were ever removed</td></tr>
     <tr><td>Quality</td><td>pytest 9.1, ruff 0.17</td><td>Fast offline suite, run locally. There is no CI pipeline</td></tr>
     <tr><td>Consumer</td><td><code>oig-mcp</code>, a separate MCP server built on FastMCP</td><td>Holds the tools, and calls this API over HTTPS</td></tr>
     </tbody></table></div>
@@ -158,6 +158,7 @@
     </tbody></table></div>
     <p><strong>Strict parameters.</strong> An unknown query parameter returns <code>422</code>, naming it and listing what is allowed. A misspelled filter would otherwise be ignored and return unfiltered numbers that look correct. The cost is a version dependency: the MCP server cannot send a new parameter until the API supports it.</p>
     <p><strong>Queries.</strong> SQL is written ahead of time as fixed pieces and assembled per request. Values are always bound; sort options and table names come from allow-lists. Neither the assistant nor the MCP server writes SQL. That rules out injection and the failure where a model composes a plausible but wrong query. The one exception is <code>q_mode=raw</code>, which passes FTS5 syntax through as a bound value, so it can affect what is matched but not the SQL itself.</p>
+    <p><strong>Limits.</strong> One Mac serves every caller, so the API refuses searches that would tie it up. Search text over 512 characters returns <code>422</code>. In the every-word mode, more than 32 words returns <code>400</code> rather than quietly dropping words, which would widen the results. Raw syntax that scans most of the index, such as a one-letter prefix, returns <code>400</code>. Each full-text query stops after 2 seconds with <code>503</code>. At most four searches run at once, and the rest wait up to 10 seconds before getting <code>429</code>, because the MCP server does not retry. Error messages never repeat SQLite's own wording. These came from a teammate's security review and were tested on the full build before release: the ten relevance-test questions returned identical results with the limits on.</p>
     <p><strong>Context budget.</strong> Lists page at 20 by default and 100 at most. Facility detail returns its 25 newest recommendations by default, because the largest facilities reached 360 KB unpaged. Search returns ranked records, and the assistant writes the answer.</p>
     <h3 id="search">Search</h3>
     <figure>
@@ -177,7 +178,9 @@
 <tr><td>Candidates per list</td><td>200</td></tr>
 <tr><td>Fusion</td><td>Each list adds 1 / (60 + rank) to a recommendation's score</td></tr>
 <tr><td>Result</td><td>A shortlist of up to 100, paged, with <code>matched_by</code> naming the lists that found each item</td></tr>
-<tr><td>Embedding timeout</td><td>5 seconds, then keyword fallback for that search</td></tr>
+<tr><td>Embedding timeout</td><td>5 seconds, then keyword fallback for that search. It does not count toward the query time limit</td></tr>
+<tr><td>Query time limit</td><td>2 seconds per full-text query</td></tr>
+<tr><td>Concurrent searches</td><td>4, with others waiting up to 10 seconds</td></tr>
 </tbody></table></div>
     <h4 id="considered-and-left-out">Considered and left out</h4>
     <ul class="clean">
@@ -207,7 +210,7 @@
     <h3 id="testing">Testing</h3>
     <p>Testing has three layers: an automated suite that runs offline, checks against the full build and OIG's live site, and measurements of the running service.</p>
     <h4 id="automated-suite">Automated suite</h4>
-    <p><code>uv run pytest</code> runs 187 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
+    <p><code>uv run pytest</code> runs 214 test cases offline in about 4 seconds, all passing, and <code>ruff</code> reports no lint errors. Fixtures are saved pages from vaoig.gov and two real PDFs, one HFI and one CHIP.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Test file</th><th class="num">Cases</th><th>Covers</th></tr></thead>
     <tbody>
@@ -215,7 +218,8 @@
     <tr><td><code>test_api_analytics.py</code></td><td class="num">37</td><td>Page search, facilities, inspections, clusters, and metrics, including hand-computed medians and quartiles, and duplicate listings counted once</td></tr>
     <tr><td><code>test_pdf_parsers.py</code></td><td class="num">36</td><td>Page extraction, footers, split words, and HFI and CHIP parsing against the real PDFs</td></tr>
     <tr><td><code>test_api_v1.py</code></td><td class="num">18</td><td>Response contracts for list and detail endpoints, strict parameters, and concurrency</td></tr>
-    <tr><td><code>test_hybrid.py</code></td><td class="num">14</td><td>Fusion, filters on every list, keyword fallback when the model is down, query text never logged, counting endpoints rejecting similarity</td></tr>
+    <tr><td><code>test_hybrid.py</code></td><td class="num">33</td><td>Fusion, filters on every list, keyword fallback when the model is down or mismatched, query text never logged, counting endpoints rejecting similarity, search limits, time limit and queueing, the API key, response headers</td></tr>
+    <tr><td><code>test_trace.py</code></td><td class="num">8</td><td>Request traces for closed testing: what they record, the size cap, and that they are off unless enabled</td></tr>
     <tr><td><code>test_listing_parser.py</code></td><td class="num">7</td><td>Listing rows, statuses, and text repair</td></tr>
     <tr><td><code>test_http.py</code></td><td class="num">7</td><td>Request delay, honest User-Agent, <code>Retry-After</code>, giving up, off-site redirects refused</td></tr>
     <tr><td><code>test_api.py</code></td><td class="num">5</td><td>Health and meta, and a republish served with no restart</td></tr>
@@ -238,7 +242,8 @@
     <tr><td>Responses attached to the right recommendation</td><td>Word agreement between each parsed block and the listing's text</td><td>No HFI or CHIP response dropped, 45 others dropped</td></tr>
     <tr><td>Data gates</td><td>Six thresholds on every build</td><td>All passed (see Data quality)</td></tr>
     <tr><td>Overlapping requests</td><td>15 rounds of 60 requests across seven live endpoints</td><td>No 500s, dropped connections, or thread errors</td></tr>
-    <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, and the real token</td><td>401, 401, 200, run from the host machine</td></tr>
+    <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, the real token without the API key, and both</td><td>401, 401, 401, 200, run from the host machine</td></tr>
+    <tr><td>Search limits</td><td>The ten relevance-test questions with and without the limits; eight searches at once; a slow and an unavailable model</td><td>All 20 searches identical in results and order; all eight returned; slow model still hybrid, unavailable model fell back to keywords, with no errors</td></tr>
     <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build, and passed the MCP server's authentication checks and evaluation</td></tr>
     </tbody></table></div>
     <h4 id="bugs-these-checks-found">Bugs these checks found</h4>
@@ -259,21 +264,21 @@
     <tr><td>Reparsing left old responses and vectors behind</td><td>Reading the ingest code during the extractor swap</td><td>A reparse replaces each report's rows, and <code>embed</code> removes vectors whose text is gone</td></tr>
     </tbody></table></div>
     <h4 id="measurements">Measurements</h4>
-    <p>Measured against the running container, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks. These are from the build before the extractor change and were not repeated. The row counts behind them differ by well under 1 percent.</p>
+    <p>Measured on November 10, 2026, against the running container with the search limits on, excluding the tunnel, which added roughly 150 to 200 ms in earlier checks.</p>
     <div class="table-wrap wide"><table>
     <thead><tr><th>Request</th><th class="num">Requests</th><th class="num">Median</th><th class="num">Slowest</th></tr></thead>
     <tbody>
-    <tr><td><code>/v1/search</code>, 10 test questions, one at a time</td><td class="num">50</td><td class="num">125 ms</td><td class="num">181 ms</td></tr>
-    <tr><td><code>/v1/search</code>, 25 at once</td><td class="num">100</td><td class="num">1,845 ms</td><td class="num">2,747 ms</td></tr>
-    <tr><td><code>/v1/metrics/closure</code></td><td class="num">30</td><td class="num">49 ms</td><td class="num">57 ms</td></tr>
-    <tr><td><code>/v1/facilities/{station}</code></td><td class="num">30</td><td class="num">9 ms</td><td class="num">10 ms</td></tr>
-    <tr><td><code>/v1/clusters</code></td><td class="num">30</td><td class="num">8 ms</td><td class="num">9 ms</td></tr>
-    <tr><td><code>/v1/metrics/counts</code></td><td class="num">30</td><td class="num">3 ms</td><td class="num">4 ms</td></tr>
-    <tr><td><code>/v1/recommendations</code>, with a keyword</td><td class="num">30</td><td class="num">2 ms</td><td class="num">5 ms</td></tr>
-    <tr><td><code>/v1/pages/search</code></td><td class="num">30</td><td class="num">2 ms</td><td class="num">3 ms</td></tr>
-    <tr><td><code>/v1/reports/{id}</code></td><td class="num">30</td><td class="num">2 ms</td><td class="num">2 ms</td></tr>
+    <tr><td><code>/v1/search</code>, 10 test questions, one at a time</td><td class="num">50</td><td class="num">151 ms</td><td class="num">182 ms</td></tr>
+    <tr><td><code>/v1/search</code>, 25 at once</td><td class="num">100</td><td class="num">1,500 ms</td><td class="num">2,496 ms</td></tr>
+    <tr><td><code>/v1/metrics/closure</code>, by office</td><td class="num">30</td><td class="num">51 ms</td><td class="num">62 ms</td></tr>
+    <tr><td><code>/v1/facilities/{station}</code></td><td class="num">30</td><td class="num">13 ms</td><td class="num">17 ms</td></tr>
+    <tr><td><code>/v1/clusters</code></td><td class="num">30</td><td class="num">12 ms</td><td class="num">25 ms</td></tr>
+    <tr><td><code>/v1/metrics/counts</code>, by year</td><td class="num">30</td><td class="num">26 ms</td><td class="num">38 ms</td></tr>
+    <tr><td><code>/v1/recommendations</code>, with a keyword</td><td class="num">30</td><td class="num">7 ms</td><td class="num">11 ms</td></tr>
+    <tr><td><code>/v1/pages/search</code></td><td class="num">30</td><td class="num">6 ms</td><td class="num">45 ms</td></tr>
+    <tr><td><code>/v1/reports/{id}</code></td><td class="num">30</td><td class="num">3 ms</td><td class="num">4 ms</td></tr>
     </tbody></table></div>
-    <p>All of these returned 200. Parallel searches queue at about 14 per second on this machine, so latency grows with concurrency. These are small samples, not a sustained load test.</p>
+    <p>All of these returned 200. At most four searches run at once and the rest wait their turn, so latency grows with concurrency. These are small samples, not a sustained load test.</p>
     <h4 id="search-relevance-test">Search relevance test</h4>
     <p>Compared <code>/v1/search</code> with OIG's <code>/recommendations-all</code> search on 10 plain-language questions, each as a full sentence and as short keywords fixed before any results were read. OIG returned no results for any full sentence. The top 5 recommendations from the other three searches were pooled into 99 distinct results and shuffled. After the text rebuild, this service's searches were run again, and 14 of the 20 returned a different list, because corrective actions were re-embedded from clean text. Recommendation text did not change, so earlier judgments stand, and the 8 new results were judged the same way. OIG's results were not fetched again. Two separate Claude agents judged each result with no project context and no view of which search found it, and a result counted as relevant only if both marked it so. They agreed on 106 of 107, but they are the same model, so that is not independent confirmation. No person judged the results.</p>
     <p>Each cell shows relevant results in the top 3, relevant results in the top 5, and results returned.</p>
@@ -321,6 +326,7 @@
     <ul class="clean">
     <li>Search quality is only lightly measured (see Search relevance test). A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. <code>/v1/search</code> always returns a full shortlist, relevant or not, because similarity has no natural cutoff, so its consumer has to read results critically.</li>
     <li>Under heavy parallel load, a query embedding can exceed its 5 second timeout, and that search then runs on keywords only. The response reports this in <code>search_mode</code>. It did not occur in the runs above.</li>
+    <li>More than four searches at once wait their turn, and one that waits over 10 seconds gets <code>429</code>. The MCP server does not retry, so the assistant sees an error.</li>
     <li>Near-duplicate templated recommendations can fill the top of a shortlist.</li>
     <li>Title-based facility links were spot-checked, and each change on this build was read, but they have not all been reviewed. A title naming several facilities links to only one, and a title naming a system links to its parent station even when it also names a division's city.</li>
     </ul>
@@ -328,7 +334,7 @@
     <ul class="clean">
     <li>The backend is hosted on one personal Mac for the competition, a single point of failure.</li>
     <li>Scheduled refresh is not installed, so <code>data_as_of</code> ages until someone runs <code>refresh</code>. The MCP server flags data older than 30 days.</li>
-    <li>There is no alerting and no rate limiting beyond the token.</li>
+    <li>There is no alerting. The MCP server limits each client's request rate and the API caps concurrent searches, but the API has no per-client limit of its own.</li>
     </ul>
     </div></section>
     <section id="operations-and-design"><div class="wrap">
@@ -337,20 +343,23 @@
     <div class="table-wrap"><table>
     <thead><tr><th>Signal</th><th>Where</th></tr></thead>
     <tbody>
-    <tr><td>Request log: path, status, duration</td><td>API log</td></tr>
+    <tr><td>Request log: route template, not the path, so a typed-in value is not recorded; status; duration</td><td>API log</td></tr>
     <tr><td>Search log: mode, query length, list sizes</td><td>API log. Query text is never logged, because a user may describe their own facility</td></tr>
     <tr><td>Pipeline log, with a warning when a stage ends with problems</td><td>Pipeline log</td></tr>
     <tr><td>Search health and fallback counters since start</td><td><code>GET /health/search</code></td></tr>
     <tr><td>Stage counts, anomalies, parse rates, fetch failures</td><td>Per-stage run output</td></tr>
     <tr><td>Rows ingest refused, with reasons</td><td>Rejects file</td></tr>
     <tr><td>Build comparison with OIG</td><td>Validation report, and <code>reconciliation</code> in <code>GET /v1/meta</code></td></tr>
+    <tr><td>Full traces of each request, including query text and results, during closed testing only</td><td>Trace files on the host, capped in size and turned off before public use</td></tr>
     </tbody></table></div>
     <p>Logs rotate. No alerting is configured, so a failure is visible only to someone who looks.</p>
     <h3 id="security">Security</h3>
     <ul class="clean">
-    <li><strong>Public data, access-controlled API.</strong> All data is public. The token manages load and usage.</li>
-    <li><strong>Network.</strong> Loopback bind, outbound-only tunnel, and an Access policy allowing only the service token. Unauthenticated requests get <code>401</code>, verified with no token and with a fake one.</li>
-    <li><strong>Credentials.</strong> The token is held in secret stores and never in a repository.</li>
+    <li><strong>Public data, access-controlled API.</strong> All data is public. Access control manages load and usage.</li>
+    <li><strong>Network.</strong> Loopback bind, outbound-only tunnel, and an Access policy allowing only the service token. Behind it, the API checks its own key, so it stays closed if the policy is ever removed. Requests get <code>401</code> with no token, a fake one, or the token without the key.</li>
+    <li><strong>Credentials.</strong> The token and key are held in secret stores and never in a repository. A scan of both repositories' full history found neither.</li>
+    <li><strong>Container.</strong> Read-only filesystem, database mounted read-only, no Linux capabilities, memory and process limits, and base images pinned by digest.</li>
+    <li><strong>Reviewed.</strong> A teammate's security review produced the search limits above; the technical findings that apply to this host were fixed or closed with a recorded reason. A scan of the full text for patient identifiers found none.</li>
     <li><strong>Read-only serving.</strong> The API opens the database with <code>mode=ro</code>, with bound parameters throughout. There are no write endpoints.</li>
     <li><strong>Crawl boundary.</strong> HTTPS on allowed hosts only, on-site redirects only, and a path allow-list for PDFs.</li>
     <li><strong>No rating of facilities.</strong> Metrics have no <code>group_by=facility</code>, and a test enforces that. Facility data is listed, not scored.</li>
