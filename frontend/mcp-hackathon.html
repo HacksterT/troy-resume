@@ -120,7 +120,7 @@
       <div class="eyebrow">GSA MCP Server and AI Agent Government Hackathon · Dataset Access track</div>
       <h1>VA OIG Recommendations MCP Server</h1>
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every finding it returns carries a report number and a link.</p>
-      <p class="meta">For hackathon judges and technical reviewers · Status as of November 10, 2026, with data as of November 4 · Built entirely from information VA OIG publishes at vaoig.gov</p>
+      <p class="meta">For hackathon judges and technical reviewers · Status as of November 17, 2026, with data as of November 4 · Built entirely from information VA OIG publishes at vaoig.gov</p>
       <nav class="hero-nav" aria-label="Project pages">
         <a href="/mcp-hackathon-overview">MCP Overview</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
@@ -183,8 +183,8 @@
     <section id="approach">
       <div class="wrap">
         <h2>Approach</h2>
-        <p>This project has two parts. A data service turns OIG's public pages and PDFs into a structured, queryable dataset, with every build checked against what OIG publishes before it ships. An MCP server sits on top of that dataset and gives AI assistants goal-level tools, so a plain-language question becomes an answer with a report number and a link attached.</p>
-        <p>The <a href="/mcp-hackathon-overview">MCP Overview</a> covers what the server itself does: its tools, its safeguards, and how it has been evaluated. The <a href="/mcp-hackathon-backend">Data Source Overview</a> covers how the dataset is collected, structured, and checked. The MCP server's code, tests, and evaluation are public on GitHub at <a href="https://github.com/HacksterT/oig-mcp">HacksterT/oig-mcp</a>. The data service's repository is private.</p>
+        <p>This project has two parts. A data service turns OIG's public pages and PDFs into a structured, queryable dataset, with every build checked against what OIG publishes before it ships. An MCP server sits on top of that dataset and gives AI assistants goal-level tools, so a plain-language question becomes an answer with a report number and a link attached. The server runs in IBM watsonx Orchestrate as a local toolkit, where an agent uses its seven tools.</p>
+        <p>The <a href="/mcp-hackathon-overview">MCP Overview</a> covers what the server itself does: its tools, its safeguards, and how it has been evaluated. The <a href="/mcp-hackathon-backend">Data Source Overview</a> covers how the dataset is collected, structured, and checked. How the server was tested, on two Claude models, an independent agent, and Orchestrate's own agent, is in the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-architecture.md">testing architecture</a> and <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>. The MCP server's code, tests, and evaluation are public on GitHub at <a href="https://github.com/HacksterT/oig-mcp">HacksterT/oig-mcp</a>. The data service's repository is private.</p>
       </div>
     </section>
 
