@@ -92,7 +92,7 @@
       <div class="eyebrow">MCP Overview</div>
       <h1>VA OIG Recommendations Assistant</h1>
       <p class="lead">The VA Office of Inspector General (OIG) has published about 4,410 reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
-      <p class="meta">Status as of November 10, 2026 · Figures from the data as of November 4, 2026</p>
+      <p class="meta">Status as of November 17, 2026 · Figures from the data as of November 4, 2026</p>
       <a class="hero-back" href="/mcp-hackathon">&larr; Back to Project Summary</a>
     </div>
   </div>
@@ -102,7 +102,7 @@
     <section id="brief">
       <div class="wrap">
         <h2>In brief</h2>
-        <p>This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,410 reports, 15,649 recommendations, and 11,264 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.</p>
+        <p>This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,410 reports, 15,649 recommendations, and 11,264 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source. It runs in IBM's watsonx Orchestrate, where an AI assistant uses it.</p>
         <p>It uses only public information from vaoig.gov and no internal VA systems. It is not an official VA or OIG product, and it does not replace VA's own tracking of recommendations.</p>
       </div>
     </section>
@@ -186,6 +186,7 @@
       <div class="wrap">
         <h2>Evaluation</h2>
         <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. On the final build, two Claude models each passed 23 of 24 questions and cited no report that does not exist. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
+        <p>In IBM's watsonx Orchestrate, the assistant answered five of six check questions correctly at first. The sixth showed a problem in the server, which was fixed and then confirmed in Orchestrate. A full run of all 24 questions there is under way. How the testing works and what it found are in the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-architecture.md">testing architecture</a> and <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</p>
       </div>
     </section>
 

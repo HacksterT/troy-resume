@@ -242,7 +242,7 @@
     <tr><td>Responses attached to the right recommendation</td><td>Word agreement between each parsed block and the listing's text</td><td>No HFI or CHIP response dropped, 45 others dropped</td></tr>
     <tr><td>Data gates</td><td>Six thresholds on every build</td><td>All passed (see Data quality)</td></tr>
     <tr><td>Overlapping requests</td><td>15 rounds of 60 requests across seven live endpoints</td><td>No 500s, dropped connections, or thread errors</td></tr>
-    <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, the real token without the API key, and both</td><td>401, 401, 401, 200, run from the host machine</td></tr>
+    <tr><td>Access control</td><td>Requests through Cloudflare with no token, a fake token, the real token without the API key, and both</td><td>401, 401, 401, 200, run from the host machine. The refusals held again from IBM's virtual machine, and calls from watsonx Orchestrate are admitted</td></tr>
     <tr><td>Search limits</td><td>The ten relevance-test questions with and without the limits; eight searches at once; a slow and an unavailable model</td><td>All 20 searches identical in results and order; all eight returned; slow model still hybrid, unavailable model fell back to keywords, with no errors</td></tr>
     <tr><td>Integration</td><td>MCP tools called against the live API</td><td>Returned real data on this build, and passed the MCP server's authentication checks and evaluation</td></tr>
     </tbody></table></div>
@@ -301,10 +301,9 @@
     <h4 id="not-yet-tested">Not yet tested</h4>
     <ul class="clean">
     <li>A full <code>refresh</code> run since closure dates moved to their own stage. Each stage ran by hand on the real run, and an automated test covers stopping at a failure, but the command has not run start to finish since that change.</li>
-    <li>Answer quality on watsonx Orchestrate's model. The evaluation against gold answers has run on two Claude models, and an independent agent answered a test bank.</li>
+    <li>The full evaluation of watsonx Orchestrate's own agent, under way. Its first six check questions, and the runs on two Claude models and an independent agent, are in the MCP server's <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</li>
     <li>Search relevance as judged by a person.</li>
     <li>Sustained load, or more concurrency than the runs above.</li>
-    <li>Access control from outside the host's network. The first call from IBM Cloud will serve as this check.</li>
     <li>A planned recovery after a reboot of the host. The Mac restarted unexpectedly during the November 4 rebuild, and the API and its dependencies came back within about two minutes with the database intact.</li>
     </ul>
     <h3 id="known-limits">Known limits</h3>
