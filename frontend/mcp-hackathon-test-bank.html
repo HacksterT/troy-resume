@@ -91,7 +91,7 @@
     <section><div class="wrap">
       <h2>How this was tested</h2>
       <ul class="clean">
-        <li><strong>A separate agent and model.</strong> Hermes Agent, running DeepSeek V4 Pro 0813, connected to the server over public HTTPS with a bearer token, as a hosted client would. It used the same server container that is planned for IBM Cloud.</li>
+        <li><strong>A separate agent and model.</strong> Hermes Agent, running DeepSeek V4 Pro 0813, connected to the server over public HTTPS with a bearer token, as a hosted client would. It used the same server container that serves testers today.</li>
         <li><strong>Two steps.</strong> First, the agent answered every question using the tools, and logged the tools it used and its observations, because the tester asked for that. That detail is more than a person would normally see. Then the tester asked it to add a native answer to each question: the answer it would have given if simply asked, without the reasoning or metadata.</li>
         <li><strong>Answers checked against the data.</strong> The expected answers were computed by database queries against a pinned copy of the data, not through the server. Code checked facts and citations, and an AI model (Claude Opus 5.5) judged caveats and behaviors.</li>
         <li><strong>Notes written by AI.</strong> Claude Code, the AI agent that built the server, wrote the notes below after checking the answers against the data. A person did not verify every note, so treat them as a careful first review.</li>
@@ -102,8 +102,8 @@
         <li><strong>It was not blind.</strong> The agent ran across several sessions and had access to its first-round answers. Being told to leave out metadata may also be why links and dates are missing, so these scores do not settle how it would cite otherwise.</li>
         <li><strong>It is small, and the builders wrote the questions.</strong> Eighteen questions are a check, not a statistical estimate, and they were written knowing what the service does.</li>
         <li><strong>The judge is AI.</strong> The caveat and agreement scores come from one AI model, not from a person, and it passed some statements the notes below question.</li>
-        <li><strong>This is one model.</strong> The server now runs in IBM's watsonx Orchestrate, whose own agent is being evaluated on the same questions, and its answers may differ. See the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</li>
-        <li><strong>The server has changed since.</strong> These answers came from the server as of November 4, 2026. Field names quoted in the logs below, such as <code>caveats</code>, <code>caveat</code>, and <code>note</code>, are now one <code>notices</code> list, and results now also name their filters and declare their shape. A rerun of the gold questions on November 10 gave the same scores.</li>
+        <li><strong>This is one model.</strong> The server now runs in IBM's watsonx Orchestrate, whose own agent was evaluated on the same questions with different results. See the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</li>
+        <li><strong>The server has changed since.</strong> These answers came from the server as of November 4, 2026. Field names quoted in the logs below, such as <code>caveats</code>, <code>caveat</code>, and <code>note</code>, are now one <code>notices</code> list, and results now also name their filters and declare their shape. A rerun of the gold questions on November 10 gave the same scores. Since then, facility profiles leave facility responses to the other tools, report records carry a ready-made citation, and an ambiguous facility name returns every match.</li>
       </ul>
     </div></section>
     <section><div class="wrap">

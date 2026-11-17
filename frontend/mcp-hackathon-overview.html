@@ -92,7 +92,7 @@
       <div class="eyebrow">MCP Overview</div>
       <h1>VA OIG Recommendations Assistant</h1>
       <p class="lead">The VA Office of Inspector General (OIG) has published about 4,410 reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.</p>
-      <p class="meta">Status as of November 16, 2026 · Figures from the data as of November 4, 2026</p>
+      <p class="meta">Status as of November 17, 2026 · Figures from the data as of November 4, 2026</p>
       <a class="hero-back" href="/mcp-hackathon">&larr; Back to Project Summary</a>
     </div>
   </div>
@@ -150,7 +150,7 @@
     <section id="tools">
       <div class="wrap">
         <h2>The tools</h2>
-        <p>The server exposes a short, deliberately small set of goal-level tools. New facts become fields on these tools rather than new tools, and it also publishes reference lists of topics, offices, and facilities, and guided prompts for clients that support them.</p>
+        <p>The server exposes a short, deliberately small set of goal-level tools. New facts become fields on these tools rather than new tools, and it also publishes reference lists of topics, offices, and facilities, and guided prompts, with suggested values, for clients that support them.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Tool</th><th>What it answers</th></tr></thead>
@@ -158,7 +158,7 @@
               <tr><td>Search findings</td><td>Recommendations and corrective actions matching a question in any wording, filtered by topic, office, status, report type, VISN, state, or date</td></tr>
               <tr><td>Analyze recommendations</td><td>Exact counts and measures grouped by year, office, topic, or report type: trends, open counts, time to closure, and aging</td></tr>
               <tr><td>Systemic clusters</td><td>Recurring recommendations across reports, with how common each one is and how long similar findings take to close</td></tr>
-              <tr><td>Facility profile</td><td>Everything OIG has reported about one facility, with responses, closure dates, repeat findings, and an estimated next inspection window</td></tr>
+              <tr><td>Facility profile</td><td>One facility's reports, inspections, and recommendations, with status, closure dates, repeat findings, and an estimated next inspection window</td></tr>
               <tr><td>Report detail</td><td>One report with every recommendation, status, closure date, response, and standards cited</td></tr>
               <tr><td>Inspection brief</td><td>One facility's preparation in one request: its history and open findings, the most common peer findings, what peers committed to do, and an estimated next window</td></tr>
               <tr><td>Dataset status</td><td>What the data covers, when it was collected, and how it compares with OIG's published totals</td></tr>
@@ -174,7 +174,7 @@
         <ul class="clean">
           <li>The server returns structured records; the assistant summarizes them. It does not generate findings.</li>
           <li>Every finding the server returns carries a report number and link, and every response states when its data was collected.</li>
-          <li>Where data supports more than one interpretation, the server says so.</li>
+          <li>Where data supports more than one interpretation, the server says so. A facility name that could mean several facilities returns every match, and in clients that support it a question to the user, never a guess.</li>
           <li>The server describes what OIG found and what facilities reported. It does not rate facilities or individuals.</li>
           <li>During the hackathon, including judging, each question the server receives and the answer it returns are recorded, so the builder can see how it is used. Nothing nonpublic belongs in a question.</li>
           <li>Text from OIG reports reaches the assistant marked as quoted source material, not instructions, and every tool only reads, so nothing written in a report can make the server act.</li>
@@ -185,8 +185,8 @@
     <section id="evaluation">
       <div class="wrap">
         <h2>Evaluation</h2>
-        <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. On the final build, two Claude models each passed 23 of 24 questions and cited no report that does not exist. The test is small, and its authors wrote the questions. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
-        <p>In IBM's watsonx Orchestrate, the assistant answered five of six check questions correctly at first. The sixth showed a problem in the server, which was fixed and then confirmed in Orchestrate. A full run of all 24 questions there is under way. How the testing works and what it found are in the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-architecture.md">testing architecture</a> and <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</p>
+        <p>An AI assistant with no other context answers realistic questions using only the server's tools, scored against gold answers computed from a frozen copy of the data: exact matches on counts and report numbers, lists, tool selection, caveats, and a check that every cited report exists. Traces are logged with Arize Phoenix. Claude Opus 5.5 passed 3 of 24 with no server and 23 with it, then 22 after results were made smaller, the new miss a correct answer worded differently from the check. Claude Sonnet 5.5 passed 23 and cited every report where required. Neither model cited a report that does not exist. The test is small, and its authors wrote the questions and tuned the server after earlier runs. An independent agent's answers, with notes on how they checked out, are in the <a href="/mcp-hackathon-test-bank">test bank</a>.</p>
+        <p>In IBM's watsonx Orchestrate, IBM's agent (GPT-OSS 120B) passed 10, 8, and 11 of 24 in three runs. The failures traced to the server, such as office names that matched nothing, are fixed and deployed, and a second round, with six adversarial questions added, is planned. In one load test on one Mac, not run to failure, all 2,059 calls from 1 to 40 concurrent clients were answered. The method, every result, and its limits are in the <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/evaluation.md">evaluation</a>.</p>
       </div>
     </section>
 
