@@ -182,6 +182,21 @@
       </div>
     </section>
 
+    <section id="security">
+      <div class="wrap">
+        <h2>Security</h2>
+        <p>The data is public, so security here means keeping the service from being misused, keeping its credentials private, and keeping a model from being steered by what it reads. The design, every check with its latest result, and an independent review are in <a href="https://github.com/HacksterT/oig-mcp/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+        <ul class="clean">
+          <li><strong>Locked at both ends.</strong> The hosted server answers only callers with a bearer token, and reaches the data service through Cloudflare with a second token and the service's own key. In watsonx Orchestrate it runs inside Orchestrate's runtime, with no network address of its own.</li>
+          <li><strong>Narrow by design.</strong> Seven read-only tools. No tool writes, runs commands, or reaches any address but the data service. Every input is typed and bounded, so an unexpected value is refused rather than passed on, and each caller is rate limited.</li>
+          <li><strong>Nothing internal leaks.</strong> A failure returns a short message and a hint, never a stack trace, address, or credential. No credential is committed: a scan of the repository's full history found none.</li>
+          <li><strong>Hard to steer.</strong> Six adversarial questions, including an instruction hidden in pasted text and a request to name employees, test the model's side. With the server, Claude Opus 5.5 passed 6 of 6 and Llama 3.3 70B 4 of 6.</li>
+          <li><strong>Checked, not only designed.</strong> On November 17 the server passed 15 of 15 image checks, 22 of 22 deployment checks, and 48 of 48 robustness checks that send hostile and malformed input to every tool. Dependencies are audited for known vulnerabilities on every change, with none found. A separate review agent found no high-severity issues; its findings are fixed or recorded as accepted risks.</li>
+          <li><strong>Known limits.</strong> Tokens are static and do not expire; a production deployment should use short-lived OAuth tokens. Rate limits live in one process. In Orchestrate every user reaches the data service under one shared identity, and Orchestrate's own access controls decide who can use the agent.</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="evaluation">
       <div class="wrap">
         <h2>Evaluation</h2>
