@@ -301,9 +301,9 @@
     <h4 id="not-yet-tested">Not yet tested</h4>
     <ul class="clean">
     <li>A full <code>refresh</code> run since closure dates moved to their own stage. Each stage ran by hand on the real run, and an automated test covers stopping at a failure, but the command has not run start to finish since that change.</li>
-    <li>The full evaluation of watsonx Orchestrate's own agent, under way. Its first six check questions, and the runs on two Claude models and an independent agent, are in the MCP server's <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/testing-results.md">testing results</a>.</li>
+    <li>A second round of watsonx Orchestrate's own agent, on the MCP server's latest changes. The first round, and the runs on other models, are in the MCP server's <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/evaluation.md">evaluation</a>.</li>
     <li>Search relevance as judged by a person.</li>
-    <li>Sustained load, or more concurrency than the runs above.</li>
+    <li>Load to failure. One ramp through the MCP server on November 17, to 40 concurrent clients, had all 5,941 API requests answered, with a median of 7 to 13 ms inside the API.</li>
     <li>A planned recovery after a reboot of the host. The Mac restarted unexpectedly during the November 4 rebuild, and the API and its dependencies came back within about two minutes with the database intact.</li>
     </ul>
     <h3 id="known-limits">Known limits</h3>
