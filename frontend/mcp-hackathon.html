@@ -120,7 +120,7 @@
       <div class="eyebrow">GSA MCP Server and AI Agent Government Hackathon · Dataset Access track</div>
       <h1>VA OIG Recommendations MCP Server</h1>
       <p class="lead">An MCP server that lets an AI assistant answer questions across VA Office of Inspector General reports: which findings recur across facilities, whether a theme is growing, what peer facilities did to fix a problem, and how long similar recommendations take to close. Every finding it returns carries a report number and a link.</p>
-      <p class="meta">For hackathon judges and technical reviewers · Status as of November 17, 2026, with data as of November 4 · Built entirely from information VA OIG publishes at vaoig.gov</p>
+      <p class="meta">For hackathon judges and technical reviewers · Status as of November 18, 2026, with data as of November 4 · Built entirely from information VA OIG publishes at vaoig.gov</p>
       <nav class="hero-nav" aria-label="Project pages">
         <a href="/mcp-hackathon-overview">MCP Overview</a>
         <a href="/mcp-hackathon-backend">Data Source Overview</a>
@@ -184,7 +184,7 @@
       <div class="wrap">
         <h2>Approach</h2>
         <p>This project has two parts. A data service turns OIG's public pages and PDFs into a structured, queryable dataset, with every build checked against what OIG publishes before it ships. An MCP server sits on top of that dataset and gives AI assistants goal-level tools, so a plain-language question becomes an answer with a report number and a link attached. The server runs in IBM watsonx Orchestrate as a local toolkit, where an agent uses its seven tools.</p>
-        <p>The <a href="/mcp-hackathon-overview">MCP Overview</a> covers the server's tools and safeguards, and the <a href="/mcp-hackathon-backend">Data Source Overview</a> how the dataset is collected, structured, and checked. The <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/submission/evaluation-document.md">evaluation</a> gives the method, results, and limits: on 24 questions the builder wrote, Claude Opus 5.5 passed 3 with no server and 22 or 23 with it, none of its answers cited a report that does not exist, and IBM's Orchestrate agent passed 8 to 11 in a first round whose server fixes are now deployed. The security design, every check with its latest result, and an independent review are in <a href="https://github.com/HacksterT/oig-mcp/blob/main/SECURITY.md">SECURITY.md</a>. The MCP server's code, tests, and evaluation are public on GitHub at <a href="https://github.com/HacksterT/oig-mcp">HacksterT/oig-mcp</a>. The data service's repository is private.</p>
+        <p>The <a href="/mcp-hackathon-overview">MCP Overview</a> covers the server's tools and safeguards, and the <a href="/mcp-hackathon-backend">Data Source Overview</a> how the dataset is collected, structured, and checked. The <a href="https://github.com/HacksterT/oig-mcp/blob/main/docs/submission/evaluation-document.md">evaluation</a> gives the method, results, and limits: on 24 questions the builder wrote, models passed 2 or 3 with no server; with it, Claude Opus 5.5 passed 23, Claude Sonnet 5.5 22, GPT-OSS 120B in watsonx Orchestrate 12 and 12 in two runs (up from 10, 8, and 11 with only the server changed), and Llama 3.3 70B 9. That spread across models is a finding in itself: a server that only meets the best model has not been tested. No Claude answer cited a report that does not exist. When a facility name matches several, the server asks the user to choose rather than let the model guess; on one measured question in Claude Code that halved the round trips and cut tokens 39 percent. The security design, every check with its latest result, and an independent review are in <a href="https://github.com/HacksterT/oig-mcp/blob/main/SECURITY.md">SECURITY.md</a>. The MCP server's code, tests, and evaluation are public on GitHub at <a href="https://github.com/HacksterT/oig-mcp">HacksterT/oig-mcp</a>. The data service's repository is private.</p>
       </div>
     </section>
 
@@ -199,7 +199,7 @@
           <li>VA OIG <a href="https://www.vaoig.gov/reports/all">Reports</a> and <a href="https://www.vaoig.gov/recommendations-all">Recommendations</a> listings</li>
           <li>GAO, <a href="https://www.gao.gov/products/gao-26-108978">Priority Open Recommendations: Department of Veterans Affairs</a>, GAO-26-108978, May 2026</li>
           <li><a href="https://www.oversight.gov/reports/recommendations">Oversight.gov open recommendations</a></li>
-          <li><a href="https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
+          <li><a href="https://www.gsa.gov/super-intelligence/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon">GSA MCP Server and AI Agent Government Hackathon</a></li>
           <li>Figures come from the project's data, collected November 4, 2026. Theme counts depend on the search words used.</li>
         </ol>
       </div>
